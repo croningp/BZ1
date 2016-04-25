@@ -1,0 +1,21 @@
+//Motor shaft paramters
+shtshape = "cylinder";  //shaft shape
+shtd=0.8;       //shaft diameter
+shtl=4.5;       //shaft length
+
+//Magnet parameters
+magshape = "cylinder";  //magnet shape
+magd = 2.1;       //magnet diameter (cylinder)
+magh = 2;       //magnet height (cylinder)
+magx = 1;       //magnet width (cube)
+magy = 1;       //magnet length (cube)
+magz = 1;       //magnet depth (cube)
+mags = 1.5;       //magnet spacing
+
+//Holder parameters
+hldshape = "cylinder";  //holder shape
+hldd = 7;           //holder diameter (cylinder)
+hldh = 2.5;           //holder height (cylinder)
+hldx = 4;           //holder width (cube)
+hldy = 7;           //holder length (cube)
+hldz = 2.5;           //holder depth (cube)

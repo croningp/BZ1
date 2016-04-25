@@ -1,0 +1,36 @@
+//Cell dimensions
+
+nx = 7;     //number of cells in x
+ny = 7;     //number of cells in y
+cx = 11;     //cell width
+cy = 11;     //cell length
+cz = 5;     //cell depth
+
+//Arena total size is (nx*cx)x(ny*cy)
+//Cells are (cx-0.5gw)x(cy-0.5gw)
+
+//Base and edge thicknesses
+
+base = 1.5;
+edge = 15;
+
+//Equidistant groove depth and width
+
+gw = 2;     //width
+gz = 0;     //depth
+gh = 0;     //height above cell edge
+
+shim = 0.0;     //narrowing wrt grooves
+extend = 0;   //extension of grooves into sides
+raise = 3;      //height of channels from bottom of cell [mm]
+prop = 0.5;     //propoprtion of cell wall to have open as channel
+
+//Stirrer motor parameters
+
+md = 6.15;     //motor diameter
+mz = 14;    //motor length
+
+//Bolt hole paramters
+
+boltd = 5.2;  //bolt diameter
+bolte = 5;  //distance from edge
