@@ -1,7 +1,7 @@
 """
     coding: UTF-8
 
-    controller.py
+    bzboard.py
 
     Created 25/04/2016
     Kevin Donkers, The Cronin Group, University of Glasgow
@@ -29,7 +29,7 @@ DEFAULT_IO_DELIM = ','
 DEFAULT_IO_TERM = ';'
 
 
-class ControllerIO(object):
+class BZBoard(object):
 
     def __init__(self, port, baudrate=DEFAULT_IO_BAUDRATE, timeout=DEFAULT_IO_TIMEOUT, delim=DEFAULT_IO_DELIM, term=DEFAULT_IO_TERM):
         self.logger = logging.getLogger(self.__class__.__name__)
@@ -92,7 +92,7 @@ class ControllerIO(object):
 
     def defaultPrint(self, cmd):
         print cmd
-    
+
     # def readline(self):
     #     msg = self._serial.readline()
     #     if msg:
