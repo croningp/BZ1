@@ -33,11 +33,12 @@ void setup() {
   pwm1.begin();
   pwm0.setPWMFreq(MAX_FREQ);
   pwm1.setPWMFreq(MAX_FREQ);
-  
+
   // Setup callbacks for SerialCommand commands
   cmdHdl.addCommand("S", setPWM);             // Set PWM of pin
   cmdHdl.addCommand("F", frequency);          // Change frequency of PWM
-  cmdHdl.setDefaultHandler(unrecognized);     // Handler for command that isn't matched  (returns "Quelle?")
+  cmdHdl.addCommand("T", testMsg);
+  cmdHdl.setDefaultHandler(unrecognized);     // Handler for command that isn't matched  (returns "???")
 }
 
 void loop() {
@@ -117,21 +118,34 @@ void unrecognized(const char *command) {
   errorMsg("Unrecognized");
 }
 
-void errorMsg(char *command) {
-    cmdHdl.initCmd();
-    cmdHdl.addCmdString("E");
-    cmdHdl.addCmdDelim();
-    cmdHdl.addCmdString(command);
-    cmdHdl.addCmdTerm();
-    cmdHdl.sendCmdSerial();
+void errorMsg(String msg) {
+  char* command;
+  msg.toCharArray(command,COMMANDHANDLER_BUFFER+1);
+  cmdHdl.initCmd();
+  cmdHdl.addCmdString("E");
+  cmdHdl.addCmdDelim();
+  cmdHdl.addCmdString(command);
+  cmdHdl.addCmdTerm();
+  cmdHdl.sendCmdSerial();
 }
 
-void sendMsg(char *command) {
-    cmdHdl.initCmd();
-    cmdHdl.addCmdString("M");
-    cmdHdl.addCmdDelim();
-    cmdHdl.addCmdString(command);
-    cmdHdl.addCmdTerm();
-    cmdHdl.sendCmdSerial();
+void sendMsg(String msg) {
+  char* command;
+  msg.toCharArray(command,COMMANDHANDLER_BUFFER+1);
+  cmdHdl.initCmd();
+  cmdHdl.addCmdString("M");
+  cmdHdl.addCmdDelim();
+  cmdHdl.addCmdString(command);
+  cmdHdl.addCmdTerm();
+  cmdHdl.sendCmdSerial();
 }
 
+void testMsg() {
+    int shield = 1;
+    int pin = 2;
+    int speed = 3;
+    String msg;
+    msg = msg + "shield" + shield + "pin" + pin + "speed" + speed;
+    sendMsg(msg);
+    Serial.println(msg);
+}
