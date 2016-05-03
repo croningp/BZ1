@@ -40,10 +40,12 @@ class BZBoard(object):
         self.cmdHdl.add_default_handler(defaultPrint)
         self.cmdHdl.add_command('E',self.handle_error)
         self.cmdHdl.add_command('M',self.handle_msg)
+        #
 
 
+    ##
     @classmethod
-    def from_config(cls, io_config):
+    def io_from_config(cls, io_config):
         port = io_config['port']
 
         if 'baudrate' in io_config:
@@ -69,9 +71,9 @@ class BZBoard(object):
         return cls(port, baudrate, timeout, delim, term)
 
     @classmethod
-    def from_configfile(cls, io_configfile):
+    def io_from_configfile(cls, io_configfile):
         with open(io_configfile) as f:
-            return cls.from_config(json.load(f))
+            return cls.io_from_config(json.load(f))
 
     def __del__(self):
         self.close()
