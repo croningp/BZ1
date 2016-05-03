@@ -31,7 +31,7 @@ DEFAULT_IO_TERM = ';'
 
 class BZBoard(object):
 
-    def __init__(self, port, baudrate=DEFAULT_IO_BAUDRATE, timeout=DEFAULT_IO_TIMEOUT, delim=DEFAULT_IO_DELIM, term=DEFAULT_IO_TERM):
+    def __init__(self, port, baudrate=DEFAULT_IO_BAUDRATE, timeout=DEFAULT_IO_TIMEOUT, delim=DEFAULT_IO_DELIM, term=DEFAULT_IO_TERM, motors=DEFAULT_MOTOR_TABLE):
         self.logger = logging.getLogger(self.__class__.__name__)
         # IO
         self.cmdHdl = SerialCommandHandler(port, baudrate, timeout, delim, term)
@@ -41,39 +41,44 @@ class BZBoard(object):
         self.cmdHdl.add_command('E',self.handle_error)
         self.cmdHdl.add_command('M',self.handle_msg)
         #
-
+        self.motors = motors
 
     ##
     @classmethod
-    def io_from_config(cls, io_config):
-        port = io_config['port']
+    def from_config(cls, config):
+        port = config['port']
 
-        if 'baudrate' in io_config:
-            baudrate = io_config['baudrate']
+        if 'baudrate' in config:
+            baudrate = config['baudrate']
         else:
             baudrate = DEFAULT_IO_BAUDRATE
 
-        if 'timeout' in io_config:
-            timeout = io_config['timeout']
+        if 'timeout' in config:
+            timeout = config['timeout']
         else:
             timeout = DEFAULT_IO_TIMEOUT
 
-        if 'delim' in io_config:
-            delim = io_config['delim']
+        if 'delim' in config:
+            delim = config['delim']
         else:
             delim = DEFAULT_IO_DELIM
 
-        if 'term' in io_config:
-            term = io_config['term']
+        if 'term' in config:
+            term = config['term']
         else:
             term = DEFAULT_IO_TERM
 
-        return cls(port, baudrate, timeout, delim, term)
+        if 'motors' in config:
+            motors = config['motors']
+        else:
+            motors = DEFAULT_MOTOR_TABLE
+
+        return cls(port, baudrate, timeout, delim, term, motors)
 
     @classmethod
-    def io_from_configfile(cls, io_configfile):
-        with open(io_configfile) as f:
-            return cls.io_from_config(json.load(f))
+    def from_configfile(cls, configfile):
+        with open(configfile) as f:
+            return cls.from_config(json.load(f))
 
     def __del__(self):
         self.close()
