@@ -67,8 +67,9 @@ void setPWM() {
   int shield;
   int pin;
   int speed;
+  char* command;
   shield = cmdHdl.readIntArg();
-  if (cmdHdl.argOk==false) {    
+  if (cmdHdl.argOk==false) {
     Serial.println("Define shield, pin & speed");
     return;
   }
@@ -91,47 +92,46 @@ void setPWM() {
   if (speed <= MAX_SPEED && speed >= MIN_SPEED) {
     if (shield==0){
       pwm0.setPWM(pin,0,speed);
-      Serial.print("shield 0, pin ");
-      Serial.print(pin);
-      Serial.print(", speed ");
-      Serial.println(speed);
+      String msg = "shield 0";
+      msg = msg + " pin " + pin + " speed " + speed;      
+      msg.toCharArray(command,COMMANDHANDLER_BUFFER+1);
+      sendMsg(command);
     }
     else if (shield==1){
       pwm1.setPWM(pin,0,speed);
-      Serial.print("shield 1, pin ");
-      Serial.print(pin);
-      Serial.print(", speed ");
-      Serial.println(speed);
+      String msg = "shield 1";
+      msg = msg + " pin " + pin + " speed " + speed;      
+      msg.toCharArray(command,COMMANDHANDLER_BUFFER+1);
+      sendMsg(command);
     }
     else {
-      Serial.print("Shield ");
-      Serial.print(shield);
-      Serial.println(" not supported");
+      errorMsg("Shield not supported");
     }
   }
   else {
-    Serial.println("Speed value not in range");
+    errorMsg("Speed value not in range");
   }
 }
 
 void unrecognized(const char *command) {
-  Serial.println("???");
+  errorMsg("Unrecognized");
 }
 
-void errorMsg(string msg) {
+void errorMsg(char *command) {
     cmdHdl.initCmd();
     cmdHdl.addCmdString("E");
     cmdHdl.addCmdDelim();
-    cmdHdl.addCmdString(msg);
+    cmdHdl.addCmdString(command);
     cmdHdl.addCmdTerm();
     cmdHdl.sendCmdSerial();
 }
 
-void sendMsg(string msg) {
+void sendMsg(char *command) {
     cmdHdl.initCmd();
     cmdHdl.addCmdString("M");
     cmdHdl.addCmdDelim();
-    cmdHdl.addCmdString(msg);
+    cmdHdl.addCmdString(command);
     cmdHdl.addCmdTerm();
     cmdHdl.sendCmdSerial();
 }
+
