@@ -33,11 +33,14 @@ class BZBoard(object):
 
     def __init__(self, port, baudrate=DEFAULT_IO_BAUDRATE, timeout=DEFAULT_IO_TIMEOUT, delim=DEFAULT_IO_DELIM, term=DEFAULT_IO_TERM):
         self.logger = logging.getLogger(self.__class__.__name__)
-
-        self.open(port, baudrate, timeout, delim, term)
-        # is this necessary?
-        self.cmdHdl.add_default_handler(defaultPrint)
+        # IO
+        self.cmdHdl = SerialCommandHandler(port, baudrate, timeout, delim, term)
         self.cmdHdl.start()
+        # response handling
+        self.cmdHdl.add_default_handler(defaultPrint)
+        self.cmdHdl.add_command('E',self.handle_error)
+        self.cmdHdl.add_command('M',self.handle_msg)
+
 
     @classmethod
     def from_config(cls, io_config):
@@ -76,27 +79,15 @@ class BZBoard(object):
     def __exit__(self, exc_type, exc_value, traceback):
         self.close()
 
-    def open(self, port, baudrate=DEFAULT_IO_BAUDRATE, timeout=DEFAULT_IO_TIMEOUT, delim=DEFAULT_IO_DELIM, term=DEFAULT_IO_TERM):
-        self.cmdHdl = SerialCommandHandler(port, baudrate, timeout, delim, term)
-
-    def close(self):    #check this is how to close
+    def close(self):
         self.cmdHdl.stop()
         self.cmdHdl.join()
-
-    # def flushInput(self):
-    #     self._serial.flushInput()
-
-    def write(self, packet):
-        str_to_send = packet.to_string()
-        self.cmdHdl.write(str_to_send)
 
     def defaultPrint(self, cmd):
         print cmd
 
-    # def readline(self):
-    #     msg = self._serial.readline()
-    #     if msg:
-    #         self.logger.debug("Received {}".format(msg))
-    #         return msg
-    #     else:
-    #         raise PumpIOTimeOutError
+    def handle_error(self, msg):
+        print "Error: {}".format(msg)
+
+    def handle_msg(self, msg):
+        print "Message: {}".format(msg)
