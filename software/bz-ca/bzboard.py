@@ -21,7 +21,7 @@ import cv2, cv
 from commanduino.commandhandler import SerialCommandHandler
 
 # default parameters
-
+DEFAULT_MOTOR_TABLE = {'A1':[0,0]}
 
 DEFAULT_IO_BAUDRATE = 9600
 DEFAULT_IO_TIMEOUT = 1
@@ -85,6 +85,20 @@ class BZBoard(object):
         self.cmdHdl.stop()
         self.cmdHdl.join()
 
+    ##
+    def motors_from_config(self, config):
+        if 'motors' in config:
+            motors = config['motors']
+            return motors
+        else:
+            motors = DEFAULT_MOTOR_TABLE
+            return motors
+
+    def motors_from_configfile(self, configfile):
+        with open(configfile) as f:
+            return motors_from_config(json.load(f))
+
+    ##
     def defaultPrint(self, cmd):
         print cmd
 
