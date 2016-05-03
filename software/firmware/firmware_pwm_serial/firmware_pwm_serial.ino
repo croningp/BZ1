@@ -117,3 +117,21 @@ void setPWM() {
 void unrecognized(const char *command) {
   Serial.println("???");
 }
+
+void errorMsg(string msg) {
+    cmdHdl.initCmd();
+    cmdHdl.addCmdString("E");
+    cmdHdl.addCmdDelim();
+    cmdHdl.addCmdString(msg);
+    cmdHdl.addCmdTerm();
+    cmdHdl.sendCmdSerial();
+}
+
+void sendMsg(string msg) {
+    cmdHdl.initCmd();
+    cmdHdl.addCmdString("M");
+    cmdHdl.addCmdDelim();
+    cmdHdl.addCmdString(msg);
+    cmdHdl.addCmdTerm();
+    cmdHdl.sendCmdSerial();
+}
