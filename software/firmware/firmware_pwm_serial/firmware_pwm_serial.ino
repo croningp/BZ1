@@ -1,4 +1,4 @@
-/* 
+/*
 Kevin Donkers
 Cronin Group, University of Glasgow, Glasgow
 
@@ -9,7 +9,7 @@ and CommandHandler by jgrizou
 [https://github.com/croningp/Arduino-CommandHandler]
 
  */
- 
+
 #include <CommandHandler.h>
 #include <Adafruit_PWMServoDriver.h>
 
@@ -47,20 +47,21 @@ void loop() {
 
 void frequency(){
   int freq;
+  String msg;
   freq = cmdHdl.readIntArg();
   if (freq != NULL) {
     if (freq <= MAX_FREQ && freq >= MIN_FREQ) {
       pwm0.setPWMFreq(freq);
       pwm1.setPWMFreq(freq);
-      Serial.print("Frequency set to ");
-      Serial.println(freq);
+      msg = msg + "frequency " + freq;
+      sendMsg(msg);
     }
     else {
-      Serial.println("Frequency value not in range");
+      errorMsg("Frequency value not in range");
     }
   }
   else {
-    Serial.println("Define frequency value");
+    errorMsg("Define frequency value");
   }
 }
 
@@ -68,45 +69,41 @@ void setPWM() {
   int shield;
   int pin;
   int speed;
-  char* command;
+  String msg;
   shield = cmdHdl.readIntArg();
   if (cmdHdl.argOk==false) {
-    Serial.println("Define shield, pin & speed");
+    errorMsg("Shield not defined");
     return;
   }
   pin = cmdHdl.readIntArg();
   if (cmdHdl.argOk==false) {
-    Serial.println("Define shield, pin & speed");
+    errorMsg("Pin not defined");
     return;
   }
   else if (pin >= NUM_PINS){
-    Serial.print("Shields only support ");
-    Serial.print(NUM_PINS);
-    Serial.println(" pins");
+    msg = msg + "Shields only supports " + NUM_PINS + " pins";
+    errorMsg(msg);
     return;
   }
   speed = cmdHdl.readIntArg();
   if (cmdHdl.argOk==false) {
-    Serial.println("Define shield, pin & speed");
+    errorMsg("Speed not defined");
     return;
   }
   if (speed <= MAX_SPEED && speed >= MIN_SPEED) {
     if (shield==0){
       pwm0.setPWM(pin,0,speed);
-      String msg = "shield 0";
-      msg = msg + " pin " + pin + " speed " + speed;      
-      msg.toCharArray(command,COMMANDHANDLER_BUFFER+1);
-      sendMsg(command);
+      msg = msg + "shield " + shield + " pin " + pin + " speed " + speed;
+      sendMsg(msg);
     }
     else if (shield==1){
       pwm1.setPWM(pin,0,speed);
-      String msg = "shield 1";
-      msg = msg + " pin " + pin + " speed " + speed;      
-      msg.toCharArray(command,COMMANDHANDLER_BUFFER+1);
-      sendMsg(command);
+      msg = msg + "shield " + shield + " pin " + pin + " speed " + speed;
+      sendMsg(msg);
     }
     else {
-      errorMsg("Shield not supported");
+      msg = msg + "Shield " + shield + " not supported";
+      errorMsg(msg);
     }
   }
   else {
