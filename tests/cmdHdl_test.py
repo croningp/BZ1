@@ -1,6 +1,6 @@
 from commanduino.commandhandler import SerialCommandHandler
 
-PORT = 'COM6'
+PORT = '/dev/ttyACM0'
 
 def defaultPrint(cmd):
     print cmd
