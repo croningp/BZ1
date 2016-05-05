@@ -40,7 +40,7 @@ class BZBoard(object):
         self.cmdHdl.add_default_handler(defaultPrint)
         self.cmdHdl.add_command('E',self.handle_error)
         self.cmdHdl.add_command('M',self.handle_msg)
-        #
+        # motor lookup table
         self.motors = motors
 
     ##
@@ -94,14 +94,14 @@ class BZBoard(object):
     def motors_from_config(self, config):
         if 'motors' in config:
             motors = config['motors']
-            return motors
+            self.motors = motors
         else:
             motors = DEFAULT_MOTOR_TABLE
-            return motors
+            self.motors = motors
 
     def motors_from_configfile(self, configfile):
         with open(configfile) as f:
-            return motors_from_config(json.load(f))
+            return self.motors_from_config(json.load(f))
 
     ##
     def defaultPrint(self, cmd):
