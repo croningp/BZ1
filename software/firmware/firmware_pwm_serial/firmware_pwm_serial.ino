@@ -146,7 +146,7 @@ void testMsg() {
     int pin = 2;
     int speed = 3;
     String msg;
-    msg = msg + "shield" + shield + "pin" + pin + "speed" + speed;
+    msg = msg + "test:shield" + shield + "pin" + pin + "speed" + speed;
     sendMsg(msg);
     Serial.println(msg);
 }
