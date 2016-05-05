@@ -95,8 +95,7 @@ class BZBoard(object):
             motors = config['motors']
             self.motors = motors
         else:
-            motors = DEFAULT_MOTOR_TABLE
-            self.motors = motors
+            print "Error: no motors in config"
 
     def motors_from_configfile(self, configfile):
         with open(configfile) as f:
