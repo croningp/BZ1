@@ -39,7 +39,7 @@ class BZBoard(object):
         self.cmdHdl.add_default_handler(defaultPrint)
         self.cmdHdl.add_command('E',self.handle_error)
         self.cmdHdl.add_command('M',self.handle_msg)
-        # motor lookup table
+        # motor lookup table    {'motor':[shield,pin]}
         self.motors = motors
 
     ##
