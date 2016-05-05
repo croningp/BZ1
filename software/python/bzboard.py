@@ -12,10 +12,10 @@
 # system modules
 import time, math
 import json
+import logging
 
 # additional modules
 import serial
-import cv2, cv
 
 # project modules
 from commanduino.commandhandler import SerialCommandHandler
@@ -26,6 +26,7 @@ DEFAULT_IO_BAUDRATE = 115200
 DEFAULT_IO_TIMEOUT = 1
 DEFAULT_IO_DELIM = ','
 DEFAULT_IO_TERM = ';'
+DEFAULT_WAIT = 0.01
 
 DEFAULT_SPEED = 1024
 DEFAULT_FREQ = 100
@@ -44,7 +45,7 @@ class BZBoard(object):
         self.cmdHdl = SerialCommandHandler(port, baudrate, timeout, delim, term)
         self.cmdHdl.start()
         # response handling
-        self.cmdHdl.add_default_handler(defaultPrint)
+        self.cmdHdl.add_default_handler(self.defaultPrint)
         self.cmdHdl.add_command(ERROR,self.handle_error)
         self.cmdHdl.add_command(MESSAGE,self.handle_msg)
         # motor lookup table    {'motor':[shield,pin]}
@@ -128,9 +129,11 @@ class BZBoard(object):
     ##
     def set_freq(self, frequency=DEFAULT_FREQ):
         self.cmdHdl.send(SET_FREQ,frequency)
+        time.sleep(DEFAULT_WAIT)
 
     def activate(self, motor='A1', speed=DEFAULT_SPEED):
         self.cmdHdl.send(SET_PWM,self.motors[motor][0],self.motors[motor][1],speed)
+        time.sleep(DEFAULT_WAIT)
 
     def activate_all(self, speed=DEFAULT_SPEED):
         for m in self.motors:
@@ -145,7 +148,7 @@ class BZBoard(object):
 
     def activate_pattern(self,pattern,speed=DEFAULT_SPEED):
         for i in pattern:
-            if pattern[i] = 1:
+            if pattern[i] == 1:
                 self.activate(i,speed)
             else:
                 self.deactivate(i)
