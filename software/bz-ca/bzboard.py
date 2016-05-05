@@ -27,6 +27,12 @@ DEFAULT_IO_TIMEOUT = 1
 DEFAULT_IO_DELIM = ','
 DEFAULT_IO_TERM = ';'
 
+DEFAULT_SPEED = 1024
+DEFAULT_FREQ = 100
+
+SET_PWM = 'S'
+SET_FREQ = 'F'
+
 
 class BZBoard(object):
 
@@ -114,6 +120,24 @@ class BZBoard(object):
 
     def handle_msg(self, msg):
         print "Message: {}".format(msg)
+
+    ##
+    def change_freq(self, frequency=DEFAULT_FREQ):
+        self.cmdHdl.send(SET_FREQ,frequency)
+
+    def activate(self, motor='A1', speed=DEFAULT_SPEED):
+        self.cmdHdl.send(SET_PWM,self.motors[motor][0],self.motors[motor][1],speed)
+
+    def activate_all(self, speed=DEFAULT_SPEED):
+        for m in self.motors:
+            self.activate(m,speed)
+
+    def deactivate(self, motor='A1'):
+        self.activate(motor,0)
+
+    def deactivate_all(self):
+        for m in self.motors:
+            self.activate(m,0)
 
     def activate_pattern(self,pattern,speed=DEFAULT_SPEED):
         for i in pattern:
