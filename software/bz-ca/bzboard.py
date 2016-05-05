@@ -47,6 +47,8 @@ class BZBoard(object):
         self.cmdHdl.add_command('M',self.handle_msg)
         # motor lookup table    {'motor':[shield,pin]}
         self.motors = motors
+        # set pwm frequency to default
+        self.set_freq()
 
     ##
     @classmethod
@@ -122,7 +124,7 @@ class BZBoard(object):
         print "Message: {}".format(msg)
 
     ##
-    def change_freq(self, frequency=DEFAULT_FREQ):
+    def set_freq(self, frequency=DEFAULT_FREQ):
         self.cmdHdl.send(SET_FREQ,frequency)
 
     def activate(self, motor='A1', speed=DEFAULT_SPEED):
