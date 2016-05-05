@@ -27,10 +27,6 @@ const int MAX_FREQ = 1000;
 const int MIN_FREQ = 60;
 const int NUM_PINS = 16;
 
-//Default characters
-const char MESSAGE_CHAR = "M";
-const char ERROR_CHAR = "E";
-
 void setup() {
   Serial.begin(115200);
   pwm0.begin();
@@ -123,7 +119,7 @@ void errorMsg(String msg) {
   char command[COMMANDHANDLER_BUFFER+1];
   msg.toCharArray(command,COMMANDHANDLER_BUFFER+1);
   cmdHdl.initCmd();
-  cmdHdl.addCmdString(MESSAGE_CHAR);
+  cmdHdl.addCmdString("E");
   cmdHdl.addCmdDelim();
   cmdHdl.addCmdString(command);
   cmdHdl.addCmdTerm();
@@ -134,7 +130,7 @@ void sendMsg(String msg) {
   char command[COMMANDHANDLER_BUFFER+1];
   msg.toCharArray(command,COMMANDHANDLER_BUFFER+1);
   cmdHdl.initCmd();
-  cmdHdl.addCmdString(ERROR_CHAR);
+  cmdHdl.addCmdString("M");
   cmdHdl.addCmdDelim();
   cmdHdl.addCmdString(command);
   cmdHdl.addCmdTerm();
