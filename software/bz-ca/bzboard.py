@@ -22,8 +22,7 @@ from commanduino.commandhandler import SerialCommandHandler
 
 # default parameters
 DEFAULT_MOTOR_TABLE = {'A1':[0,0]}
-
-DEFAULT_IO_BAUDRATE = 9600
+DEFAULT_IO_BAUDRATE = 115200
 DEFAULT_IO_TIMEOUT = 1
 DEFAULT_IO_DELIM = ','
 DEFAULT_IO_TERM = ';'
