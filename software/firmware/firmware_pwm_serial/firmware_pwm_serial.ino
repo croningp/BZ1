@@ -116,7 +116,7 @@ void unrecognized(const char *command) {
 }
 
 void errorMsg(String msg) {
-  char* command;
+  char command[COMMANDHANDLER_BUFFER+1];
   msg.toCharArray(command,COMMANDHANDLER_BUFFER+1);
   cmdHdl.initCmd();
   cmdHdl.addCmdString("E");
@@ -127,7 +127,7 @@ void errorMsg(String msg) {
 }
 
 void sendMsg(String msg) {
-  char* command;
+  char command[COMMANDHANDLER_BUFFER+1];
   msg.toCharArray(command,COMMANDHANDLER_BUFFER+1);
   cmdHdl.initCmd();
   cmdHdl.addCmdString("M");
