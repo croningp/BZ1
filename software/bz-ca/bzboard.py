@@ -101,6 +101,10 @@ class BZBoard(object):
         with open(configfile) as f:
             return self.motors_from_config(json.load(f))
 
+    def pattern_from_file(self, patternfile):
+        with open(patternfile) as f:
+            return json.load(f)
+
     ##
     def defaultPrint(self, cmd):
         print cmd
@@ -110,3 +114,10 @@ class BZBoard(object):
 
     def handle_msg(self, msg):
         print "Message: {}".format(msg)
+
+    def activate_pattern(self,pattern,speed=DEFAULT_SPEED):
+        for i in pattern:
+            if pattern[i] = 1:
+                self.activate(i,speed)
+            else:
+                self.deactivate(i)
