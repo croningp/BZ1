@@ -1,7 +1,7 @@
 import os, sys
 lib_path = os.path.abspath(os.path.join('..', 'software', 'python'))
 sys.path.append(lib_path)
-from python.bzboard import bzboard
+import bzboard
 
 import time
 
