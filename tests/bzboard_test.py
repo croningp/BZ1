@@ -1,4 +1,4 @@
-import os, sys
+import os, sys  # add path of bzboard.py, relative to /bz_ca/test
 lib_path = os.path.abspath(os.path.join('..', 'software', 'python'))
 sys.path.append(lib_path)
 import bzboard
