@@ -24,5 +24,22 @@ for m in bz.motors:
     bz.deactivate(m)
 
 # load and run a pattern from pattern file
-pattern = bz.pattern_from_file(PATTERN_FILE)
-bz.activate_pattern(pattern)
+file_pattern = bz.pattern_from_file(PATTERN_FILE)
+bz.activate_pattern(file_pattern)
+time.sleep(10)
+
+# or manually set pattern
+man_pattern = {
+"A1":1,"A2":0,"A3":0,"A4":0,"A5":0,
+"B1":0,"B2":1,"B3":0,"B4":0,"B5":0,
+"C1":0,"C2":0,"C3":1,"C4":0,"C5":0,
+"D1":0,"D2":0,"D3":0,"D4":1,"D5":0,
+"E1":0,"E2":0,"E3":0,"E4":0,"E5":1
+}
+bz.activate_pattern(man_pattern)
+time.sleep(10)
+
+# all motors can be switched on/off
+bz.activate_all()
+time.sleep(5)
+bz.deactivate_all()
