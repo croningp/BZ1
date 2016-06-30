@@ -55,7 +55,7 @@ BZ-CA has working control software.
 
 ## Parts
 A list of parts and where they were purchased is in the table below,
-and as a .csv file: [part_links.csv](hardware/part_links.csv).
+and in [part_links.csv](hardware/part_links.csv).
 
 Part | url | Purchase url
 --- | --- | ---
