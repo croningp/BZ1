@@ -41,19 +41,19 @@ class BZBoard(object):
 
     def __init__(self, port, baudrate=DEFAULT_IO_BAUDRATE, timeout=DEFAULT_IO_TIMEOUT, delim=DEFAULT_IO_DELIM, term=DEFAULT_IO_TERM, motors=DEFAULT_MOTOR_TABLE):
         self.logger = logging.getLogger(self.__class__.__name__)
-        # IO
+        '''IO'''
         self.cmdHdl = SerialCommandHandler(port, baudrate, timeout, delim, term)
         self.cmdHdl.start()
-        # response handling
+        '''response handling'''
         self.cmdHdl.add_default_handler(self.defaultPrint)
         self.cmdHdl.add_command(ERROR,self.handle_error)
         self.cmdHdl.add_command(MESSAGE,self.handle_msg)
-        # motor lookup table    {'motor':[shield,pin]}
+        '''motor lookup table'''    #{'motor':[shield,pin]}
         self.motors = motors
-        # set pwm frequency to default
+        '''set pwm frequency to default'''
         self.set_freq()
 
-    ##
+    ## CONFIG HANDLING
     @classmethod
     def from_config(cls, config):
         port = config['port']
@@ -100,7 +100,6 @@ class BZBoard(object):
         self.cmdHdl.stop()
         self.cmdHdl.join()
 
-    ##
     def motors_from_config(self, config):
         if 'motors' in config:
             motors = config['motors']
@@ -116,7 +115,7 @@ class BZBoard(object):
         with open(patternfile) as f:
             return json.load(f)
 
-    ##
+    ## RESPONSE HANDLING
     def defaultPrint(self, cmd):
         print cmd
 
@@ -126,7 +125,7 @@ class BZBoard(object):
     def handle_msg(self, msg):
         print "Message: {}".format(msg)
 
-    ##
+    ## COMMANDS
     def set_freq(self, frequency=DEFAULT_FREQ):
         self.cmdHdl.send(SET_FREQ,frequency)
         time.sleep(DEFAULT_WAIT)
