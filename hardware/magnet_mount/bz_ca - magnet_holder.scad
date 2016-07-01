@@ -5,12 +5,12 @@
 
 //Motor shaft paramters
 shtshape = "cylinder";  //shaft shape
-shtd=0.8;       //shaft diameter
-shtl=4.5;       //shaft length
+shtd=0.69;       //shaft diameter
+shtl=2.5;       //shaft length
 
 //Magnet parameters
 magshape = "cylinder";  //magnet shape
-magd = 2.1;       //magnet diameter (cylinder)
+magd = 2.06;       //magnet diameter (cylinder)
 magh = 2;       //magnet height (cylinder)
 magx = 1;       //magnet width (cube)
 magy = 1;       //magnet length (cube)
@@ -18,12 +18,12 @@ magz = 1;       //magnet depth (cube)
 mags = 1.5;       //magnet spacing
 
 //Holder parameters
-hldshape = "cylinder";  //holder shape
+hldshape = "cube";  //holder shape
 hldd = 7;           //holder diameter (cylinder)
 hldh = 2.5;           //holder height (cylinder)
 hldx = 4;           //holder width (cube)
 hldy = 7;           //holder length (cube)
-hldz = 2.5;           //holder depth (cube)
+hldz = 5;           //holder depth (cube)
 
 //Set translation parameters
 x= hldshape=="cube" ? hldx : hldd;
@@ -55,7 +55,7 @@ difference(){
     }
     //Shaft
     if (shtshape=="cylinder"){
-        translate([x/2,y/2,-shtl+z+0.1])
+        translate([x/2,y/2,-0.1])
         cylinder(h=shtl,d=shtd,center=false,$fn=50);
     }
 }
