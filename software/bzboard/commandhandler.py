@@ -2,7 +2,9 @@ import time
 import serial
 import threading
 
-from _logger import create_logger
+import logging
+__logger_root_name__ = 'commanduino'
+
 
 DEFAULT_DELIM = ','
 DEFAULT_TERM = ';'
@@ -15,7 +17,7 @@ DEFAULT_TIMEOUT = 0.01
 class CommandHandler(object):
 
     def __init__(self, delim=DEFAULT_DELIM, term=DEFAULT_TERM, cmd_decimal=DEFAULT_CMD_DECIMAL):
-        self.logger = create_logger(self.__class__.__name__)
+        self.logger = create_logger(__logger_root_name__+'.'+self.__class__.__name__)
 
         self.delim = delim  # character separating args in a message
         self.term = term  # character ending a message
