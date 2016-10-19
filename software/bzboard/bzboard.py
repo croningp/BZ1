@@ -105,7 +105,7 @@ class BZBoard(object):
             motors = config['motors']
             self.motors = motors
         else:
-            print "Error: no motors in config"
+            print ("Error: no motors in config")
 
     def motors_from_configfile(self, configfile):
         with open(configfile) as f:
@@ -117,13 +117,13 @@ class BZBoard(object):
 
     ## RESPONSE HANDLING
     def defaultPrint(self, cmd):
-        print cmd
+        print (cmd)
 
     def handle_error(self, msg):
-        print "Error: {}".format(msg)
+        print ("Error: {}".format(msg))
 
     def handle_msg(self, msg):
-        print "Message: {}".format(msg)
+        print ("Message: {}".format(msg))
 
     ## COMMANDS
     def set_freq(self, frequency=DEFAULT_FREQ):
