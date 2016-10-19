@@ -18,7 +18,7 @@ import logging
 import serial
 
 # project modules
-from commanduino.commandhandler import SerialCommandHandler
+from commandhandler import SerialCommandHandler
 
 # default parameters
 DEFAULT_MOTOR_TABLE = {'A1':[0,0]}
