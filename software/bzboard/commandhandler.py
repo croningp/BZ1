@@ -17,7 +17,7 @@ DEFAULT_TIMEOUT = 0.01
 class CommandHandler(object):
 
     def __init__(self, delim=DEFAULT_DELIM, term=DEFAULT_TERM, cmd_decimal=DEFAULT_CMD_DECIMAL):
-        self.logger = create_logger(__logger_root_name__+'.'+self.__class__.__name__)
+        self.logger = logging.getLogger(__logger_root_name__+'.'+self.__class__.__name__)
 
         self.delim = delim  # character separating args in a message
         self.term = term  # character ending a message
@@ -141,7 +141,7 @@ class SerialCommandHandler(threading.Thread, CommandHandler):
         self.daemon = True
         self.interrupted = threading.Lock()
 
-        self.logger = create_logger(self.__class__.__name__)
+        self.logger = logging.getLogger(__logger_root_name__+'.'+self.__class__.__name__)
 
         CommandHandler.__init__(self, delim, term, cmd_decimal)
 
