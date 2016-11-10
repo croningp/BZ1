@@ -6,9 +6,11 @@
 
     Created 05/05/2016
     Kevin Donkers, The Cronin Group, University of Glasgow
+    Modified by Juan Manuel Parrilla, UoG
 
     Example of how to use bzboard.py
 """
+
 # system imports
 import time
 import os, sys
@@ -28,12 +30,13 @@ PATTERN_FILE = './pattern_test.json'
 bz = bzboard.BZBoard.from_configfile(SETUP_CONFIG_FILE)
 
 # activate each motor for 0.5 seconds each
-for m in bz.motors:
-    bz.activate(m)
-    time.sleep(0.5)
-    bz.deactivate(m)
-
+#for m in bz.motors:
+#    bz.activate(m)
+#    time.sleep(1)
+#    bz.deactivate(m)
+#
 # load and run a pattern from pattern file
+
 file_pattern = bz.pattern_from_file(PATTERN_FILE)
 bz.activate_pattern(file_pattern)
 time.sleep(10)
@@ -48,6 +51,7 @@ man_pattern = {
 }
 bz.activate_pattern(man_pattern)
 time.sleep(10)
+
 
 # all motors can be switched on/off
 bz.activate_all()

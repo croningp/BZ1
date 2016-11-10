@@ -46,7 +46,8 @@ class CommandHandler(object):
             self.process_char(a_char)
 
     def process_serial(self, a_serial):
-        self.process_char(a_serial.read(1))
+        a_char = a_serial.read(1)
+        self.process_char(a_char.decode())
 
     def handle(self, cmd):
         cmd = cmd.strip().strip(self.term)
@@ -166,6 +167,8 @@ class SerialCommandHandler(threading.Thread, CommandHandler):
                                  'baudrate': baudrate,
                                  'timeout': timeout})
         self._serial = serial.Serial(port, baudrate, timeout=timeout)
+        # wait 2 seconds after the connection as pyserial recommends
+        time.sleep(2)
 
     def close(self):
         if hasattr(self, "_serial"):
