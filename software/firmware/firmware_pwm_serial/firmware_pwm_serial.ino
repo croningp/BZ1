@@ -28,7 +28,7 @@ const int MIN_FREQ = 60;
 const int NUM_PINS = 16;
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   pwm0.begin();
   pwm1.begin();
   pwm0.setPWMFreq(MAX_FREQ);
