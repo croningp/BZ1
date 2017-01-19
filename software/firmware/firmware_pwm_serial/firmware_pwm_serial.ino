@@ -46,93 +46,110 @@ void loop() {
 }
 
 void frequency(){
+  
   int freq;
   String msg;
+  
   freq = cmdHdl.readIntArg();
+  
   if (freq != NULL) {
-    if (freq <= MAX_FREQ && freq >= MIN_FREQ) {
+  
+  if (freq <= MAX_FREQ && freq >= MIN_FREQ) {
       pwm0.setPWMFreq(freq);
       pwm1.setPWMFreq(freq);
-      msg = msg + "frequency " + freq;
-      sendMsg(msg);
+      msg = "frequency " + freq;
+      sendMsg(msg.c_str());
     }
-    else {
+  
+  else {
       errorMsg("Frequency value not in range");
     }
   }
+  
   else {
     errorMsg("Define frequency value");
   }
+
 }
 
 void setPWM() {
+
   int shield;
   int pin;
   int speed;
   String msg;
+  
   shield = cmdHdl.readIntArg();
+  
   if (cmdHdl.argOk==false) {
     errorMsg("Shield not defined");
     return;
   }
+  
   pin = cmdHdl.readIntArg();
+  
   if (cmdHdl.argOk==false) {
     errorMsg("Pin not defined");
     return;
   }
+  
   else if (pin >= NUM_PINS){
     msg = msg + "Shields only supports " + NUM_PINS + " pins";
-    errorMsg(msg);
+    errorMsg(msg.c_str());
     return;
   }
+  
   speed = cmdHdl.readIntArg();
+  
   if (cmdHdl.argOk==false) {
     errorMsg("Speed not defined");
     return;
   }
+  
   if (speed <= MAX_SPEED && speed >= MIN_SPEED) {
-    if (shield==0){
+  
+  if (shield==0){
       pwm0.setPWM(pin,0,speed);
       msg = msg + "shield " + shield + " pin " + pin + " speed " + speed;
-      sendMsg(msg);
+      sendMsg(msg.c_str());
     }
-    else if (shield==1){
+  
+  else if (shield==1){
       pwm1.setPWM(pin,0,speed);
       msg = msg + "shield " + shield + " pin " + pin + " speed " + speed;
-      sendMsg(msg);
+      sendMsg(msg.c_str());
     }
-    else {
+  
+  else {
       msg = msg + "Shield " + shield + " not supported";
-      errorMsg(msg);
+      errorMsg(msg.c_str());
     }
   }
+  
   else {
     errorMsg("Speed value not in range");
   }
+
 }
 
 void unrecognized(const char *command) {
   errorMsg("Unrecognized");
 }
 
-void errorMsg(String msg) {
-  char command[COMMANDHANDLER_BUFFER+1];
-  msg.toCharArray(command,COMMANDHANDLER_BUFFER+1);
+void errorMsg(const char *msg) {
   cmdHdl.initCmd();
   cmdHdl.addCmdString("E");
   cmdHdl.addCmdDelim();
-  cmdHdl.addCmdString(command);
+  cmdHdl.addCmdString(msg);
   cmdHdl.addCmdTerm();
   cmdHdl.sendCmdSerial();
 }
 
-void sendMsg(String msg) {
-  char command[COMMANDHANDLER_BUFFER+1];
-  msg.toCharArray(command,COMMANDHANDLER_BUFFER+1);
+void sendMsg(const char *msg) {
   cmdHdl.initCmd();
   cmdHdl.addCmdString("M");
   cmdHdl.addCmdDelim();
-  cmdHdl.addCmdString(command);
+  cmdHdl.addCmdString(msg);
   cmdHdl.addCmdTerm();
   cmdHdl.sendCmdSerial();
 }
@@ -143,6 +160,6 @@ void testMsg() {
     int speed = 3;
     String msg;
     msg = msg + "test:shield" + shield + "pin" + pin + "speed" + speed;
-    sendMsg(msg);
+    sendMsg(msg.c_str());
     Serial.println(msg);
 }
