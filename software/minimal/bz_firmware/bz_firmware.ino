@@ -30,7 +30,6 @@ int read_command(char *buffer)
 	int rpos;
 
 	if (Serial.available() > 0) {
-
 		char readch = Serial.read();
 
 		switch (readch) {
@@ -61,7 +60,7 @@ void parse_command(char* command)
 
 	char* parameter;
 	parameter = strtok(command, " ");
-  long shield, pin, speed;
+	long shield, pin, speed;
 
 	while (parameter != NULL) {
 

@@ -51,7 +51,7 @@ class BZBoard:
             return json.load(f)
 
 
-    def activate_motor(self, motor_code, speed=300):
+    def activate_motor(self, motor_code, speed=70):
         ''' code as in A1 or C2 as marked in the actual board. See the dict motors'''
 
         shield, pin = self.motors[motor_code]
@@ -59,10 +59,11 @@ class BZBoard:
         self.ser.write(command.encode())
 
 
-    def activate_all(self, speed=300):
+    def activate_all(self, speed=100):
 
         for key in self.motors.keys():
             self.activate_motor(key, speed)
+            self.ser.flush()
 
 
     def activate_pattern(self, pattern, speed=300):
