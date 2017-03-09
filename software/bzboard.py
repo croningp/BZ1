@@ -22,12 +22,12 @@ class BZBoard:
         time.sleep(2) # serial docs recommend a wait just after connection
         self.ser.flush(); self.ser.flushInput(); self.ser.flushOutput();
 
-        self.motors = {
-            "A1":[1, 8],"A2":[1, 9],"A3":[1,10],"A4":[1,11],"A5":[1,12],
-            "B1":[1,14],"B2":[1,15],"B3":[1,13],"B4":[1, 0],"B5":[1, 1],
-            "C1":[1, 2],"C2":[1, 3],"C3":[1, 4],"C4":[1, 5],"C5":[1, 6],
-            "D1":[1, 7],"D2":[0,4],"D3":[0, 8],"D4":[0, 9],"D5":[0,10],
-            "E1":[0,11],"E2":[0,12],"E3":[0,13],"E4":[0,14],"E5":[0,15]
+        self.motors = { # [adafruit_shield, pin, min_speed]
+            "A1":[1, 8, 95],"A2":[1, 9, 100],"A3":[1,10, 70],"A4":[1,11, 70],"A5":[1,12, 100],
+            "B1":[1,14, 80],"B2":[1,15, 130],"B3":[1,13, 120],"B4":[1, 0, 80],"B5":[1, 1, 100],
+            "C1":[1, 2, 100],"C2":[1, 3, 140],"C3":[1, 4, 150],"C4":[1, 5, 130],"C5":[1, 6, 90],
+            "D1":[1, 7, 100],"D2":[0,4, 100],"D3":[0, 8, 60],"D4":[0, 9, 90],"D5":[0,10, 80],
+            "E1":[0,11, 120],"E2":[0,12, 100],"E3":[0,13, 100],"E4":[0,14, 90],"E5":[0,15, 90]
             }
     
 
@@ -51,22 +51,26 @@ class BZBoard:
             return json.load(f)
 
 
-    def activate_motor(self, motor_code, speed=70):
+    def activate_motor(self, motor_code, speed=None):
         ''' code as in A1 or C2 as marked in the actual board. See the dict motors'''
 
-        shield, pin = self.motors[motor_code]
+        if speed == None:
+            shield, pin, speed = self.motors[motor_code] 
+        else:
+            shield, pin, _  = self.motors[motor_code] 
+
         command = "A%d P%d S%d\n" % ( shield, pin, speed )
         self.ser.write(command.encode())
 
 
-    def activate_all(self, speed=100):
+    def activate_all(self, speed=None):
 
         for key in self.motors.keys():
             self.activate_motor(key, speed)
             self.ser.flush()
 
 
-    def activate_pattern(self, pattern, speed=300):
+    def activate_pattern(self, pattern, speed=None):
 
         for i in pattern:
 
@@ -78,7 +82,7 @@ class BZBoard:
 
     def disable_motor(self, motor_code):
 
-        shield, pin = self.motors[motor_code]
+        shield, pin, _ = self.motors[motor_code]
         command = "A%d P%d S0\n" % ( shield, pin )
         self.ser.write(command.encode())
 
