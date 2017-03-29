@@ -102,8 +102,8 @@ def draw_save_cells(frame, bz_coordinates, clicks):
         # dividing this by step size and rounding we can guess the cell
         icell, jcell = int(rx/stepw), int(ry/steph)
         # now we can just draw the cell and also save it into a file
-        pointA = (x1 + stepw * icell, y1 + steph * jcell)
-        pointB = (x1 + stepw * (icell+1), y1 + steph * (jcell+1))
+        pointA = (x1+9 + stepw * icell, y1+9 + steph * jcell)
+        pointB = (x1-9 + stepw * (icell+1), y1-9 + steph * (jcell+1))
 
         if click[2] == 0: # left click
 
