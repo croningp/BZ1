@@ -31,11 +31,13 @@ class CellClickData:
     the cell mouse callback in order to recognize clicks by the user in 
     order to select a cell and save it as red or blue for the database.'''
 
+
     def __init__(self):
         # returns a empty clicks array where we will store the user clicks
         # Each position of the array contains a 4 size array, which 4 elements
         # are: x, y, left or right click, saved or not
         self.clicks = np.delete(np.empty([1,4]), 0, axis=0)
+
 
     def mouse_cell(self, event, x, y, flags, param):
         '''mouse callback function
@@ -48,11 +50,60 @@ class CellClickData:
             self.clicks = np.append(self.clicks, [[x,y,1,0]], axis=0)
 
 
+    def draw_save_cells(self, frame, bz_coordinates):
+        ''' colours and saves the bz cells where the user has clicked. '''
+
+        x1, y1, x2, y2 = bz_coordinates
+        height = y2 - y1
+        width = x2 - x1
+        stepw = int(width / 5)
+        steph = int(height / 5)
+
+        for click in self.clicks:
+            # relative click coordinates to the origin of the bz grid (x1, y1)
+            rx, ry = click[0] - x1, click[1] - y1
+            # dividing this by step size and rounding we can guess the cell
+            icell, jcell = int(rx/stepw), int(ry/steph)
+            # now we can just draw the cell and also save it into a file
+            pointA = (x1+9 + stepw * icell, y1+9 + steph * jcell)
+            pointB = (x1-9 + stepw * (icell+1), y1-9 + steph * (jcell+1))
+
+            if click[2] == 0: # left click
+
+                if click[3] == 0: # not saved it yet
+                    # define Region Of Interest around the cell we want
+                    roi = frame[pointA[1]:pointB[1], pointA[0]:pointB[0]]
+                    new_image = 'blues/'+self.random_filename(8)
+                    cv2.imwrite(new_image, roi) # save cell
+                    click[3] = 1 # we mark it as saved
+
+                #draw rectangle just for visualization    
+                cv2.rectangle(frame, pointA, pointB, (255,0,0), -1) 
+
+            else: # right click, see comments just above for following lines
+
+                if click[3] == 0:
+                    roi = frame[pointA[1]:pointB[1], pointA[0]:pointB[0]]
+                    cv2.imwrite('reds/'+random_filename(8), roi)
+                    click[3] = 1
+
+                cv2.rectangle(frame, pointA, pointB, (0,0,255), -1) 
+
+
+    def random_filename(self, size):
+        ''' to create random names for the dataset pictures '''
+
+        w = ''.join(random.choice(string.ascii_lowercase) for i in range(size))
+        return w+'.png'
+
+
+
 class GridClickData:
     '''This class represents the data that is passed from and to
     the mouse callback, in order to recognize clicks by the user
     The objective of this class is for the user to mark the corners
     of the grid, so we know its start x,y, width and height.'''
+
 
     def __init__(self):
         self.drawing = False # True if mouse is pressed
@@ -61,8 +112,8 @@ class GridClickData:
         self.finished = False # True when user releases click
 
 
-    def mouse_grid(self, event, x, y, flags, param):
-        '''mouse callback function'''
+    def grid_callback(self, event, x, y, flags, param):
+        '''mouse callback function. See OpenCV documentation example'''
 
         if event == cv2.EVENT_LBUTTONDOWN:
             self.drawing = True
@@ -79,116 +130,76 @@ class GridClickData:
             self.finished = True
 
 
+    def draw_grid(self, frame):
+        '''draws a 5x5 grid, just the lines. Used for visualization'''
 
-def random_filename(length):
-    ''' to create random names for the dataset pictures '''
+        x1, y1, x2, y2 = self.points
+        cv2.rectangle(frame, (x1,y1), (x2,y2), (0,0,255), 3)
+        height = y2 - y1
+        width = x2 - x1
+        stepw = int(width / 5)
+        steph = int(height / 5)
 
-    word = ''.join(random.choice(string.ascii_lowercase) for i in range(length))
-    return word+'.png'
-
-
-def draw_save_cells(frame, bz_coordinates, clicks):
-    ''' colours and saves the bz cells where the user has clicked. '''
-
-    x1, y1, x2, y2 = bz_coordinates
-    height = y2 - y1
-    width = x2 - x1
-    stepw = int(width / 5)
-    steph = int(height / 5)
-
-    for click in clicks:
-        # relative click coordinates respect the origin of the bz grid (x1, y1)
-        rx, ry = click[0] - x1, click[1] - y1
-        # dividing this by step size and rounding we can guess the cell
-        icell, jcell = int(rx/stepw), int(ry/steph)
-        # now we can just draw the cell and also save it into a file
-        pointA = (x1+9 + stepw * icell, y1+9 + steph * jcell)
-        pointB = (x1-9 + stepw * (icell+1), y1-9 + steph * (jcell+1))
-
-        if click[2] == 0: # left click
-
-            if click[3] == 0: # not saved it yet
-                roi = frame[pointA[1]:pointB[1], pointA[0]:pointB[0]]
-                cv2.imwrite('blues/'+random_filename(8), roi) # save cell
-                click[3] = 1 # we mark it as saved
-
-            #draw rectangle just for visualization    
-            cv2.rectangle(frame, pointA, pointB, (255,0,0), -1) 
-
-        else: # right click, see comments just above for following lines
-
-            if click[3] == 0:
-                roi = frame[pointA[1]:pointB[1], pointA[0]:pointB[0]]
-                cv2.imwrite('reds/'+random_filename(8), roi)
-                click[3] = 1
-
-            cv2.rectangle(frame, pointA, pointB, (0,0,255), -1) 
-
-def draw_grid(frame, points):
-    '''draws a 5x5 grid, just the lines. Used for visualization'''
-
-    x1, y1, x2, y2 = points
-    cv2.rectangle(frame, (x1,y1), (x2,y2), (0,0,255), 3)
-    height = y2 - y1
-    width = x2 - x1
-    stepw = int(width / 5)
-    steph = int(height / 5)
-
-    for i in range(1, 5):
-        cv2.line(frame, (x1+stepw*i,y1),  (x1+stepw*i,y2), (0,0,255), 3)
-        cv2.line(frame, (x1,y1+steph*i),  (x2,y1+steph*i), (0,0,255), 3)
+        for i in range(1, 5):
+            cv2.line(frame, (x1+stepw*i,y1),  (x1+stepw*i,y2), (0,0,255), 3)
+            cv2.line(frame, (x1,y1+steph*i),  (x2,y1+steph*i), (0,0,255), 3)
 
 
-def get_platform_corners(frame, click_data):
-    '''Given a frame, it will let the user click on the platform corners
-    in order to obtain its coordinates: top left corner, bottom right corner'''
+    def get_platform_corners(self, frame):
+        '''Given a frame, it will let the user click on the platform corners
+        in order to obtain its coordinates: top left corner, bottom right corner'''
 
-    cv2.namedWindow('Choose grid')
-    cv2.setMouseCallback('Choose grid', click_data.mouse_grid)
-    unmodified = frame.copy()
+        cv2.namedWindow('Choose grid')
+        cv2.setMouseCallback('Choose grid', self.grid_callback)
+        unmodified = frame.copy()
 
-    while(click_data.finished is False):
-        frame = unmodified.copy()
-        draw_grid(frame, click_data.points)
-        cv2.imshow('Choose grid', frame)
-        cv2.waitKey(10)
+        # grid_callback sets finished to True once the user selects both corners
+        while(self.finished is False):
+            frame = unmodified.copy()
+            self.draw_grid(frame)
+            cv2.imshow('Choose grid', frame)
+            cv2.waitKey(10)
 
+        cv2.destroyAllWindows()
+
+
+
+if __name__ == "__main__":
+
+
+    video = cv2.VideoCapture(sys.argv[1])
+    click_grid = GridClickData()    
+    play = True # True means play, False means pause
+
+
+    while(True):
+
+        if play is True:
+            ret, frame = video.read()
+            click_cell = CellClickData()
+
+        if ret is False:
+            break
+
+        # first thing we ask the user to define the 5x5 grid
+        if click_grid.finished is False:
+            click_grid.get_platform_corners(frame)
+
+        # "click_grid" is now populated with the x,y corners of the platform
+        click_grid.draw_grid(frame)
+       
+        # now while the video plays the user can click to save cells as dataset
+        cv2.namedWindow('Left blue, Right red')
+        cv2.setMouseCallback('Left blue, Right red', click_cell.mouse_cell)
+        click_cell.draw_save_cells(frame, click_grid.points)
+        
+        cv2.imshow('Left blue, Right red', frame)
+        key = cv2.waitKey(33) & 0xFF # 33 means roughly 30FPS 
+
+        if key == ord('p'):
+            play = not play
+
+
+    video.release()
     cv2.destroyAllWindows()
-
-
-
-video = cv2.VideoCapture(sys.argv[1])
-click_grid = GridClickData()    
-play = True # True means play, False means pause
-
-while(True):
-
-    if play is True:
-        ret, frame = video.read()
-        click_cell = CellClickData()
-
-    if ret is False:
-        break
-
-    # first thing we ask the user to define the 5x5 grid
-    if click_grid.finished is False:
-        get_platform_corners(frame, click_grid)
-
-    # "click_grid" is now populated with the x,y corners of the platform
-    draw_grid(frame, click_grid.points)
-   
-    # now while the video plays the user can click to save cells as dataset
-    cv2.namedWindow('Left blue, Right red')
-    cv2.setMouseCallback('Left blue, Right red', click_cell.mouse_cell)
-    draw_save_cells(frame, click_grid.points, click_cell.clicks)
-    
-    cv2.imshow('Left blue, Right red', frame)
-    key = cv2.waitKey(33) & 0xFF # 33 means roughly 30FPS 
-
-    if key == ord('p'):
-        play = not play
-
-
-video.release()
-cv2.destroyAllWindows()
 
