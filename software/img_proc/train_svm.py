@@ -9,8 +9,8 @@ import glob
 import cv2
 import numpy as np
 
-# if we used data_set.py we should have a "reds" and "blues" folder with
-# the images we clicked for training. We load then only the blue channel
+# if we used generate_dataset.py  we should have a "reds" and "blues" folder 
+# with the images we clicked for training. We load then only the blue channel
 blues = [cv2.imread(file)[:,:,0] for file in glob.glob("blues/*.png")]  
 reds = [cv2.imread(file)[:,:,0] for file in glob.glob("reds/*.png")] 
 # we also convert them to 25 by 25, so all of them have the same size
@@ -31,9 +31,13 @@ np.random.seed(seed)
 np.random.shuffle(dataset)
 np.random.seed(seed)
 np.random.shuffle(responses)
+# If train = test, it is because we are testing now with actual videos, so we
+# used all the data to train
 trainData = dataset
 testData = dataset
 
+# see the link in the header to see how the svm is init. we also use the same
+# parameters for C and gamma
 svm = cv2.ml.SVM_create()
 svm.setKernel(cv2.ml.SVM_LINEAR)
 svm.setType(cv2.ml.SVM_C_SVC)
