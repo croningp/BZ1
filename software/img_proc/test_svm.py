@@ -12,6 +12,9 @@ import cv2
 import numpy as np
 import sys
 from generate_dataset import GridClickData
+from sklearn.decomposition import PCA
+from sklearn.externals import joblib
+
 
 
 class TestSVM():
@@ -65,8 +68,9 @@ class BlueChannel(TestSVM):
     In this case, the SVM is trained and tested only using the blue channel
     of the image, and reducing it to 25 by 25 pixels'''
 
-    def ___init___(self, svm_file):
-        super().__init__(svm_file)
+
+    def __init__(self, svm_file):
+        super().__init__(self, svm_file)
 
 
     def roi_to_decision(self, roi):
@@ -83,9 +87,67 @@ class BlueChannel(TestSVM):
         return int(decision[1][0][0]) 
 
 
+
+class RedBlueChannel(TestSVM):
+    ''' Very similar to BlueChannel, but use both red and blue, and use 
+    15 by 15 images for each channel, instead of 25 by 25
+    Only use with a dataset created with the class with the same name
+    from train_svm.py'''
+
+
+    def __init__(self, svm_file):
+        super().__init__(self, svm_file)
+
+
+    def roi_to_decision(self, roi):
+        
+        # we resize the roi into 10 by 10
+        resized = np.array( cv2.resize(roi, (15,15)), dtype=np.float32 )
+        # take the red and blue channels
+        rbc =  np.concatenate( (resized[:,:,0], resized[:,:,2]) )  
+        # And flatten it into a 1D array as require by the SVM
+        roi1D = rbc.reshape(-1)
+        # And use the svm to decide if it is red or blue
+        decision = self.svm.predict(np.array([roi1D], dtype=np.float32))
+
+        return int(decision[1][0][0]) 
+
+
+
+class PCATransform(TestSVM):
+    '''This class feeds the SVM with data which went through a PCA
+    for dimensionality reduction. The dataset must be generated using the 
+    class with the same name from train_svm.py'''
+
+
+    def __init__(self, svm_file, pca_file):
+
+        super().__init__(svm_file)
+        self.pca = joblib.load(pca_file)
+
+
+    def roi_to_decision(self, roi):
+
+        # resize into 50,50
+        resized = cv2.resize(roi, (50, 50))
+        resized = np.asarray(resized, dtype=np.float32)
+        # flatten it into 1D array
+        roi1D = resized.reshape(1, -1)
+        # reduce its dimensionality
+        pca_out = self.pca.transform(roi1D)
+        pca32 = pca_out.astype('float32')
+        # And use the svm to decide if it is red or blue
+        decision = self.svm.predict(np.array([pca32[0]], dtype=np.float32))
+
+        return int(decision[1][0][0]) 
+
+
+
 if __name__ == "__main__":
 
-    bc_svm = BlueChannel("svm_bluechannel.dat")
+    # svm = BlueChannel('svm_bluechannel.dat')
+    # svm = RedBlueChannel('svm_rbchannel.dat')
+    svm = PCATransform('svm_pca.dat', 'pca.dat')
 
     video = cv2.VideoCapture(sys.argv[1])
     click_grid = GridClickData()    
@@ -109,7 +171,7 @@ if __name__ == "__main__":
         # "click_grid" is now populated with the x,y corners of the platform
         click_grid.draw_grid(frame)
         # we use the svm to decide if the cells are painted red or blue
-        bc_svm.paint_cells(frame, click_grid.points)
+        svm.paint_cells(frame, click_grid.points)
 
         cv2.imshow('Video', frame)
         out.write(frame)
