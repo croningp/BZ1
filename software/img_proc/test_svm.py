@@ -70,7 +70,7 @@ class BlueChannel(TestSVM):
 
 
     def __init__(self, svm_file):
-        super().__init__(self, svm_file)
+        super().__init__(svm_file)
 
 
     def roi_to_decision(self, roi):
@@ -96,7 +96,7 @@ class RedBlueChannel(TestSVM):
 
 
     def __init__(self, svm_file):
-        super().__init__(self, svm_file)
+        super().__init__(svm_file)
 
 
     def roi_to_decision(self, roi):
