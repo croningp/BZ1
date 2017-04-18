@@ -20,7 +20,7 @@ sys.path.append(lib_path)
 import bzboard
 
 # link to config file
-SETUP_CONFIG_FILE = './bzboard_config_test.json'
+SETUP_CONFIG_FILE = './bzboard_config_wintest.json'
 # link to pattern file
 PATTERN_FILE = './pattern_test.json'
 
