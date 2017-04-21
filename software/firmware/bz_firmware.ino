@@ -97,7 +97,7 @@ void parse_command(char* command)
 void setup() 
 {
   
-  Serial.begin(9600);
+  Serial.begin(19200);
   Serial.flush();
 
   pwm0.begin();

@@ -18,16 +18,16 @@ class BZBoard:
 
     def __init__(self, port):
 
-        self.ser = serial.Serial(port, 9600, timeout=120)
+        self.ser = serial.Serial(port, 115200, timeout=120)
         time.sleep(2) # serial docs recommend a wait just after connection
         self.ser.flush(); self.ser.flushInput(); self.ser.flushOutput();
 
         self.motors = { # [adafruit_shield, pin, min_speed]
             "A1":[1, 8, 500],"A2":[1, 9, 500],"A3":[1,10, 500],"A4":[1,11, 500],"A5":[1,12, 500],
-            "B1":[1,14, 500],"B2":[1,15, 500],"B3":[1,13, 380],"B4":[1, 0, 500],"B5":[1, 1, 500],
+            "B1":[1,14, 500],"B2":[1,15, 500],"B3":[1,13, 500],"B4":[1, 0, 500],"B5":[1, 1, 500],
             "C1":[1, 2, 500],"C2":[1, 3, 500],"C3":[1, 4, 500],"C4":[1, 5, 500],"C5":[1, 6, 500],
             "D1":[1, 7, 500],"D2":[0,4, 500],"D3":[0, 8, 500],"D4":[0, 9, 500],"D5":[0,10, 500],
-            "E1":[0,11, 380],"E2":[0,12, 500],"E3":[0,13, 500],"E4":[0,14, 500],"E5":[0,15, 380]
+            "E1":[0,11, 500],"E2":[0,12, 500],"E3":[0,13, 500],"E4":[0,14, 500],"E5":[0,15, 500]
             }
 
         # this matrix stores if the motors are enabled (1) or disabled (0)
@@ -126,4 +126,4 @@ class BZBoard:
 
 if __name__ == "__main__":
 
-    board = BZBoard("/dev/ttyACM0")
+    b = BZBoard("/dev/ttyACM0")
