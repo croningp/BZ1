@@ -147,7 +147,8 @@ class GridClickData:
 
     def get_platform_corners(self, frame):
         '''Given a frame, it will let the user click on the platform corners
-        in order to obtain its coordinates: top left corner, bottom right corner'''
+        in order to obtain its coordinates: 
+        top left corner, bottom right corner'''
 
         cv2.namedWindow('Choose grid')
         cv2.setMouseCallback('Choose grid', self.grid_callback)

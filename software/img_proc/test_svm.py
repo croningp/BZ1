@@ -12,6 +12,7 @@ import cv2
 import numpy as np
 import sys
 from generate_dataset import GridClickData
+from train_svm import equalise_img
 from sklearn.decomposition import PCA
 from sklearn.externals import joblib
 
@@ -46,6 +47,7 @@ class TestSVM():
                 pointB = (x1-9 + stepw * (i+1), y1-9 + steph * (j+1))
                 # Define the Region of Interest as the current cell (i, j)
                 roi = frame[pointA[1]:pointB[1], pointA[0]:pointB[0]]
+                # roi = equalise_img(roi)
 
                 if self.roi_to_decision(roi) == 0:
                     # if predicted as 0, paint it blue, otherwise red
@@ -143,11 +145,37 @@ class PCATransform(TestSVM):
 
 
 
+class HSVHistogram(TestSVM):
+    '''Uses a 3D histogram of the HSV color map. This is what Gerardo was
+    using. The dataset must be generated using the class with the same name
+    from train_svm.py'''
+
+
+    def __init__(self, svm_file):
+        super().__init__(svm_file)
+
+
+    def roi_to_decision(self, roi):
+
+        roiHSV = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
+        # calculate histograms for H, S and V
+        hist_ocv = cv2.calcHist([roiHSV], [0, 1, 2], None, [8, 8, 8], 
+            [0, 256, 0, 256, 0, 256])
+        # flatten to 1D
+        hist1D = hist_ocv.flatten()
+        # eq lighting, idea from HOG
+        hist = hist1D / np.sqrt( np.sum( np.power(hist1D,2) ) )
+        decision = self.svm.predict(np.array([hist], dtype=np.float32))
+
+        return int(decision[1][0][0]) 
+
+
 if __name__ == "__main__":
 
     # svm = BlueChannel('svm_bluechannel.dat')
     # svm = RedBlueChannel('svm_rbchannel.dat')
-    svm = PCATransform('svm_pca.dat', 'pca.dat')
+    # svm = PCATransform('svm_pca.dat', 'pca.dat')
+    svm = HSVHistogram('hsvhist.dat')
 
     video = cv2.VideoCapture(sys.argv[1])
     click_grid = GridClickData()    

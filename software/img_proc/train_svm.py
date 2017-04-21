@@ -49,12 +49,12 @@ class TrainSVM:
         testData = self.dataset
 
         # see the link in the header to see how the svm is init. 
-        # we will use the default SVM parameters
+        # we will use the default SVM parameters from the header link
         svm = cv2.ml.SVM_create()
-        # svm.setKernel(cv2.ml.SVM_LINEAR)
-        # svm.setType(cv2.ml.SVM_C_SVC)
-        # svm.setC(2.67)
-        # svm.setGamma(5.383)
+        svm.setKernel(cv2.ml.SVM_LINEAR)
+        svm.setType(cv2.ml.SVM_C_SVC)
+        svm.setC(2.67)
+        svm.setGamma(5.383)
         svm.train(trainData, cv2.ml.ROW_SAMPLE, responses)
         svm.save(file_to_save)
         result = svm.predict(testData)
@@ -74,7 +74,6 @@ class BlueChannel(TrainSVM):
     def __init__(self, dataset, responses):
 
         super().__init__(dataset, responses)
-
         # only take blue channel from dataset
         bc =  [img[:,:,0] for img in self.dataset]  
         # transform it into 25 by 25
@@ -110,11 +109,11 @@ class PCATransform(TrainSVM):
 
 
     def __init__(self, dataset, response, pca_file):
-        
+
         super().__init__(dataset, responses)
         # First we need to prepare the data to feed the PCA
         # we need to make sure all the images are the same size
-        resized = [ cv2.resize(img, (50,50) ) for img in dataset]
+        resized = [ cv2.resize(img, (50,50) ) for img in self.dataset]
         resized = np.asarray(resized, dtype=np.float32)
         # reshape from (N, size, size, 3) to (N, size*size*3)
         data2D = resized.reshape( resized.shape[0], -1)
@@ -131,6 +130,47 @@ class PCATransform(TrainSVM):
 
 
 
+class HSVHistogram(TrainSVM):
+    '''Transform the image into the HSV channel and calculates a 3D
+    histogram. This code follows what Gerardo did'''
+
+
+    def __init__(self, dataset, response):
+
+        super().__init__(dataset, responses)
+        # change to HSV 
+        dataHSV = [ cv2.cvtColor(i, cv2.COLOR_BGR2HSV) for i in self.dataset ]
+        # calculate histograms for H, S and V
+        hist_ocv = [ cv2.calcHist([i], [0, 1, 2], None, [8, 8, 8], 
+            [0, 256, 0, 256, 0, 256]) for i in dataHSV ]
+        # everything to 1D
+        hists1D = [ h.flatten() for h in hist_ocv ]
+        # eq lighting, idea from HOG
+        hists = [ hist / np.sqrt(np.sum(np.power(hist,2))) for hist in hists1D ]
+        self.dataset = np.asarray(hists)
+
+
+
+def equalise_img(img):
+    '''histogram equalisation. From Gerardo's code'''
+
+    b,g,r = cv2.split(img)
+    r_hst = cv2.equalizeHist(r)
+    g_hst = cv2.equalizeHist(g)
+    b_hst = cv2.equalizeHist(b)
+    image_eq = cv2.merge((b_hst, g_hst, r_hst))
+
+    clahe = cv2.createCLAHE(clipLimit=1.0, tileGridSize=(4,4))
+    b,g,r = cv2.split(img)
+    cl1 = clahe.apply(b)
+    cl2 = clahe.apply(g)
+    cl3 = clahe.apply(r)
+    image_eq = cv2.merge((cl1,cl2,cl3))
+
+    return image_eq
+
+
+
 if __name__ == "__main__":
 
     
@@ -139,8 +179,9 @@ if __name__ == "__main__":
     blues = [cv2.imread(file) for file in glob.glob("blues/*.png")]  
     reds = [cv2.imread(file) for file in glob.glob("reds/*.png")] 
 
-    # and we put everything together into a dataset
+    # and we put everything together into a dataset and equalise it
     dataset = blues + reds 
+    dataset = [ equalise_img(img) for img in dataset ]
 
     # responses will be their "class", 0 for blues, and 1 for reds
     responses = np.array([[0]] * len(blues) + [[1]] * len(reds), dtype=np.int32) 
@@ -154,3 +195,5 @@ if __name__ == "__main__":
     pca_svm = PCATransform(dataset, responses, "pca.dat")
     pca_svm.train("svm_pca.dat")
 
+    # hsvhist = HSVHistogram(dataset, responses)
+    # hsvhist.train("hsvhist.dat")
