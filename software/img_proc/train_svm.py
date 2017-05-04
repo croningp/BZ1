@@ -47,14 +47,13 @@ class TrainSVM:
         # so we used all the data to train
         trainData = self.dataset 
         testData = self.dataset
-
         # see the link in the header to see how the svm is init. 
         # we will use the default SVM parameters from the header link
         svm = cv2.ml.SVM_create()
         svm.setKernel(cv2.ml.SVM_LINEAR)
         svm.setType(cv2.ml.SVM_C_SVC)
-        svm.setC(2.67)
-        svm.setGamma(5.383)
+        svm.setC(1) # before 2.67
+        svm.setGamma(1) # before 5.383
         svm.train(trainData, cv2.ml.ROW_SAMPLE, responses)
         svm.save(file_to_save)
         result = svm.predict(testData)
@@ -192,8 +191,8 @@ if __name__ == "__main__":
     # rbchannel_svm = RedBlueChannel(dataset, responses)
     # rbchannel_svm.train("svm_rbchannel.dat")
 
-    pca_svm = PCATransform(dataset, responses, "pca.dat")
-    pca_svm.train("svm_pca.dat")
+    # pca_svm = PCATransform(dataset, responses, "pca.dat")
+    # pca_svm.train("svm_pca.dat")
 
-    # hsvhist = HSVHistogram(dataset, responses)
-    # hsvhist.train("hsvhist.dat")
+    hsvhist = HSVHistogram(dataset, responses)
+    hsvhist.train("hsvhist.dat")
