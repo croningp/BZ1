@@ -24,6 +24,7 @@
 import numpy as np
 import cv2
 import random, string, sys
+import subprocess
 
 
 class CellClickData:
@@ -84,7 +85,7 @@ class CellClickData:
 
                 if click[3] == 0:
                     roi = frame[pointA[1]:pointB[1], pointA[0]:pointB[0]]
-                    cv2.imwrite('reds/'+random_filename(8), roi)
+                    cv2.imwrite('reds/'+self.random_filename(8), roi)
                     click[3] = 1
 
                 cv2.rectangle(frame, pointA, pointB, (0,0,255), -1) 
@@ -171,13 +172,17 @@ if __name__ == "__main__":
     video = cv2.VideoCapture(sys.argv[1])
     click_grid = GridClickData()    
     play = True # True means play, False means pause
-
+    frame_counter = 0
+    total_frames = video.get(cv2.CAP_PROP_FRAME_COUNT)
 
     while(True):
 
         if play is True:
             ret, frame = video.read()
             click_cell = CellClickData()
+            frame_counter += 1
+            sys.stdout.write("\r{0} in {1}".format(frame_counter, total_frames))
+            sys.stdout.flush()
 
         if ret is False:
             break

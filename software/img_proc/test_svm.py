@@ -182,7 +182,7 @@ if __name__ == "__main__":
     play = True # True means play, False means pause
 
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter('output.avi',fourcc, 30.0, (960,540))
+    out = cv2.VideoWriter('output.avi',fourcc, 30.0, (600,600))
 
     while(True):
 
