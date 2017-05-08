@@ -38,6 +38,7 @@ class TestSVM():
         width = x2 - x1
         stepw = int(width / 5)
         steph = int(height / 5)
+        blues = [] # list of the blue cells in this frame
 
         for i in range(5):
             for j in range(5):
@@ -52,8 +53,12 @@ class TestSVM():
                 if self.roi_to_decision(roi) == 0:
                     # if predicted as 0, paint it blue, otherwise red
                     cv2.rectangle(frame, pointA, pointB, (255,0,0), -1) 
+                    blues.append((i,j)) # add cell to the blue cells list 
+
                 else:
                     cv2.rectangle(frame, pointA, pointB, (0,0,255), -1) 
+        
+        return blues
 
 
     def roi_to_decision(self, roi):
