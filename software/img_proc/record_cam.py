@@ -51,7 +51,8 @@ if __name__ == "__main__":
         cv2.imshow("video",frame)
 
         end_time = time.clock() * 1000
-        key = cv2.waitKey(34 - int(end_time - start_time))
+        wait_time = 33333 - (end_time - start_time)*1000
+        key = cv2.waitKey(int(wait_time/1000))
 
         if key == ord('q') or event.is_set():
             break
