@@ -50,10 +50,10 @@ class TrainSVM:
         # see the link in the header to see how the svm is init. 
         # we will use the default SVM parameters from the header link
         svm = cv2.ml.SVM_create()
-        svm.setKernel(cv2.ml.SVM_LINEAR)
+        svm.setKernel(cv2.ml.SVM_RBF)
         svm.setType(cv2.ml.SVM_C_SVC)
-        svm.setC(1) # before 2.67
-        svm.setGamma(1) # before 5.383
+        svm.setC(2) # before 2.67
+        svm.setGamma(5) # before 5.383
         svm.train(trainData, cv2.ml.ROW_SAMPLE, responses)
         svm.save(file_to_save)
         result = svm.predict(testData)
