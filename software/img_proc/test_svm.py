@@ -180,14 +180,14 @@ if __name__ == "__main__":
     # svm = BlueChannel('svm_bluechannel.dat')
     # svm = RedBlueChannel('svm_rbchannel.dat')
     # svm = PCATransform('svm_pca.dat', 'pca.dat')
-    svm = HSVHistogram('hsvhist.dat')
+    svm = HSVHistogram('hsvhist_c10_g10.dat')
 
     video = cv2.VideoCapture(sys.argv[1])
     click_grid = GridClickData()    
     play = True # True means play, False means pause
 
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter('output.avi',fourcc, 30.0, (600,600))
+    out = cv2.VideoWriter('c10_g10.avi',fourcc, 30.0, (800,600))
 
     while(True):
 
@@ -206,12 +206,12 @@ if __name__ == "__main__":
         # we use the svm to decide if the cells are painted red or blue
         svm.paint_cells(frame, click_grid.points)
 
-        cv2.imshow('Video', frame)
+        # cv2.imshow('Video', frame)
         out.write(frame)
-        key = cv2.waitKey(33) & 0xFF # 33 means roughly 30FPS 
+        # key = cv2.waitKey(33) & 0xFF # 33 means roughly 30FPS 
 
-        if key == ord('p'):
-            play = not play
+        # if key == ord('p'):
+        #    play = not play
 
 
     video.release()
