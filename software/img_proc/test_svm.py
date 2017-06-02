@@ -180,14 +180,14 @@ if __name__ == "__main__":
     # svm = BlueChannel('svm_bluechannel.dat')
     # svm = RedBlueChannel('svm_rbchannel.dat')
     # svm = PCATransform('svm_pca.dat', 'pca.dat')
-    svm = HSVHistogram('hsvhist_c10_g10.dat')
+    svm = HSVHistogram('hsvhist_c1_g1.dat')
 
     video = cv2.VideoCapture(sys.argv[1])
     click_grid = GridClickData()    
     play = True # True means play, False means pause
 
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter('c10_g10.avi',fourcc, 30.0, (800,600))
+    out = cv2.VideoWriter('c1_g1.avi',fourcc, 30.0, (800,600))
 
     while(True):
 
