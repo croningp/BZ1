@@ -51,7 +51,7 @@ class CellClickData:
             self.clicks = np.append(self.clicks, [[x,y,1,0]], axis=0)
 
 
-    def draw_save_cells(self, frame, bz_coordinates):
+    def draw_save_cells(self, frame, bz_coordinates, window_c):
         ''' colours and saves the bz cells where the user has clicked. '''
 
         x1, y1, x2, y2 = bz_coordinates
@@ -59,6 +59,7 @@ class CellClickData:
         width = x2 - x1
         stepw = int(width / 5)
         steph = int(height / 5)
+        color = window_c.astype("int32")
 
         for click in self.clicks:
             # relative click coordinates to the origin of the bz grid (x1, y1)
@@ -74,7 +75,7 @@ class CellClickData:
                 if click[3] == 0: # not saved it yet
                     # define Region Of Interest around the cell we want
                     roi = frame[pointA[1]:pointB[1], pointA[0]:pointB[0]]
-                    new_image = 'blues/'+self.random_filename(8)
+                    new_image = 'blues/'+self.random_filename(5, color)
                     cv2.imwrite(new_image, roi) # save cell
                     click[3] = 1 # we mark it as saved
 
@@ -85,16 +86,18 @@ class CellClickData:
 
                 if click[3] == 0:
                     roi = frame[pointA[1]:pointB[1], pointA[0]:pointB[0]]
-                    cv2.imwrite('reds/'+self.random_filename(8), roi)
+                    new_image = 'reds/'+self.random_filename(5, color)
+                    cv2.imwrite(new_image, roi)
                     click[3] = 1
 
                 cv2.rectangle(frame, pointA, pointB, (0,0,255), -1) 
 
 
-    def random_filename(self, size):
+    def random_filename(self, size, color):
         ''' to create random names for the dataset pictures '''
 
         w = ''.join(random.choice(string.ascii_lowercase) for i in range(size))
+        w += "_"+str(color[0]) +'_' +str(color[2])
         return w+'.png'
 
 
@@ -166,6 +169,43 @@ class GridClickData:
 
 
 
+def bz_average_color(frame, bz_coordinates):
+    ''' Given a frame, it gets the bz board, and returns in average color'''
+
+    x1, y1, x2, y2 = bz_coordinates
+    height = y2 - y1
+    width = x2 - x1
+    stepw = int(width / 5)
+    steph = int(height / 5)
+    cell_colors = []
+
+    for cell in range(25):
+        icell = int(cell / 5)
+        jcell = cell % 5
+        # calculate cell coordinates
+        pointA = (x1+9 + stepw * icell, y1+9 + steph * jcell)
+        pointB = (x1-9 + stepw * (icell+1), y1-9 + steph * (jcell+1))
+
+
+        # define Region Of Interest around the cell we want
+        roi = frame[pointA[1]:pointB[1], pointA[0]:pointB[0]]
+        # calculate its average color
+        avg_color_per_row = np.average(roi, axis=0)
+        avg_color = np.average(avg_color_per_row, axis=0)
+        cell_colors.append(avg_color)
+
+    return np.average(cell_colors, axis=0)
+
+
+
+def bz_avg_moving_color(colors, n=100):
+    ''' returns the average hue  of the last n frames'''
+
+    frames = min(n, len(colors))
+    window = colors[-frames:]
+    return np.average(window, axis=0)
+
+
 if __name__ == "__main__":
 
 
@@ -174,6 +214,7 @@ if __name__ == "__main__":
     play = True # True means play, False means pause
     frame_counter = 0
     total_frames = video.get(cv2.CAP_PROP_FRAME_COUNT)
+    frame_color = [] # keeps the average color per frame
 
     while(True):
 
@@ -191,13 +232,20 @@ if __name__ == "__main__":
         if click_grid.finished is False:
             click_grid.get_platform_corners(frame)
 
+        # calculate the average color of this frame
+        avg_c = bz_average_color(frame, click_grid.points) 
+        # save it
+        frame_color.append(avg_c)
+        # calculate the average color of the last n frames
+        window_c = bz_avg_moving_color(frame_color).astype('float32')
+
         # "click_grid" is now populated with the x,y corners of the platform
         click_grid.draw_grid(frame)
        
         # now while the video plays the user can click to save cells as dataset
         cv2.namedWindow('Left blue, Right red')
         cv2.setMouseCallback('Left blue, Right red', click_cell.mouse_cell)
-        click_cell.draw_save_cells(frame, click_grid.points)
+        click_cell.draw_save_cells(frame, click_grid.points, window_c)
         
         cv2.imshow('Left blue, Right red', frame)
         key = cv2.waitKey(33) & 0xFF # 33 means roughly 30FPS 

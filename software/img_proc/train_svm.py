@@ -13,6 +13,7 @@
 
 import glob
 import cv2
+import re
 import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.externals import joblib
@@ -26,8 +27,8 @@ class TrainSVM:
 
     def __init__(self, dataset, responses):
 
-        self.dataset = dataset
-        self.responses = responses
+        self.dataset = dataset.copy()
+        self.responses = responses.copy()
 
 
     def train(self, file_to_save):
@@ -52,12 +53,12 @@ class TrainSVM:
         svm = cv2.ml.SVM_create()
         svm.setKernel(cv2.ml.SVM_RBF)
         svm.setType(cv2.ml.SVM_C_SVC)
-        svm.setC(10) # before 2.67
-        svm.setGamma(10) # before 5.383
-        svm.train(trainData, cv2.ml.ROW_SAMPLE, responses)
+        svm.setC(5) # before 2.67
+        svm.setGamma(5) # before 5.383
+        svm.train(trainData, cv2.ml.ROW_SAMPLE, self.responses)
         svm.save(file_to_save)
         result = svm.predict(testData)
-        mask = result[1]==responses
+        mask = result[1]==self.responses
         correct = np.count_nonzero(mask)
         print( correct*100.0/len(result[1]) )
     
@@ -150,14 +151,49 @@ class HSVHistogram(TrainSVM):
 
 
 
+class HSVHistogramBkgMem(TrainSVM):
+    '''Transform the image into the HSV channel and calculates a 3D
+    histogram. This code follows what Gerardo did
+    It also uses the average background color of the last N frames
+    in order to help the classification'''
+
+
+    def __init__(self, dataset, response):
+
+        super().__init__(dataset, responses)
+        # get the file names because there we have the backgrund color
+        filesblue = [file for file in glob.glob("blues/*.png")]
+        filesred = [file for file in glob.glob("reds/*.png")]
+        files = filesblue + filesred
+        backgrounds = [re.findall(r'\d+', f) for f in files]
+
+        # change to HSV 
+        dataHSV = [ cv2.cvtColor(i, cv2.COLOR_BGR2HSV) for i in self.dataset ]
+        # calculate histograms for H, S and V
+        hist_ocv = [ cv2.calcHist([i], [0, 1, 2], None, [8, 8, 8], 
+            [0, 256, 0, 256, 0, 256]) for i in dataHSV ]
+        # everything to 1D
+        hists1D = [ h.flatten() for h in hist_ocv ]
+        # eq lighting, idea from HOG
+        hists = [ hist / np.sqrt(np.sum(np.power(hist,2))) for hist in hists1D ]
+        
+        for i, hist in enumerate(hists):
+            b, r = backgrounds[i]
+            br = np.array([np.float32(b)/255, np.float(r)/255], dtype='float32')
+            hists[i] = np.append( hist, br )
+
+        self.dataset = np.asarray(hists)
+
+
+
 def equalise_img(img):
     '''histogram equalisation. From Gerardo's code'''
 
-    b,g,r = cv2.split(img)
-    r_hst = cv2.equalizeHist(r)
-    g_hst = cv2.equalizeHist(g)
-    b_hst = cv2.equalizeHist(b)
-    image_eq = cv2.merge((b_hst, g_hst, r_hst))
+    #b,g,r = cv2.split(img)
+    #r_hst = cv2.equalizeHist(r)
+    #g_hst = cv2.equalizeHist(g)
+    #b_hst = cv2.equalizeHist(b)
+    #image_eq = cv2.merge((b_hst, g_hst, r_hst))
 
     clahe = cv2.createCLAHE(clipLimit=1.0, tileGridSize=(4,4))
     b,g,r = cv2.split(img)
@@ -195,4 +231,9 @@ if __name__ == "__main__":
     # pca_svm.train("svm_pca.dat")
 
     hsvhist = HSVHistogram(dataset, responses)
-    hsvhist.train("hsvhist_c10_g10.dat")
+    hsvhist.train("hsvhist.dat")
+
+    hsvhistmem = HSVHistogramBkgMem(dataset, responses)
+    hsvhistmem.train("hsvhistmem.dat")
+
+
