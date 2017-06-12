@@ -1,5 +1,5 @@
 import cv2
-import sys
+import sys, time
 sys.path.insert(0, 'img_proc')
 
 import test_svm
@@ -16,7 +16,7 @@ def activate_motors(motors, board, matrix):
         motor = code[i] + str(5-j)
         if matrix[motor] == 0:
             matrix[motor] = 1
-            board.activate_motor(motor, 4000)
+            board.activate_motor(motor, 1000)
 
 
 # this matrix stores if the motors are enabled (1) or disabled (0)
@@ -30,7 +30,7 @@ matrix = {
     }
 
 board = BZBoard('/dev/ttyACM0')
-svm = test_svm.HSVHistogram('img_proc/hsvhist.dat')
+svm = test_svm.HSVHistogram('img_proc/hsvhist_c1_g1.dat')
 
 
 vc = cv2.VideoCapture(0)
@@ -56,9 +56,9 @@ while(True):
     # first thing we ask the user to define the 5x5 grid
     if click_grid.finished is False:
         click_grid.get_platform_corners(frame)
-        board.activate_motor("A1", 4000)
-        board.activate_motor("A3", 4000)
-        board.activate_motor("A4", 4000)
+        board.activate_motor("A1", 1000)
+        board.activate_motor("A3", 1000)
+        board.activate_motor("A4", 1000)
 
     # "click_grid" is now populated with the x,y corners of the platform
     click_grid.draw_grid(frame)
