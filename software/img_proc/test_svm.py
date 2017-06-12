@@ -12,10 +12,11 @@ import cv2
 import numpy as np
 import sys
 from generate_dataset import GridClickData
+from generate_dataset import bz_average_color
+from generate_dataset import bz_avg_moving_color
 from train_svm import equalise_img
-from sklearn.decomposition import PCA
 from sklearn.externals import joblib
-
+from sklearn.decomposition import PCA
 
 
 class TestSVM():
@@ -28,7 +29,7 @@ class TestSVM():
         self.svm = cv2.ml.SVM_load(svm_file)
 
 
-    def paint_cells(self, frame, bz_coordinates):
+    def paint_cells(self, frame, bz_coordinates, b_color):
         ''' Given a frame and the bz coordinates, it extracts the cells 
         and uses the SVM to predict if it will be a blue or red cell'''
 
@@ -48,9 +49,9 @@ class TestSVM():
                 pointB = (x1-9 + stepw * (i+1), y1-9 + steph * (j+1))
                 # Define the Region of Interest as the current cell (i, j)
                 roi = frame[pointA[1]:pointB[1], pointA[0]:pointB[0]]
-                # roi = equalise_img(roi)
+                roi = equalise_img(roi)
 
-                if self.roi_to_decision(roi) == 0:
+                if self.roi_to_decision(roi, b_color) == 0:
                     # if predicted as 0, paint it blue, otherwise red
                     cv2.rectangle(frame, pointA, pointB, (255,0,0), -1) 
                     blues.append((i,j)) # add cell to the blue cells list 
@@ -160,7 +161,7 @@ class HSVHistogram(TestSVM):
         super().__init__(svm_file)
 
 
-    def roi_to_decision(self, roi):
+    def roi_to_decision(self, roi, b_color=None):
 
         roiHSV = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
         # calculate histograms for H, S and V
@@ -175,19 +176,52 @@ class HSVHistogram(TestSVM):
         return int(decision[1][0][0]) 
 
 
+
+class HSVHistogramBkgMem(TestSVM):
+    '''Uses a 3D histogram of the HSV color map. This is what Gerardo was
+    using, plus using the average color of the last N frames. 
+    The dataset must be generated using the class with the same name
+    from train_svm.py'''
+
+
+    def __init__(self, svm_file):
+        super().__init__(svm_file)
+
+
+    def roi_to_decision(self, roi, b_color):
+
+        b,g,r = b_color
+        br = [b/255., r/255.]
+        roiHSV = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
+        # calculate histograms for H, S and V
+        hist_ocv = cv2.calcHist([roiHSV], [0, 1, 2], None, [8, 8, 8], 
+            [0, 256, 0, 256, 0, 256])
+        # flatten to 1D
+        hist1D = hist_ocv.flatten()
+        # eq lighting, idea from HOG
+        hist = hist1D / np.sqrt( np.sum( np.power(hist1D,2) ) )
+        hist = np.append(hist, br)
+        decision = self.svm.predict(np.array([hist], dtype=np.float32))
+
+        return int(decision[1][0][0]) 
+
+
+
 if __name__ == "__main__":
 
     # svm = BlueChannel('svm_bluechannel.dat')
     # svm = RedBlueChannel('svm_rbchannel.dat')
     # svm = PCATransform('svm_pca.dat', 'pca.dat')
-    svm = HSVHistogram('hsvhist_c1_g1.dat')
+    # svm = HSVHistogram('hsvhist.dat')
+    svm = HSVHistogramBkgMem('hsvhistmem.dat')
 
     video = cv2.VideoCapture(sys.argv[1])
     click_grid = GridClickData()    
     play = True # True means play, False means pause
+    frame_color = []
 
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter('c1_g1.avi',fourcc, 30.0, (800,600))
+    out = cv2.VideoWriter('hsvhistmem.avi',fourcc, 30.0, (800,600))
 
     while(True):
 
@@ -201,10 +235,17 @@ if __name__ == "__main__":
         if click_grid.finished is False:
             click_grid.get_platform_corners(frame)
 
+        # calculate the average color of this frame
+        avg_c = bz_average_color(frame, click_grid.points) 
+        # save it
+        frame_color.append(avg_c)
+        # calculate the average color of the last n frames
+        window_c = bz_avg_moving_color(frame_color).astype('float32')
+
         # "click_grid" is now populated with the x,y corners of the platform
         click_grid.draw_grid(frame)
         # we use the svm to decide if the cells are painted red or blue
-        svm.paint_cells(frame, click_grid.points)
+        svm.paint_cells(frame, click_grid.points, window_c)
 
         # cv2.imshow('Video', frame)
         out.write(frame)
