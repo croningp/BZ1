@@ -46,8 +46,8 @@ class TrainSVM:
         # now we separate dataset between train and test
         # If train = test, it is because we are testing now with actual videos
         # so we used all the data to train
-        trainData = self.dataset 
-        testData = self.dataset
+        trainData = self.dataset[:1500]
+        testData = self.dataset[1500:]
         # see the link in the header to see how the svm is init. 
         # we will use the default SVM parameters from the header link
         svm = cv2.ml.SVM_create()
@@ -55,10 +55,10 @@ class TrainSVM:
         svm.setType(cv2.ml.SVM_C_SVC)
         svm.setC(5) # before 2.67
         svm.setGamma(5) # before 5.383
-        svm.train(trainData, cv2.ml.ROW_SAMPLE, self.responses)
+        svm.train(trainData, cv2.ml.ROW_SAMPLE, self.responses[:1500])
         svm.save(file_to_save)
         result = svm.predict(testData)
-        mask = result[1]==self.responses
+        mask = result[1]==self.responses[1500:]
         correct = np.count_nonzero(mask)
         print( correct*100.0/len(result[1]) )
     
