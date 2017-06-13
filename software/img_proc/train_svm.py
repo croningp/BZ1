@@ -46,7 +46,7 @@ class TrainSVM:
         # now we separate dataset between train and test
         # If train = test, it is because we are testing now with actual videos
         # so we used all the data to train
-        trainData = self.dataset 
+        trainData = self.dataset
         testData = self.dataset
         # see the link in the header to see how the svm is init. 
         # we will use the default SVM parameters from the header link
