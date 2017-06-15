@@ -232,12 +232,13 @@ if __name__ == "__main__":
         if click_grid.finished is False:
             click_grid.get_platform_corners(frame)
 
-        # calculate the average color of this frame
-        avg_c = bz_average_color(frame, click_grid.points) 
-        # save it
-        frame_color.append(avg_c)
-        # calculate the average color of the last n frames
-        window_c = bz_avg_moving_color(frame_color).astype('float32')
+        if play is True:
+            # calculate the average color of this frame
+            avg_c = bz_average_color(frame, click_grid.points) 
+            # save it
+            frame_color.append(avg_c)
+            # calculate the average color of the last n frames
+            window_c = bz_avg_moving_color(frame_color).astype('float32')
 
         # "click_grid" is now populated with the x,y corners of the platform
         click_grid.draw_grid(frame)
