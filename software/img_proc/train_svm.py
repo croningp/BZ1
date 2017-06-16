@@ -141,7 +141,7 @@ class HSVHistogram(TrainSVM):
         # change to HSV 
         dataHSV = [ cv2.cvtColor(i, cv2.COLOR_BGR2HSV) for i in self.dataset ]
         # calculate histograms for H, S and V
-        hist_ocv = [ cv2.calcHist([i], [0, 1, 2], None, [8, 8, 8], 
+        hist_ocv = [ cv2.calcHist([i], [0, 1, 2], None, [8, 4, 4], 
             [0, 256, 0, 256, 0, 256]) for i in dataHSV ]
         # everything to 1D
         hists1D = [ h.flatten() for h in hist_ocv ]
@@ -170,7 +170,7 @@ class HSVHistogramBkgMem(TrainSVM):
         # change to HSV 
         dataHSV = [ cv2.cvtColor(i, cv2.COLOR_BGR2HSV) for i in self.dataset ]
         # calculate histograms for H, S and V
-        hist_ocv = [ cv2.calcHist([i], [0, 1, 2], None, [8, 8, 8], 
+        hist_ocv = [ cv2.calcHist([i], [0, 1, 2], None, [8, 4, 4], 
             [0, 256, 0, 256, 0, 256]) for i in dataHSV ]
         # everything to 1D
         hists1D = [ h.flatten() for h in hist_ocv ]
