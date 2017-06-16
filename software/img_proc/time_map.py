@@ -31,12 +31,15 @@ def add_column(frame, timemap, bz_coord, xcol):
 
     x1, y1, x2, y2 = bz_coord
     step_w = int( (x2 - x1) / 5 )
+    step_h = int( (y2 - y1) / 5 )
     height = y2 - y1
+    width = x2 - x1
 
     for i in range(5):
-        col = frame[y1:y2, x1+25-(i*2) + step_w*i]
-        timemap[i*height:i*height+height, xcol] = col
-
+        #col = frame[y1:y2, x1+25-(i*2) + step_w*i]
+        #timemap[i*height:i*height+height, xcol] = col
+        row = frame[y1+20-(i*2) + step_h*i, x1:x2]
+        timemap[i*width:i*width+width, xcol] = row
 
 if __name__ == "__main__":
 
@@ -64,7 +67,7 @@ if __name__ == "__main__":
             # click_grid is now populated with the x,y corners of the platform
             click_grid.get_platform_corners(frame)
             x1, y1, x2, y2 = click_grid.points
-            timemap = np.resize(timemap, ( (y2-y1)*5, total_frames, 3) )
+            timemap = np.resize(timemap, ( (x2-x1)*5, total_frames, 3) )
         
         add_column(frame, timemap, click_grid.points, frame_counter)
         
