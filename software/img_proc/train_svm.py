@@ -30,7 +30,6 @@ class TrainSVM:
         self.dataset = dataset.copy()
         self.responses = responses.copy()
 
-
     def train(self, file_to_save):
         '''Trains the SVM with the dataset provided, and stores it in
         file_to_save'''
@@ -139,9 +138,9 @@ class HSVHistogram(TrainSVM):
 
         super().__init__(dataset, responses)
         # change to HSV 
-        dataHSV = [ cv2.cvtColor(i, cv2.COLOR_BGR2HSV) for i in self.dataset ]
+        dataHSV = [ cv2.cvtColor(i, cv2.COLOR_BGR2HSV) for i in dataset ]
         # calculate histograms for H, S and V
-        hist_ocv = [ cv2.calcHist([i], [0, 1, 2], None, [8, 4, 4], 
+        hist_ocv = [ cv2.calcHist([i], [0, 1, 2], None, [8, 8, 8], 
             [0, 256, 0, 256, 0, 256]) for i in dataHSV ]
         # everything to 1D
         hists1D = [ h.flatten() for h in hist_ocv ]
@@ -168,9 +167,9 @@ class HSVHistogramBkgMem(TrainSVM):
         backgrounds = [re.findall(r'\d+', f) for f in files]
 
         # change to HSV 
-        dataHSV = [ cv2.cvtColor(i, cv2.COLOR_BGR2HSV) for i in self.dataset ]
+        dataHSV = [ cv2.cvtColor(i, cv2.COLOR_BGR2HSV) for i in dataset ]
         # calculate histograms for H, S and V
-        hist_ocv = [ cv2.calcHist([i], [0, 1, 2], None, [8, 4, 4], 
+        hist_ocv = [ cv2.calcHist([i], [0, 1, 2], None, [8, 8, 8], 
             [0, 256, 0, 256, 0, 256]) for i in dataHSV ]
         # everything to 1D
         hists1D = [ h.flatten() for h in hist_ocv ]
@@ -230,8 +229,8 @@ if __name__ == "__main__":
     # pca_svm = PCATransform(dataset, responses, "pca.dat")
     # pca_svm.train("svm_pca.dat")
 
-    hsvhist = HSVHistogram(dataset, responses)
-    hsvhist.train("hsvhist.dat")
+    #hsvhist = HSVHistogram(dataset, responses)
+    #hsvhist.train("hsvhist.dat")
 
     hsvhistmem = HSVHistogramBkgMem(dataset, responses)
     hsvhistmem.train("hsvhistmem.dat")
