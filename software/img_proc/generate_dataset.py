@@ -198,7 +198,7 @@ def bz_average_color(frame, bz_coordinates):
 
 
 
-def bz_avg_moving_color(colors, n=100):
+def bz_avg_moving_color(colors, n=600):
     ''' returns the average hue  of the last n frames'''
 
     frames = min(n, len(colors))
