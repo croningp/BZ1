@@ -198,7 +198,7 @@ def bz_average_color(frame, bz_coordinates):
 
 
 
-def bz_avg_moving_color(colors, n=600):
+def bz_avg_moving_color(colors, n=100):
     ''' returns the average hue  of the last n frames'''
 
     frames = min(n, len(colors))
@@ -238,7 +238,7 @@ if __name__ == "__main__":
             # save it
             frame_color.append(avg_c)
             # calculate the average color of the last n frames
-            window_c = bz_avg_moving_color(frame_color).astype('float32')
+            window_c = bz_avg_moving_color(frame_color, 3000).astype('float32')
 
         # "click_grid" is now populated with the x,y corners of the platform
         click_grid.draw_grid(frame)

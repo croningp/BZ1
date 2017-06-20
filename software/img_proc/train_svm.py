@@ -41,7 +41,11 @@ class TrainSVM:
         np.random.shuffle(self.dataset)
         np.random.seed(seed)
         np.random.shuffle(self.responses)
-
+        #np.random.seed(seed)
+        #np.random.shuffle(self.databefore)
+        #np.random.seed(seed)
+        #np.random.shuffle(self.files)
+        
         # now we separate dataset between train and test
         # If train = test, it is because we are testing now with actual videos
         # so we used all the data to train
@@ -58,6 +62,9 @@ class TrainSVM:
         svm.save(file_to_save)
         result = svm.predict(testData)
         mask = result[1]==self.responses
+        #wrongs = np.where(mask==False)[0]
+        #for im in wrongs:
+        #    print(self.files[im])
         correct = np.count_nonzero(mask)
         print( correct*100.0/len(result[1]) )
     
@@ -163,9 +170,11 @@ class HSVHistogramBkgMem(TrainSVM):
         # get the file names because there we have the backgrund color
         filesblue = [file for file in glob.glob("blues/*.png")]
         filesred = [file for file in glob.glob("reds/*.png")]
-        files = filesblue + filesred
-        backgrounds = [re.findall(r'\d+', f) for f in files]
+        self.files = filesblue + filesred
+        backgrounds = [re.findall(r'\d+', f) for f in self.files]
 
+        # we copy the dataset raw here just in case we want to do some post
+        self.databefore = dataset.copy()
         # change to HSV 
         dataHSV = [ cv2.cvtColor(i, cv2.COLOR_BGR2HSV) for i in dataset ]
         # calculate histograms for H, S and V
