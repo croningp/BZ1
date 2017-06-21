@@ -25,6 +25,7 @@ import numpy as np
 import cv2
 import random, string, sys
 import subprocess
+from collections import deque
 
 
 class CellClickData:
@@ -198,14 +199,6 @@ def bz_average_color(frame, bz_coordinates):
 
 
 
-def bz_avg_moving_color(colors, n=100):
-    ''' returns the average hue  of the last n frames'''
-
-    frames = min(n, len(colors))
-    window = colors[-frames:]
-    return np.average(window, axis=0)
-
-
 if __name__ == "__main__":
 
 
@@ -214,7 +207,8 @@ if __name__ == "__main__":
     play = True # True means play, False means pause
     frame_counter = 0
     total_frames = video.get(cv2.CAP_PROP_FRAME_COUNT)
-    frame_color = [] # keeps the average color per frame
+    bkg_window = 3000 # number of avg frame colors we will keep
+    frame_color = deque(maxlen=bkg_window) # keeps the average color per frame
 
     while(True):
 
@@ -238,7 +232,8 @@ if __name__ == "__main__":
             # save it
             frame_color.append(avg_c)
             # calculate the average color of the last n frames
-            window_c = bz_avg_moving_color(frame_color, 3000).astype('float32')
+            window_c = np.average(frame_color, axis=0)
+            print(window_c)
 
         # "click_grid" is now populated with the x,y corners of the platform
         click_grid.draw_grid(frame)

@@ -1,11 +1,12 @@
 import cv2
 import sys, time
 sys.path.insert(0, 'img_proc')
+from collections import deque
 
 import test_svm
 from bzboard.bzboard import BZBoard
 from generate_dataset import bz_average_color
-from generate_dataset import bz_avg_moving_color
+
 
 def activate_motors(motors, board, matrix):
     '''activates the motors from the list given'''
@@ -33,7 +34,6 @@ matrix = {
 board = BZBoard('/dev/ttyACM0')
 svm = test_svm.HSVHistogramBkgMem('img_proc/hsvhistmem.dat')
 
-
 vc = cv2.VideoCapture(0)
 vc.set(cv2.CAP_PROP_FRAME_WIDTH, 800)
 vc.set(cv2.CAP_PROP_FRAME_HEIGHT, 600)
@@ -43,8 +43,13 @@ raw = cv2.VideoWriter('raw.avi',fourcc, 30.0, (800,600))
 out = cv2.VideoWriter('svm.avi',fourcc, 30.0, (800,600))
 
 click_grid = test_svm.GridClickData()    
-frame_color = []
+# number of frame avg background we will keep
+bkg_window = 3000
+# where we keep the avg background colour
+frame_color = deque(maxlen=bkg_window)
 start = False
+state0 = False
+
 
 while(True):
 
@@ -60,13 +65,16 @@ while(True):
     if click_grid.finished is False:
         click_grid.get_platform_corners(frame)
         
-    if start is True:
+    if start is True and state0 is False:
         board.activate_motor("A4")
         board.activate_motor("A5")
         board.activate_motor("E1")
         board.activate_motor("D1")
         board.activate_motor("B5")
         board.activate_motor("E2")
+        state0 = True
+
+    if start is True and state0 is True:
         activate_motors(blue_cells, board, matrix)
 
     # calculate the average color of this frame
@@ -74,7 +82,7 @@ while(True):
     # save it
     frame_color.append(avg_c)
     # calculate the average color of the last n frames
-    window_c = bz_avg_moving_color(frame_color).astype('float32')
+    window_c = np.average(frame_color, axis=0).astype('float32')
 
     # "click_grid" is now populated with the x,y corners of the platform
     click_grid.draw_grid(frame)

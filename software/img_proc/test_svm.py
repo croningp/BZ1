@@ -13,7 +13,6 @@ import numpy as np
 import sys
 from generate_dataset import GridClickData
 from generate_dataset import bz_average_color
-from generate_dataset import bz_avg_moving_color
 from train_svm import equalise_img
 from sklearn.externals import joblib
 from sklearn.decomposition import PCA
@@ -218,7 +217,9 @@ if __name__ == "__main__":
     video = cv2.VideoCapture(sys.argv[1])
     click_grid = GridClickData()    
     play = True # True means play, False means pause
-    frame_color = []
+
+    bkg_window = 3000 # number of avg frame colors we will keep
+    frame_color = deque(maxlen=bkg_window) # keeps the average color per frame
 
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
     out = cv2.VideoWriter('hsvhistmem.avi',fourcc, 30.0, (800,600))
@@ -240,7 +241,7 @@ if __name__ == "__main__":
         # save it
         frame_color.append(avg_c)
         # calculate the average color of the last n frames
-        window_c = bz_avg_moving_color(frame_color).astype('float32')
+        window_c = np.average(frame_color, axis=0).astype('float32')
 
         # "click_grid" is now populated with the x,y corners of the platform
         click_grid.draw_grid(frame)
