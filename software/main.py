@@ -1,7 +1,8 @@
 import cv2
 import sys, time
-sys.path.insert(0, 'img_proc')
 from collections import deque
+import numpy as np
+sys.path.insert(0, 'img_proc')
 
 import test_svm
 from bzboard.bzboard import BZBoard
@@ -66,12 +67,10 @@ while(True):
         click_grid.get_platform_corners(frame)
         
     if start is True and state0 is False:
-        board.activate_motor("A4")
-        board.activate_motor("A5")
-        board.activate_motor("E1")
-        board.activate_motor("D1")
-        board.activate_motor("B5")
-        board.activate_motor("E2")
+        board.activate_motor("A1")
+        #board.activate_motor("A5")
+        #board.activate_motor("E1")
+        board.activate_motor("E5")
         state0 = True
 
     if start is True and state0 is True:

@@ -29,13 +29,6 @@ class BZBoard:
             "D1":[1, 7, 560],"D2":[0,4, 590],"D3":[0, 8, 540],"D4":[0, 9, 530],"D5":[0,10, 500],
             "E1":[0,11, 560],"E2":[0,12, 530],"E3":[0,13, 560],"E4":[0,14, 550],"E5":[0,15, 500]
             }
-        #self.motors = { # [adafruit_shield, pin, min_speed]
-        #    "A1":[1, 8, 500],"A2":[1, 9, 570],"A3":[1,10, 520],"A4":[1,11, 530],"A5":[1,12, 580],
-        #    "B1":[1,14, 560],"B2":[1,15, 600],"B3":[1,13, 560],"B4":[1, 0, 640],"B5":[1, 1, 540],
-        #    "C1":[1, 2, 0],"C2":[1, 3, 0],"C3":[1, 4, 0],"C4":[1, 5, 0],"C5":[1, 6, 0],
-        #    "D1":[1, 7, 2800],"D2":[0,4, 2950],"D3":[0, 8, 2700],"D4":[0, 9, 2650],"D5":[0,10, 2500],
-        #    "E1":[0,11, 2800],"E2":[0,12, 2650],"E3":[0,13, 2800],"E4":[0,14, 2750],"E5":[0,15, 2500]
-        #    }
 
 
         # this matrix stores if the motors are enabled (1) or disabled (0)
@@ -78,7 +71,6 @@ class BZBoard:
         else:
             shield, pin, _  = self.motors[motor_code] 
         
-        speed = speed * 2
         # because sometimes we can send here a speed 0 to disable it
         # the following if will be longer than expected
         if self.matrix[motor_code] < 1 and speed > 0: # we need to activate it
@@ -112,10 +104,12 @@ class BZBoard:
 
         for i in pattern:
 
+            _, _, speed = self.motors[i] 
+
             if pattern[i] == 1:
-                self.activate_motor(i, speed)
+                self.activate_motor(i, speed*5)
             else:
-                self.disable_motor(i)
+                self.activate_motor(i, speed)
 
 
     def disable_motor(self, motor_code):
