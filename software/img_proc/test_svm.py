@@ -16,6 +16,7 @@ from generate_dataset import bz_average_color
 from train_svm import equalise_img
 from sklearn.externals import joblib
 from sklearn.decomposition import PCA
+from collections import deque
 
 
 class TestSVM():
