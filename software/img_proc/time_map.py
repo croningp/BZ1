@@ -77,6 +77,7 @@ if __name__ == "__main__":
         frame_counter += 1
 
 
-    cv2.imwrite("test.jpg", timemap)
+    outname = sys.argv[1].split(".")[0] + ".png"
+    cv2.imwrite(outname, timemap)
     video.release()
 
