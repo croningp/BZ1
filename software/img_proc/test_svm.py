@@ -223,7 +223,8 @@ if __name__ == "__main__":
     frame_color = deque(maxlen=bkg_window) # keeps the average color per frame
 
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter('hsvhistmem.avi',fourcc, 30.0, (800,600))
+    outname = sys.argv[1].split(".")[0] + "_svm.avi"
+    out = cv2.VideoWriter(outname, fourcc, 30.0, (800,600))
 
     while(True):
 
