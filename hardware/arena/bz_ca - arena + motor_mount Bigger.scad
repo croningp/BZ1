@@ -45,7 +45,7 @@ gh = 0;     //height above cell edge
 
 shim = 0.0;     //narrowing wrt grooves
 extend = 0;   //extension of grooves into sides
-raise = 3;      //height of channels from bottom of cell [mm]
+raise = 0;      //height of channels from bottom of cell [mm]
 prop = 0.5;     //propoprtion of cell wall to have open as channel
 
 //Stirrer motor parameters
@@ -170,7 +170,7 @@ union() {
     for (l=[1:ny]){
         translate([0,(l-0.5)*cy,(m*prop*cy*0.5)+gz+base+raise])
         rotate([0,90,0])
-        cylinder(h=ax,d=(prop*cx),$fn=6);        
+        cylinder(h=ax,d=(prop*cx),$fn=6);
             }
         }
     }
