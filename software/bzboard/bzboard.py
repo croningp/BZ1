@@ -107,9 +107,9 @@ class BZBoard:
             _, _, speed = self.motors[i] 
 
             if pattern[i] == 1:
-                self.activate_motor(i, speed*5) # x2 before
+                self.activate_motor(i, speed*2) # x5 before
             else:
-                self.activate_motor(i, speed*1) # x0 before
+                self.activate_motor(i, speed*0) # x1 before
 
 
     def disable_motor(self, motor_code):
