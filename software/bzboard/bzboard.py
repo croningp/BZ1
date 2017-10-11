@@ -85,12 +85,15 @@ class BZBoard:
         elif self.matrix[motor_code] < 1 and speed == 0: # we keep it disabled
             pass
 
-        if self.matrix[motor_code] > 0 and speed > 0: # just update speed
+        elif self.matrix[motor_code] > 0 and speed > 0: # just update speed
             command = "A%d P%d S%d\n" % ( shield, pin, speed )
             self.ser.write(command.encode())
 
-        if self.matrix[motor_code] > 0 and speed == 0: # we disable it
-            board.disable_motor(motor_code)
+        elif self.matrix[motor_code] > 0 and speed == 0: # we disable it
+            self.disable_motor(motor_code)
+
+        else:
+            print("something bad happened when updating a motor")
 
 
     def activate_all(self, speed=None):
@@ -107,9 +110,9 @@ class BZBoard:
             _, _, speed = self.motors[i] 
 
             if pattern[i] == 1:
-                self.activate_motor(i, speed*2) # x5 before
+                self.activate_motor(i, speed*5) # x2 before
             else:
-                self.activate_motor(i, speed*0) # x1 before
+                self.activate_motor(i, speed*1) # x0 before
 
 
     def disable_motor(self, motor_code):
