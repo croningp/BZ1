@@ -46,8 +46,8 @@ if __name__ == '__main__':
     video = cv2.VideoCapture(sys.argv[1])
     click_grid = GridClickData()
     play = True # True means play, False means pause
-    frame_skip = 2 # 1 plays every frame, 2 takes one out, 3 takes 2 out,...
-    start_frame = 1800 # 0 from beggining, 1800 half,...
+    frame_skip = 1 # 1 plays every frame, 2 takes one out, 3 takes 2 out,...
+    start_frame = 0 # 0 from beggining, 1800 half,...
     video.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
     
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
@@ -72,31 +72,34 @@ if __name__ == '__main__':
         if click_grid.finished is False:
             click_grid.get_platform_corners(frame)
 
+        # get only the liquid of the video, ignoring plastic parts
         liquid = only_bz_liquid(frame[:,:,0], click_grid.points)        
+        # calculate the moments of the blue channel
         M = cv2.moments(liquid)
+        # calculate center of moments
         cX = int(M["m10"] / M["m00"])
         cY = int(M["m01"] / M["m00"])
+        # calculate angle respect to previous frame moment
         angle = math.degrees(math.atan2(cX-prevcX, cY-prevcY))
         angles.append(angle)
         cXs.append(cX)
         cYs.append(cY)
-        cv2.arrowedLine(frame,  (400-(cX-prevcX)*5,300-(cY-prevcY)*5),(400+(cX-prevcX)*5,300+(cY-prevcY)*5), (1, 1, 255), 2, 8, 0, 0.5)
         prevcX, prevcY = cX, cY
 
         # cv2.circle(frame, (int(cX*2.2), int(cY*1.75)), 7, (1, 1, 255), -1)
         # out.write(frame)
-        cv2.imshow('Blue liquid', frame)
-        key = cv2.waitKey(33) & 0xFF # 33 means roughly 30 FPS
+        # cv2.imshow('Blue liquid', frame)
+        # key = cv2.waitKey(1) & 0xFF # 33 means roughly 30 FPS
 
-        if key == ord('p'):
-            play = not play
+        # if key == ord('p'):
+        #     play = not play
 
-        if key == ord('q'):
-            break
+        # if key == ord('q'):
+        #     break
 
     # print(angles)
-    # print(cXs)
-    # print(cYs)
+    print(cXs)
+    print(cYs)
     video.release()
     cv2.destroyAllWindows()
 
