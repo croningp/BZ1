@@ -44,8 +44,11 @@ if __name__ == "__main__":
         timer = threading.Thread(target=kill_video, args=(event,user_time))
         timer.start()
 
+    frame_counter = 0
+
     while(1):
         start_time = time.clock() * 1000 # seconds to ms
+        frame_counter += 1
         ret,frame = vc.read()
         out.write(frame)
         cv2.imshow("video",frame)
@@ -60,4 +63,3 @@ if __name__ == "__main__":
     vc.release()
     out.release()
     cv2.destroyAllWindows()
-                
