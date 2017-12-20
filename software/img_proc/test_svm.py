@@ -19,6 +19,7 @@ from sklearn.decomposition import PCA
 from collections import deque
 
 
+
 class TestSVM():
     '''This class is just the framework to test the SVM
     You must instantiate one of the other classes instead'''
