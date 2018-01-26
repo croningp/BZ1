@@ -166,7 +166,7 @@ class GridClickData:
             cv2.imshow('Choose grid', frame)
             cv2.waitKey(10)
 
-        cv2.destroyAllWindows()
+        cv2.destroyWindow('Choose grid')
 
 
 
