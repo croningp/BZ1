@@ -6,8 +6,6 @@ doing this minimal implementation instead.
 
 If you want better functionality, error handling,... check the other one
 
-motor D2 is 0,4
-
 '''
 
 import serial, time, json, random
