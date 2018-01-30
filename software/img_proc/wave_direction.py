@@ -50,12 +50,11 @@ if __name__ == '__main__':
     start_frame = 0 # 0 from beggining, 1800 half,...
     video.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
     
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter("output.avi", fourcc, 30.0, (800,600))
-    
+    # fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    # out = cv2.VideoWriter("output.avi", fourcc, 30.0, (800,600))
     
     prevcX, prevcY = 0,0
-    angles = []
+    # angles = []
     cXs = []
     cYs = []
 
@@ -80,8 +79,8 @@ if __name__ == '__main__':
         cX = int(M["m10"] / M["m00"])
         cY = int(M["m01"] / M["m00"])
         # calculate angle respect to previous frame moment
-        angle = math.degrees(math.atan2(cX-prevcX, cY-prevcY))
-        angles.append(angle)
+        # angle = math.degrees(math.atan2(cX-prevcX, cY-prevcY))
+        # angles.append(angle)
         cXs.append(cX)
         cYs.append(cY)
         prevcX, prevcY = cX, cY
@@ -100,6 +99,7 @@ if __name__ == '__main__':
     # print(angles)
     print(cXs)
     print(cYs)
-    video.release()
-    cv2.destroyAllWindows()
+
+    # video.release()
+    # cv2.destroyAllWindows()
 
