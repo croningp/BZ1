@@ -83,7 +83,7 @@ if (baseprint==1 || baseprint==0) {
         //Create block
         union() { 
             translate([-edge/2,-edge/2,0])
-            cube([ax+edge,ay+edge,bz],false);
+            #cube([ax+edge,ay+edge,bz],false);
                 
             // DRAIN OUTLET
             if (drain_outlet == 1) {

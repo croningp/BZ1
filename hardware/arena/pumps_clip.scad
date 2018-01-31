@@ -22,24 +22,46 @@ ay = ny*cy;
 az = cz;
 bz = az + base;     //depth
 
+//Bolt hole paramters
+
+boltd = 5.2;  //bolt diameter
+bolte = 5;  //distance from edge
+
+
 module clip(){
+    side = ax+edge;
+    hs = side/2;
     difference(){
-        cube([60, (edge/2)+8, 25]);
-        #translate([0,0,15])cube([60, (edge/2)+3, 15]);
-        translate([0,-5,15])cube([10, 50, 15]);
-        translate([50,-5,15])cube([10, 50, 15]);
-        translate([25,30,10])rotate([60,0,0])cylinder(h=50,d=6, $fn=20);
-        translate([35,30,10])rotate([60,0,0])cylinder(h=50,d=6, $fn=20);
-        translate([45,30,10])rotate([60,0,0])cylinder(h=50,d=6, $fn=20);
-        translate([15,30,10])rotate([60,0,0])cylinder(h=50,d=6, $fn=20);
-        translate([4,9,-12])rotate([0,0,0])cylinder(h=50,d=5, $fn=20);
-        translate([56,9,-12])rotate([0,0,0])cylinder(h=50,d=5, $fn=20);
+        #cube([side, (edge/2)+8, 27]);
+        translate([0,0,15])cube([side, (edge/2)+2, 15]);
+        translate([0,-5,15])cube([30, 50, 15]);
+        translate([97,-5,15])cube([30, 50, 15]);
+        translate([hs-9,30,12])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
+        translate([hs-25,30,12])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
+        translate([hs+9,30,12])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
+        translate([hs+25,30,12])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
+        //translate([4,9,-12])rotate([0,0,0])cylinder(h=50,d=5, $fn=20);
+        //translate([56,9,-12])rotate([0,0,0])cylinder(h=50,d=5, $fn=20);
+    }
+}
+
+module base(){
+    union(){
+        translate([-edge/2,-edge/2,0])cube([ax+edge,ay+edge,bz+1]);
+        translate([-edge/2+bolte,-edge/2+bolte,-9])
+        cylinder(h=bz+20,d=boltd,$fn=50);
+        translate([ax+edge/2-bolte,-edge/2+bolte,-9])
+        cylinder(h=bz+20,d=boltd,$fn=50);     
+        translate([-edge/2+bolte,ay+edge/2-bolte,-9])
+        cylinder(h=bz+20,d=boltd,$fn=50);
+        translate([ax+edge/2-bolte,ay+edge/2-bolte,-9])
+        cylinder(h=bz+20,d=boltd,$fn=50);
     }
 }
 
 difference() {
-    translate([(ax+edge)/2, -3, -0.75])
+    translate([-edge/2,(-edge/2)-3, -0.75])
     clip();
-    cube([ax+edge,ay+edge,bz+1]);
+    base();
     
 }
