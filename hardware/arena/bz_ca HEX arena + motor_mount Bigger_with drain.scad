@@ -24,7 +24,12 @@ stirrer = 0;
 //Drain outlet?
 // 0 = print without a drain oulet
 // 1 = print with a drain outlet
-drain_outlet = 0;
+drain_outlet = 1;
+
+//Tubing clip?
+// 0 = print without a tubing clip
+// 1 = print with a tubing clip
+drain_outlet = 1;
 
 //Cell dimensions
 
@@ -52,7 +57,7 @@ shim = 0.0;     //narrowing wrt grooves
 extend = 0;   //extension of grooves into sides
 raise = -2;      //height of channels from bottom of cell [mm]
 prop = 0.3;     //propoprtion of cell wall to have open as channel
-roundness = 6;  //arena units - 6=hexagon. 50= circle etc
+roundness = 60;  //arena units - 6=hexagon. 50= circle etc
 
 //Stirrer motor parameters
 
@@ -77,17 +82,37 @@ az = cz + gz;
 bd = sqrt((ax*ax+ay*ay))+edge;   //diameter
 bz = az + base;     //depth
 
+//clip attachment for tubing
+module clip(){
+    side = ax+edge;
+    hs = side/2;
+    difference() {
+        translate([side/3.2,6,0])cube([side/2, (edge/2), 14]);
+        //translate([0,0,17])cube([side, (edge/2)+2, 15]);
+        //translate([0,-5,17])cube([30, 50, 15]);
+        //translate([97,-5,17])cube([30, 50, 15]);
+        translate([hs,30,-2])rotate([65,0,0])cylinder(h=50,d=5.5, $fn=20);
+        translate([hs-16,30,-2])rotate([65,0,0])cylinder(h=50,d=5.5, $fn=20);
+        translate([hs+16,30,-2])rotate([65,0,0])cylinder(h=50,d=5.5, $fn=20);
+        translate([hs+32,30,-2])rotate([65,0,0])cylinder(h=50,d=5.5, $fn=20);
+        //translate([4,9,-12])rotate([0,0,0])cylinder(h=50,d=5, $fn=20);
+        //translate([56,9,-12])rotate([0,0,0])cylinder(h=50,d=5, $fn=20);
+    }
+}
+
+translate([-edge/2, (-edge/2)-5, bz])clip();
+
 //Base
 if (baseprint==1 || baseprint==0) {
     difference() {
         //Create block
         union() { 
             translate([-edge/2,-edge/2,0])
-            #cube([ax+edge,ay+edge,bz],false);
+            cube([ax+edge,ay+edge,bz],false);
                 
             // DRAIN OUTLET
             if (drain_outlet == 1) {
-                translate([-base-1,ax/2,0])
+                translate([ax/2, -base-1, 0])
                 cube([10,10,4],true);
             }
         }
@@ -137,9 +162,10 @@ if (baseprint==1 || baseprint==0) {
         
             // DRAIN OUTLET
         if (drain_outlet == 1) {
-            rotate([0,90,0])
-            translate([-base-1,ax/2,-(0.5+edge/2)])
-            cylinder(h=2+(edge/2), r1=3, r2=2,$fn=50);
+            translate([ ax/2, -base-1.3, base+0.5 ])
+
+            rotate([-90,0,0])
+            cylinder(h=2+(edge/2), r1=3, r2=2,$fn=50, center=true);
             rotate([0,-15,0])
             translate([-base-1,ax/2+1,-2.7])
             cube([10,14,4],true);

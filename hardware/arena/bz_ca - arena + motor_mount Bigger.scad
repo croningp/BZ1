@@ -43,7 +43,7 @@ gw = 2;     //width
 gz = 0;     //depth
 gh = 0;     //height above cell edge
 
-shim = 0.0;     //narrowing wrt grooves
+shim = 0.1;     //narrowing wrt grooves
 extend = 0;   //extension of grooves into sides
 raise = 0;      //height of channels from bottom of cell [mm]
 prop = 0.5;     //propoprtion of cell wall to have open as channel
@@ -157,7 +157,7 @@ union() {
     for (m=[1:(ceil(1/prop)*2)]){
     //channels (gaps) in x as single long triangular prisms
     for (l=[1:nx]){
-        translate([(l-0.5)*cx,0,(m*prop*cx*0.5)+gz+base+raise])
+        translate([(l-0.5)*cx,0,(m*prop*cx*0.5)+gz+base+raise-3])
         rotate([-90,90,0])
         cylinder(h=ay,d=(prop*cy),$fn=6);        
             }

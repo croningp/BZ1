@@ -32,18 +32,20 @@ module clip(){
     side = ax+edge;
     hs = side/2;
     difference(){
-        #cube([side, (edge/2)+8, 27]);
-        translate([0,0,15])cube([side, (edge/2)+2, 15]);
-        translate([0,-5,15])cube([30, 50, 15]);
-        translate([97,-5,15])cube([30, 50, 15]);
-        translate([hs-9,30,12])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
-        translate([hs-25,30,12])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
-        translate([hs+9,30,12])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
-        translate([hs+25,30,12])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
+        cube([side, (edge/2)+8, 30]);
+        translate([0,0,17])cube([side, (edge/2)+1, 15]);
+        translate([0,-5,17])cube([35, 50, 15]);
+        translate([107,-5,17])cube([20, 50, 15]);
+        translate([hs,30,14])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
+        //translate([hs-32,30,14])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
+        translate([hs-16,30,14])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
+        translate([hs+16,30,14])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
+        translate([hs+32,30,14])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
         //translate([4,9,-12])rotate([0,0,0])cylinder(h=50,d=5, $fn=20);
         //translate([56,9,-12])rotate([0,0,0])cylinder(h=50,d=5, $fn=20);
     }
 }
+
 
 module base(){
     union(){
@@ -56,12 +58,41 @@ module base(){
         cylinder(h=bz+20,d=boltd,$fn=50);
         translate([ax+edge/2-bolte,ay+edge/2-bolte,-9])
         cylinder(h=bz+20,d=boltd,$fn=50);
+        translate([ax/2,-base-1,0])cube([15,20,15],true); // drain
     }
 }
 
+module idiot_extension(){
+    
+    side = ax+edge;
+    hs = side/2;
+    
+    difference() {
+        union() {
+            translate([0,-0.25,17])cube([40,18,1]);
+            translate([34,7,18])cube([5,10,12]);
+            translate([21,8.5,18])cube([18,7,12]);
+        }
+        #clip();
+        translate([hs-34,30,14])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
+    }
+    
+}
+
 difference() {
-    translate([-edge/2,(-edge/2)-3, -0.75])
+    translate([-edge/2,(-edge/2)-3, -1.75])
+    idiot_extension();
+    #base();
+    
+}
+
+
+
+/*difference() {
+    translate([-edge/2,(-edge/2)-3, -1.75])
     clip();
     base();
     
-}
+}*/
+
+
