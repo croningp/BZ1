@@ -16,8 +16,6 @@ class PumpsCtl:
                         'P2': {'id':2, 'valve': 'input', 'plunger' : 0},
                         'P3': {'id':3, 'valve': 'input', 'plunger' : 0},
                         'P4': {'id':4, 'valve': 'input', 'plunger' : 0},
-                        'P5': {'id':5, 'valve': 'input', 'plunger' : 0},
-                        'P6': {'id':6, 'valve': 'input', 'plunger' : 0},
                         'P7': {'id':7, 'valve': 'input', 'plunger' : 0}}
 
 
