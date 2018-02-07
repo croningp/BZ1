@@ -1,5 +1,6 @@
 from time import sleep
 from serial import Serial
+import threading
 
 class PumpsCtl:
 
@@ -23,7 +24,7 @@ class PumpsCtl:
         ''' Syncs pumps and Arduino '''
 
         response = self.pumps_ser.readline().strip()
- 
+
 
     def rotate_valve(self, pump, valve):
         ''' positions the valve to input or output '''
@@ -95,4 +96,4 @@ class PumpsCtl:
 
 if __name__ == '__main__':
 
-    v = PumpsCtl('/dev/ttyACM0')
+    p = PumpsCtl('/dev/ttyACM0')
