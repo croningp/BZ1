@@ -74,7 +74,7 @@ int read_command(char *buffer) {
 					buffer[pos++] = readch;
 					buffer[pos] = '\0';
 				} else {
-					Serial.println('666'); //buffer overflow
+					Serial.println("666"); //buffer overflow
 				}
 		}
 	}
