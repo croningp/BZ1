@@ -13,12 +13,12 @@ class PumpsCtl:
         # syringe means the volume of the syringe attached in ml
         # pumps must start its valve in input state 
         # plunger position in steps, 0 means when the plunger is up, no liquid inside
-        self.pumps = {'P0' : {'id':0, 'syringe':5, 'valve': 'input', 'plunger' : 0} ,
+        self.pumps = {'P0' : {'id':0, 'syringe':12.5, 'valve': 'input', 'plunger' : 0} ,
                         'P1': {'id':1, 'syringe':5, 'valve': 'input', 'plunger' : 0},
                         'P2': {'id':2, 'syringe':5, 'valve': 'input', 'plunger' : 0},
                         'P3': {'id':3, 'syringe':5, 'valve': 'input', 'plunger' : 0},
                         'P4': {'id':4, 'syringe':5, 'valve': 'input', 'plunger' : 0},
-                        'P7': {'id':7, 'syringe':5, 'valve': 'input', 'plunger' : 0}}
+                        'P5': {'id':5, 'syringe':5, 'valve': 'input', 'plunger' : 0}}
 
         self.ser_lock = threading.Lock() # to control access to serial port
         # to control access to individual pumps
@@ -93,15 +93,24 @@ class PumpsCtl:
     def pump_in(self, pump, quantity=1, speedIn=50, speedOut=50):
         '''quantity in ml'''
 
-        syringe = self.pumps[pump]['syringe']
-        steps_left = (quantity / syringe) * 100000 # plunger is 100000 steps 
+        pump_id = self.pumps[pump]['id']
+        pump_lock = self.pump_locks[pump_id]
+            
+        pump_lock.acquire()
+        
+        try:
+            syringe = self.pumps[pump]['syringe']
+            steps_left = (quantity / syringe) * 100000 # plunger is 100000 steps 
 
-        while steps_left > 0:
-            steps_now = min(steps_left, 100000) 
-            steps_left = steps_left - steps_now
-            self.absorb(pump, speedIn,  steps_now)
-            self.release(pump, speedOut)
-            self.rotate_valve(pump, 'input')
+            while steps_left > 0:
+                steps_now = min(steps_left, 100000) 
+                steps_left = steps_left - steps_now
+                self.absorb(pump, speedIn,  steps_now)
+                self.release(pump, speedOut)
+                self.rotate_valve(pump, 'input')
+        
+        finally:
+            pump_lock.release()
 
 
     def pump(self, pump, quantity=1, speedIn=50, speedOut=50):
@@ -109,16 +118,9 @@ class PumpsCtl:
         so you can execute several of them at the same time.
         You need to control when they are finished'''
 
-        pump_id = self.pumps[pump]['id'] 
-        pump_lock = self.pump_locks[pump_id]
-
-        pump_lock.acquire()
-        try:
-            t = threading.Thread(target=self.pump_in, args=(pump, quantity,
-                speedIn, speedOut,))
-            t.start()
-        finally:
-            pump_lock.release()
+        t = threading.Thread(target=self.pump_in, args=(pump, quantity,
+            speedIn, speedOut,))
+        t.start()
 
     
     def close(self):
