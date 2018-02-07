@@ -22,12 +22,7 @@ def kill_video(event, time_to_wait):
     event.set()
 
 
-if __name__ == "__main__":
-
-    if len(sys.argv) > 1:
-        user_time = float(sys.argv[1])
-    else:
-        user_time = 0
+def record_video(duration):
 
     vc = cv2.VideoCapture(0)
     vc.set(cv2.CAP_PROP_FRAME_WIDTH, 800)
@@ -63,3 +58,13 @@ if __name__ == "__main__":
     vc.release()
     out.release()
     cv2.destroyAllWindows()
+
+
+if __name__ == "__main__":
+
+    if len(sys.argv) > 1:
+        user_time = float(sys.argv[1])
+    else:
+        user_time = 0
+
+    record_video(user_time)
