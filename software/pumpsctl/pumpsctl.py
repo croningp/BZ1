@@ -20,18 +20,42 @@ class PumpsCtl:
                         'P4': {'id':4, 'syringe':5, 'valve': 'input', 'plunger' : 0},
                         'P5': {'id':5, 'syringe':5, 'valve': 'input', 'plunger' : 0}}
 
-        self.ser_lock = threading.Lock() # to control access to serial port
+        # to control access to serial port
+        self.ser_lock = threading.Lock() 
+        d = threading.Thread(target=self.read_serial, daemon=True)
         # to control access to individual pumps
         self.pump_locks = [threading.Lock() for i in range(len(self.pumps))]
+        # a list of current tasks so we know if something is running or not
+        self.current_tasks = []
+        # to make it thread safe, no idea if erase() is thread safe
+        self.ctasks_lock = threading.Lock()
+      
+        d.start()
 
-    def wait_response(self):
-        ''' Syncs pumps and Arduino '''
 
-        self.ser_lock.acquire()
-        try:
-            response = self.pumps_ser.readline()#.strip()
-        finally:
-            self.ser_lock.release()
+    def read_serial(self):
+        ''' reads from serial and populates the current tasks list
+        which tells which tasks have been completed
+        This is supposed to be executed as a daemon'''
+
+        while True:
+            with self.ser_lock:
+                response = self.pumps_ser.readline().strip()
+
+            if response is not None:
+                self.current_tasks.append(int(response))
+
+            sleep(0.3)
+
+
+    def wait_response(self, code):
+        ''' Waits for this task code to be completed '''
+
+        while code not in self.current_tasks:
+            sleep(0.1)
+
+        with self.ctasks_lock: 
+            self.current_tasks.remove(code)
 
 
     def rotate_valve(self, pump, valve):
@@ -43,14 +67,14 @@ class PumpsCtl:
         if valve is 'input' and self.pumps[pump]['valve'] is not 'input':
             command = "P%d M1 C%d D0 S400 E2208\n" % ( pump_id, code )
             self.pumps_ser.write(command.encode())
-            self.wait_response()
+            self.wait_response(code)
             self.pumps[pump]['valve'] = 'input'
 
 
         if valve is 'output' and self.pumps[pump]['valve'] is not 'output':
             command = "P%d M1 C%d D1 S400 E2208\n" % ( pump_id, code )
             self.pumps_ser.write(command.encode())
-            self.wait_response()
+            self.wait_response(code)
             self.pumps[pump]['valve'] = 'output'
 
 
@@ -71,7 +95,7 @@ class PumpsCtl:
 
         command = "P%d M0 C%d D%d S%d E%d\n" % ( pump_id, code, direction, speed, required_steps )
         self.pumps_ser.write(command.encode())
-        self.wait_response()
+        self.wait_response(code)
         self.pumps[pump]['plunger'] = abs_steps
 
 
@@ -91,14 +115,13 @@ class PumpsCtl:
 
 
     def pump_in(self, pump, quantity=1, speedIn=50, speedOut=50):
-        '''quantity in ml'''
+        '''quantity in ml
+        Read MOTD Threading'''
 
         pump_id = self.pumps[pump]['id']
         pump_lock = self.pump_locks[pump_id]
-            
-        pump_lock.acquire()
-        
-        try:
+           
+        with pump_lock:
             syringe = self.pumps[pump]['syringe']
             steps_left = (quantity / syringe) * 100000 # plunger is 100000 steps 
 
@@ -109,18 +132,27 @@ class PumpsCtl:
                 self.release(pump, speedOut)
                 self.rotate_valve(pump, 'input')
         
-        finally:
-            pump_lock.release()
 
+    def pump_multiple(self, *actions):
+        ''' This will execute several pumps at the same time.
+        The main thread will wait until all are finished.
+        The *args parameter will be a list where each position
+        is a dict, with pump, quantity, speedIn and speedOut.
+        Read MOTD threading'''
 
-    def pump(self, pump, quantity=1, speedIn=50, speedOut=50):
-        ''' This fuction basically launches pump_in a separate thread
-        so you can execute several of them at the same time.
-        You need to control when they are finished'''
+        threads = [ 
+                threading.Thread(
+                    target=self.pump_in, 
+                    args=(a['pump'], a['quantity'], a['speedIn'], a['speedOut'])
+                )
+                for a in actions 
+        ]
 
-        t = threading.Thread(target=self.pump_in, args=(pump, quantity,
-            speedIn, speedOut,))
-        t.start()
+        for t in threads:
+            t.start()
+
+        for t in threads:
+            t.join()
 
     
     def close(self):
