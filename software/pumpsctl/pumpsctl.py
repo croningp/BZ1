@@ -168,4 +168,4 @@ class PumpsCtl:
 
 if __name__ == '__main__':
 
-    p = PumpsCtl('/dev/ttyACM0')
+    p = PumpsCtl('/dev/ttyACM1')
