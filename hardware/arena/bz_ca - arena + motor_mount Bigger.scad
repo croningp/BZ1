@@ -21,6 +21,12 @@ baseprint = 0;
 
 stirrer = 0;
 
+// drain = 0 no drain, drain = 1 drain
+drain = 0;
+
+// clip = 0 no tubbing clip, clip = 1 yes
+clip = 0;
+
 //Cell dimensions
 
 nx = 7;     //number of cells in x
@@ -43,9 +49,9 @@ gw = 2;     //width
 gz = 0;     //depth
 gh = 0;     //height above cell edge
 
-shim = 0.1;     //narrowing wrt grooves
+shim = 0.0;     //narrowing wrt grooves
 extend = 0;   //extension of grooves into sides
-raise = 0;      //height of channels from bottom of cell [mm]
+raise = -2;      //height of channels from bottom of cell [mm]
 prop = 0.5;     //propoprtion of cell wall to have open as channel
 
 //Stirrer motor parameters
@@ -71,12 +77,38 @@ az = cz + gz;
 bd = sqrt((ax*ax+ay*ay))+edge;   //diameter
 bz = az + base;     //depth
 
+
+//clip attachment for tubing
+module clip(){
+    side = ax+edge;
+    hs = side/2;
+    difference() {
+        translate([20,6,0])cube([side-40, (edge/2)-0.5, 15]);
+        translate([hs-32,30,-2])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
+        translate([hs,30,-2])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
+        translate([hs-16,30,-2])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
+        translate([hs+16,30,-2])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
+        translate([hs+32,30,-2])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
+    }
+}
+
+if (clip==1){
+rotate([0,0,-90])translate([-20+edge/2-(ax+edge)+20, -6+(-edge/2)+1.5, bz])clip();
+}
+
+
 //Base
 if (baseprint==1 || baseprint==0) {
 difference() {
     //Create block
-    translate([-edge/2,-edge/2,0])
-    cube([ax+edge,ay+edge,bz],false);
+    union() {
+        translate([-edge/2,-edge/2,0])
+        cube([ax+edge,ay+edge,bz],false);
+        if(drain==1) {
+            translate([-base-1,ax/2,0])
+            cube([10,10,4],true);
+        }
+    }
     //Subtract arena
     translate([(0.5*gw),(0.5*gw),base])
     cube([(ax-gw),(ay-gw),(az+1)],false);
@@ -91,6 +123,11 @@ difference() {
         translate([ax+edge/2-bolte,ay+edge/2-bolte,-1])
         cylinder(h=bz+2,d=boltd,$fn=50);
         }
+    if (drain==1) {
+        rotate([0,90,0])
+        translate([-base-1,ax/2,-(0.5+edge/2)])
+        cylinder(h=2+(edge/2), r1=3, r2=2,$fn=50);
+    }
 }
 } 
 
@@ -151,6 +188,7 @@ union() {
 
 if (baseprint==3 || baseprint==0) {
 union() {
+
     //Cut X grid wall channels
     if (nx>1) {
     //subtracts a vertical stack of 4 hexagonal prisms half a diameter apart

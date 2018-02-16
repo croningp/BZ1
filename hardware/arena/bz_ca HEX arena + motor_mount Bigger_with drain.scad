@@ -26,11 +26,6 @@ stirrer = 0;
 // 1 = print with a drain outlet
 drain_outlet = 1;
 
-//Tubing clip?
-// 0 = print without a tubing clip
-// 1 = print with a tubing clip
-drain_outlet = 1;
-
 //Cell dimensions
 
 nx = 7;     //number of cells in x
@@ -87,14 +82,15 @@ module clip(){
     side = ax+edge;
     hs = side/2;
     difference() {
-        translate([side/3.2,6,0])cube([side/2, (edge/2), 14]);
+        translate([20,6,0])cube([side-40, (edge/2)-0.5, 14]);
         //translate([0,0,17])cube([side, (edge/2)+2, 15]);
         //translate([0,-5,17])cube([30, 50, 15]);
         //translate([97,-5,17])cube([30, 50, 15]);
-        translate([hs,30,-2])rotate([65,0,0])cylinder(h=50,d=5.5, $fn=20);
-        translate([hs-16,30,-2])rotate([65,0,0])cylinder(h=50,d=5.5, $fn=20);
-        translate([hs+16,30,-2])rotate([65,0,0])cylinder(h=50,d=5.5, $fn=20);
-        translate([hs+32,30,-2])rotate([65,0,0])cylinder(h=50,d=5.5, $fn=20);
+        translate([hs-32,30,-2])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
+        translate([hs,30,-2])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
+        translate([hs-16,30,-2])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
+        translate([hs+16,30,-2])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
+        translate([hs+32,30,-2])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
         //translate([4,9,-12])rotate([0,0,0])cylinder(h=50,d=5, $fn=20);
         //translate([56,9,-12])rotate([0,0,0])cylinder(h=50,d=5, $fn=20);
     }
@@ -198,6 +194,7 @@ if (stirrer==1){
         }    
     }
 }
+
 //Stirrer grid round
 if (stirrer==2){
     difference(){

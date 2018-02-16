@@ -34,10 +34,10 @@ module clip(){
     difference(){
         cube([side, (edge/2)+8, 30]);
         translate([0,0,17])cube([side, (edge/2)+1, 15]);
-        translate([0,-5,17])cube([35, 50, 15]);
+        translate([0,-5,17])cube([20, 50, 15]);
         translate([107,-5,17])cube([20, 50, 15]);
         translate([hs,30,14])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
-        //translate([hs-32,30,14])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
+        translate([hs-32,30,14])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
         translate([hs-16,30,14])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
         translate([hs+16,30,14])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
         translate([hs+32,30,14])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
@@ -62,37 +62,12 @@ module base(){
     }
 }
 
-module idiot_extension(){
-    
-    side = ax+edge;
-    hs = side/2;
-    
-    difference() {
-        union() {
-            translate([0,-0.25,17])cube([40,18,1]);
-            translate([34,7,18])cube([5,10,12]);
-            translate([21,8.5,18])cube([18,7,12]);
-        }
-        #clip();
-        translate([hs-34,30,14])rotate([65,0,0])cylinder(h=50,d=6, $fn=20);
-    }
-    
-}
 
 difference() {
-    translate([-edge/2,(-edge/2)-3, -1.75])
-    idiot_extension();
-    #base();
-    
-}
-
-
-
-/*difference() {
     translate([-edge/2,(-edge/2)-3, -1.75])
     clip();
     base();
     
-}*/
+}
 
 
