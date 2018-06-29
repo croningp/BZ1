@@ -103,7 +103,7 @@ difference() {
     //Create block
     union() {
         translate([-edge/2,-edge/2,0])
-        cube([ax+edge,ay+edge,bz],false);
+        color([1,1,1])cube([ax+edge,ay+edge,bz],false);
         if(drain==1) {
             translate([-base-1,ax/2,0])
             cube([10,10,4],true);
@@ -111,7 +111,7 @@ difference() {
     }
     //Subtract arena
     translate([(0.5*gw),(0.5*gw),base])
-    cube([(ax-gw),(ay-gw),(az+1)],false);
+    color([1,1,1])cube([(ax-gw),(ay-gw),(az+1)],false);
     //Subtract bolt holes
     if (stirrer==1||stirrer==0||stirrer==2){
         translate([-edge/2+bolte,-edge/2+bolte,-1])
@@ -166,20 +166,20 @@ union() {
     //Build X grid walls
     if (nx>1) {
         translate([cx-(gw*0.5)+shim,-(extend-shim),(base)])
-        cube([gw-(2*shim),ay+((extend-shim)*2),(az+gh-(gz*2))])  ;
+        color([1,1,1])cube([gw-(2*shim),ay+((extend-shim)*2),(az+gh-(gz*2))])  ;
     for (i=[2:(nx-1)]) {
         if (i<nx) {
         translate([(i*cx)-(gw*0.5)+(shim),-(extend-shim),(base)])
-        cube([gw-(2*shim),ay+((extend-shim)*2),(az+gh-(gz*2))]);
+        color([1,1,1])cube([gw-(2*shim),ay+((extend-shim)*2),(az+gh-(gz*2))]);
     }}};
     //Build Y grid walls 
     if (ny>1) { 
         translate([-(extend-shim),cy-(gw*0.5)+shim,(base)])
-        cube([ax+((extend-shim)*2),gw-(2*shim),(az+gh-(gz*2))]);
+        color([1,1,1])cube([ax+((extend-shim)*2),gw-(2*shim),(az+gh-(gz*2))]);
     for (i=[2:(ny-1)]) {
         if (i<ny) {
         translate([-(extend-shim),(i*cy)-(gw*0.5)+(shim),(base)])
-        cube([ax+((extend-shim)*2),gw-(2*shim),(az+gh-(gz*2))]);
+        color([1,1,1])cube([ax+((extend-shim)*2),gw-(2*shim),(az+gh-(gz*2))]);
     }}};        
 }
 } 
