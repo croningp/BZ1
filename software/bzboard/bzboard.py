@@ -130,4 +130,4 @@ class BZBoard:
 
 if __name__ == "__main__":
 
-    b = BZBoard("/dev/ttyACM0")
+    b = BZBoard("/dev/ttyACM1")

@@ -12,6 +12,8 @@
  * For example, if you are rotating motor P0 M0, and while its rotating, you sends a new command to the same motor
  * this firmware is likely to fuck itself.
  * An example of command would be: P0 M1 D0 C123 S50 E50000
+ *
+ * Juan M Parrilla, Cronin group
 */ 
 
 
