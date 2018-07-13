@@ -46,7 +46,7 @@ if __name__ == "__main__":
     timemap = np.zeros((600, total_frames, 3), np.uint8)
     speed = 1
 
-    start_frame = 52000 # 0 from beggining, 1800 half,...
+    start_frame = 0 # 0 from beggining, 1800 half,...
     video.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
  
 
@@ -75,8 +75,7 @@ if __name__ == "__main__":
         frame_counter += 1
 
 
-    #outname = sys.argv[1].split(".")[0] + ".png"
-    #cv2.imwrite(outname, timemap)
-    cv2.imwrite("test.png", timemap)
+    outname = sys.argv[1].split(".")[0] + ".png"
+    cv2.imwrite(outname, timemap)
     video.release()
 
