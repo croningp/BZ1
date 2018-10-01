@@ -50,8 +50,8 @@ if __name__ == '__main__':
     start_frame = 0 # 0 from beggining, 1800 half,...
     video.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
     
-    # fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    # out = cv2.VideoWriter("output.avi", fourcc, 30.0, (800,600))
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    out = cv2.VideoWriter("output.avi", fourcc, 30.0, (800,600))
     
     prevcX, prevcY = 0,0
     # angles = []
@@ -85,16 +85,16 @@ if __name__ == '__main__':
         cYs.append(cY)
         prevcX, prevcY = cX, cY
 
-        # cv2.circle(frame, (int(cX*2.2), int(cY*1.75)), 7, (1, 1, 255), -1)
-        # out.write(frame)
-        # cv2.imshow('Blue liquid', frame)
-        # key = cv2.waitKey(1) & 0xFF # 33 means roughly 30 FPS
+        cv2.circle(frame, (int(cX*2.2), int(cY*1.75)), 7, (1, 1, 255), -1)
+        out.write(frame)
+        cv2.imshow('Blue liquid', frame)
+        key = cv2.waitKey(1) & 0xFF # 33 means roughly 30 FPS
 
-        # if key == ord('p'):
-        #     play = not play
+        if key == ord('p'):
+            play = not play
 
-        # if key == ord('q'):
-        #     break
+        if key == ord('q'):
+            break
 
     # print(angles)
     print(cXs)

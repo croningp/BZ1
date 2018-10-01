@@ -216,8 +216,8 @@ if __name__ == "__main__":
             ret, frame = video.read()
             click_cell = CellClickData()
             frame_counter += 1
-            sys.stdout.write("\r{0} in {1}".format(frame_counter, total_frames))
-            sys.stdout.flush()
+            # sys.stdout.write("\r{0} in {1}".format(frame_counter, total_frames))
+            # sys.stdout.flush()
 
         if ret is False:
             break
@@ -233,7 +233,7 @@ if __name__ == "__main__":
             frame_color.append(avg_c)
             # calculate the average color of the last n frames
             window_c = np.average(frame_color, axis=0)
-            print(window_c)
+            # print(window_c)
 
         # "click_grid" is now populated with the x,y corners of the platform
         click_grid.draw_grid(frame)
