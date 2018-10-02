@@ -15,10 +15,10 @@ class PumpsCtl:
         # plunger position in steps, 0 means when the plunger is up, no liquid inside
         self.pumps = {'P0' : {'id':0, 'syringe':12.5, 'valve': 'input', 'plunger' : 0} ,
                         'P1': {'id':1, 'syringe':5, 'valve': 'input', 'plunger' : 0},
-                        'P2': {'id':2, 'syringe':5, 'valve': 'input', 'plunger' : 0},
-                        'P3': {'id':3, 'syringe':5, 'valve': 'input', 'plunger' : 0},
-                        'P4': {'id':4, 'syringe':5, 'valve': 'input', 'plunger' : 0},
-                        'P5': {'id':5, 'syringe':5, 'valve': 'input', 'plunger' : 0}}
+                        'P2': {'id':2, 'syringe':12.5, 'valve': 'input', 'plunger' : 0},
+                        'P3': {'id':3, 'syringe':12.5, 'valve': 'input', 'plunger' : 0},
+                        'P4': {'id':4, 'syringe':12.5, 'valve': 'input', 'plunger' : 0},
+                        'P5': {'id':5, 'syringe':12.5, 'valve': 'input', 'plunger' : 0}}
 
         # to control access to serial port
         self.ser_lock = threading.Lock() 
@@ -168,4 +168,4 @@ class PumpsCtl:
 
 if __name__ == '__main__':
 
-    p = PumpsCtl('/dev/ttyACM1')
+    p = PumpsCtl('/dev/ttyACM0')
