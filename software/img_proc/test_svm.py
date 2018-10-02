@@ -217,6 +217,7 @@ if __name__ == "__main__":
     svm = HSVHistogramBkgMem('hsvhistmem.dat')
 
     video = cv2.VideoCapture(sys.argv[1])
+    # print(video.get(cv2.CAP_PROP_FRAME_COUNT))
     click_grid = GridClickData()    
     play = True # True means play, False means pause
 
@@ -225,7 +226,8 @@ if __name__ == "__main__":
 
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
     outname = sys.argv[1].split(".")[0] + "_svm.avi"
-    out = cv2.VideoWriter(outname, fourcc, 30.0, (800,600))
+    out = cv2.VideoWriter(outname, fourcc, 20.0, (800,600))
+    counter = 0
 
     while(True):
 
@@ -234,6 +236,8 @@ if __name__ == "__main__":
 
         if ret is False:
             break
+
+        counter = counter + 1
 
         # first thing we ask the user to define the 5x5 grid
         if click_grid.finished is False:
@@ -262,4 +266,4 @@ if __name__ == "__main__":
     video.release()
     out.release()
     cv2.destroyAllWindows()
-
+    # print(counter)

@@ -26,10 +26,12 @@ def add_column(frame, timemap, bz_coord, xcol):
 
     for i in range(5):
         pad = 0
+        if i == 3:
+            pad = -9
+        if i == 2:
+            pad = 55
         if i == 4:
-            pad = 42
-        if i==3:
-            pad = 40
+            pad = -9
         col = frame[y1:y2, x1+25-(i*0)+pad + step_w*i]
         timemap[i*height:i*height+height, xcol] = col
         #row = frame[y1+20-(i*2) + step_h*i, x1:x2]
@@ -42,14 +44,15 @@ if __name__ == "__main__":
     video = cv2.VideoCapture(sys.argv[1])
     click_grid = GridClickData()
     frame_counter = 0
+    fps = video.get(cv2.CAP_PROP_FPS)
     total_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
+    #total_frames = int(total_frames/30)+1
     timemap = np.zeros((600, total_frames, 3), np.uint8)
     speed = 1
 
-    start_frame = 52000 # 0 from beggining, 1800 half,...
+    start_frame = 0 # 0 from beggining, 1800 half,...
     video.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
- 
-
+     
     while(True):
 
         ret, frame = video.read()
@@ -68,15 +71,13 @@ if __name__ == "__main__":
             timemap = np.resize(timemap, ( (y2-y1)*5, total_frames-start_frame, 3) )
         
         add_column(frame, timemap, click_grid.points, frame_counter)
-        
 
         #cv2.imshow('Time map', timemap)
         #key = cv2.waitKey(1) & 0xFF
         frame_counter += 1
 
 
-    #outname = sys.argv[1].split(".")[0] + ".png"
-    #cv2.imwrite(outname, timemap)
-    cv2.imwrite("test.png", timemap)
+    outname = sys.argv[1].split(".")[0] + ".png"
+    cv2.imwrite(outname, timemap)
     video.release()
 
