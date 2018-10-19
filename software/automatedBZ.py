@@ -49,11 +49,15 @@ class AutomatedPlatform():
 
         self.rv.record_threaded( str(kbro3)+"kbro3" )
         # activate experimental pattern and wait for 30 minutes
-        for i in range(2):
-            self.b.activate_all()
-            time.sleep(60*7.5)
-            self.b.disable_all()
-            time.sleep(60*7.5)
+        self.b.activate_motor("A1")
+        self.b.activate_motor("B1")
+        self.b.activate_motor("A5")
+        self.b.activate_motor("B5")
+        self.b.activate_motor("D1")
+        self.b.activate_motor("E1")
+        self.b.activate_motor("D3")
+        self.b.activate_motor("E3")
+        time.sleep(60*30)
 
         # start cleaning platform
         for i in range(2):
@@ -74,6 +78,5 @@ if __name__ == "__main__":
 
     ap = AutomatedPlatform()
 
-    for i in [15, 16]:
-        ap.perform_experiment(kbro3=i)
+    ap.perform_experiment()
 
