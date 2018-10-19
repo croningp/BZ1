@@ -1,6 +1,8 @@
 from time import sleep
 from serial import Serial
 import threading
+import emailalert 
+
 
 class PumpsCtl:
 
@@ -13,12 +15,13 @@ class PumpsCtl:
         # syringe means the volume of the syringe attached in ml
         # pumps must start its valve in input state 
         # plunger position in steps, 0 means when the plunger is up, no liquid inside
-        self.pumps = {'P0' : {'id':0, 'syringe':12.5, 'valve': 'input', 'plunger' : 0} ,
-                        'P1': {'id':1, 'syringe':5, 'valve': 'input', 'plunger' : 0},
-                        'P2': {'id':2, 'syringe':12.5, 'valve': 'input', 'plunger' : 0},
-                        'P3': {'id':3, 'syringe':12.5, 'valve': 'input', 'plunger' : 0},
-                        'P4': {'id':4, 'syringe':12.5, 'valve': 'input', 'plunger' : 0},
-                        'P5': {'id':5, 'syringe':12.5, 'valve': 'input', 'plunger' : 0}}
+        # added name to pump with vol counter and limit
+        self.pumps =   {'P0': {'id':0, 'liquid': 'waste',   'volume':0, 'limit':10000, 'syringe':12.5, 'valve': 'input', 'plunger' : 0},
+		                'P1': {'id':1, 'liquid': 'ferroin', 'volume':0, 'limit':250,   'syringe':5.00, 'valve': 'input', 'plunger' : 0},
+		                'P2': {'id':2, 'liquid': 'h2so4',   'volume':0, 'limit':1000,  'syringe':12.5, 'valve': 'input', 'plunger' : 0},
+		                'P3': {'id':3, 'liquid': 'malonic', 'volume':0, 'limit':1000,  'syringe':12.5, 'valve': 'input', 'plunger' : 0},
+		                'P4': {'id':4, 'liquid': 'water',   'volume':0, 'limit':1000,  'syringe':12.5, 'valve': 'input', 'plunger' : 0},
+		                'P5': {'id':5, 'liquid': 'kbro3',   'volume':0, 'limit':1000,  'syringe':12.5, 'valve': 'input', 'plunger' : 0}} 
 
         # to control access to serial port
         self.ser_lock = threading.Lock() 
@@ -120,6 +123,22 @@ class PumpsCtl:
 
         pump_id = self.pumps[pump]['id']
         pump_lock = self.pump_locks[pump_id]
+
+        #add quantity to associated volume
+        self.pumps[pump]['volume'] += quantity
+
+        #now set up prompt at 90% of limit
+        if self.pumps[pump]['volume'] >= self.pumps[pump]['limit']*0.9:
+            addr_list = ["2186149q@student.gla.ac.uk",'JuanManuel.ParrillaGutierrez@glasgow.ac.uk']
+            fromaddr = "bzboardalert@gmail.com"
+            alert = 'limit reached for ' + self.pumps[pump]['liquid'] + ' please change and confirm on input'
+            self.email_alert(self,fromaddr,addr_list,alert)
+
+        user_input = 'n'
+        while user_input != 'y':
+            user_input = input('Has' + self.pumps[pump]['liquid'] + 'been reset?([y]es/[n]o)')
+            if user_input == 'y':
+                self.pumps[pump]['volume'] = 0
            
         with pump_lock:
             syringe = self.pumps[pump]['syringe']
