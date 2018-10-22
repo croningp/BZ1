@@ -22,10 +22,8 @@ def email_alert(efrom,eto,ebody):
     msg.attach(MIMEText(body, 'plain'))
     print("end")
 
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.starttls()
+    server = smtplib.SMTP('smtp.chem.gla.ac.uk', 25)
     text = msg.as_string()
-    server.login(fromaddr, "croninlab")
     server.sendmail(fromaddr, toaddr, text)
     server.quit()
 
@@ -33,22 +31,22 @@ def email_alert(efrom,eto,ebody):
 
 #non function code for trouble shooting below
 
-# #send email to multiple emails require list
-# addr_list = ["2186149q@student.gla.ac.uk",'andrew.quinn1112@gmail.com']
-# fromaddr = "bzboardalert@gmail.com"
-# #must import COMMASPACE
-# toaddr = COMMASPACE.join(addr_list)
-# msg = MIMEMultipart()
-# msg['From'] = fromaddr
-# msg['To'] = COMMASPACE.join(addr_list)
-# msg['Subject'] = "BZ Limit alert!"
+#send email to multiple emails require list
+#addr_list = ["2186149q@student.gla.ac.uk",'juanma@chem.gla.ac.uk']
+addr_list = "juanma@chem.gla.ac.uk"
+fromaddr = "juanma@chem.gla.ac.uk"
+#must import COMMASPACE
+#toaddr = COMMASPACE.join(addr_list)
+msg = MIMEMultipart()
+msg['From'] = fromaddr
+#msg['To'] = COMMASPACE.join(addr_list)
+msg['To'] = fromaddr
+msg['Subject'] = "BZ Limit alert!"
 
-# body = 'limit reached for ' + 'volume'+ ' please change and confirm on input' 
-# msg.attach(MIMEText(body, 'plain'))
+body = 'limit reached for ' + 'volume'+ ' please change and confirm on input' 
+msg.attach(MIMEText(body, 'plain'))
 
-# server = smtplib.SMTP('smtp.gmail.com', 587)
-# server.starttls()
-# text = msg.as_string()
-# server.login(fromaddr, "croninlab")
-# server.sendmail(fromaddr, toaddr, text)
-# server.quit()
+server = smtplib.SMTP('smtp.chem.gla.ac.uk', 25)
+text = msg.as_string()
+server.sendmail(fromaddr, fromaddr, text)
+server.quit()

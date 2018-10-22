@@ -1,12 +1,10 @@
 from time import sleep
 from serial import Serial
 import threading
-import os, sys, inspect
-
-HERE = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-ROOT = os.path.join(HERE, "..")
-sys.path.append(ROOT)
-from  tools import emailalert 
+# path hack
+import os, sys
+sys.path.insert(0, os.path.abspath('..'))
+from tools import emailalert 
 
 
 class PumpsCtl:
@@ -21,12 +19,18 @@ class PumpsCtl:
         # pumps must start its valve in input state 
         # plunger position in steps, 0 means when the plunger is up, no liquid inside
         # added name to pump with vol counter and limit
-        self.pumps =   {'P0': {'id':0, 'liquid': 'waste',   'volume':0, 'limit':50000, 'syringe':12.5, 'valve': 'input', 'plunger' : 0},
-		                'P1': {'id':1, 'liquid': 'ferroin', 'volume':0, 'limit':100,   'syringe':5.00, 'valve': 'input', 'plunger' : 0},
-		                'P2': {'id':2, 'liquid': 'h2so4',   'volume':0, 'limit':1000,  'syringe':12.5, 'valve': 'input', 'plunger' : 0},
-		                'P3': {'id':3, 'liquid': 'malonic', 'volume':0, 'limit':1000,  'syringe':12.5, 'valve': 'input', 'plunger' : 0},
-		                'P4': {'id':4, 'liquid': 'water',   'volume':4997, 'limit':5000,  'syringe':12.5, 'valve': 'input', 'plunger' : 0},
-		                'P5': {'id':5, 'liquid': 'kbro3',   'volume':0, 'limit':1000,  'syringe':12.5, 'valve': 'input', 'plunger' : 0}} 
+        self.pumps =   {'P0': {'id':0, 'liquid': 'waste', 'volume':0, 'limit':5000, 
+                            'syringe':12.5, 'valve': 'input', 'plunger' : 0},
+                        'P1': {'id':1, 'liquid': 'ferro', 'volume':0, 'limit':100, 
+                            'syringe':5.00, 'valve': 'input', 'plunger' : 0},
+                        'P2': {'id':2, 'liquid': 'h2so4', 'volume':0, 'limit':1000, 
+                            'syringe':12.5, 'valve': 'input', 'plunger' : 0},
+                        'P3': {'id':3, 'liquid': 'malon', 'volume':0, 'limit':1000, 
+                            'syringe':12.5, 'valve': 'input', 'plunger' : 0},
+                        'P4': {'id':4, 'liquid': 'water', 'volume':0, 'limit':5000, 
+                            'syringe':12.5, 'valve': 'input', 'plunger' : 0},
+                        'P5': {'id':5, 'liquid': 'kbro3', 'volume':0, 'limit':1000, 
+                            'syringe':12.5, 'valve': 'input', 'plunger' : 0}} 
 
         # to control access to serial port
         self.ser_lock = threading.Lock() 
@@ -134,14 +138,16 @@ class PumpsCtl:
 
         #now set up prompt at 90% of limit
         if self.pumps[pump]['volume'] >= self.pumps[pump]['limit']*1.0:
-            addr_list = ["2186149q@student.gla.ac.uk",'JuanManuel.ParrillaGutierrez@glasgow.ac.uk']
-            fromaddr = "bzboardalert@gmail.com"
-            alert = 'limit reached for ' + self.pumps[pump]['liquid'] + ' please change and confirm on input'
+            addr_list = ['2186149q@student.gla.ac.uk', 'juanma@chem.gla.ac.uk']
+            fromaddr = 'juanma@chem.gla.ac.uk'
+            alert = 'limit reached for ' + self.pumps[pump]['liquid'] + 
+                ' please change and confirm on input'
             emailalert.email_alert(fromaddr,addr_list,alert)
 
             user_input = 'n'
             while user_input != 'y':
-                user_input = input('Has' + self.pumps[pump]['liquid'] + 'been reset?([y]es/[n]o)')
+                user_input = input('Has' + self.pumps[pump]['liquid'] + 
+                        'been reset?([y]es/[n]o)')
                 if user_input == 'y':
                     self.pumps[pump]['volume'] = 0
            
