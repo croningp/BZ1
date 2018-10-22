@@ -33,20 +33,20 @@ def email_alert(efrom,eto,ebody):
 
 #send email to multiple emails require list
 #addr_list = ["2186149q@student.gla.ac.uk",'juanma@chem.gla.ac.uk']
-addr_list = "juanma@chem.gla.ac.uk"
-fromaddr = "juanma@chem.gla.ac.uk"
+#addr_list = "juanma@chem.gla.ac.uk"
+#fromaddr = "juanma@chem.gla.ac.uk"
 #must import COMMASPACE
 #toaddr = COMMASPACE.join(addr_list)
-msg = MIMEMultipart()
-msg['From'] = fromaddr
+#msg = MIMEMultipart()
+#msg['From'] = fromaddr
 #msg['To'] = COMMASPACE.join(addr_list)
-msg['To'] = fromaddr
-msg['Subject'] = "BZ Limit alert!"
+#msg['To'] = fromaddr
+#msg['Subject'] = "BZ Limit alert!"
 
-body = 'limit reached for ' + 'volume'+ ' please change and confirm on input' 
-msg.attach(MIMEText(body, 'plain'))
+#body = 'limit reached for ' + 'volume'+ ' please change and confirm on input' 
+#msg.attach(MIMEText(body, 'plain'))
 
-server = smtplib.SMTP('smtp.chem.gla.ac.uk', 25)
-text = msg.as_string()
-server.sendmail(fromaddr, fromaddr, text)
-server.quit()
+#server = smtplib.SMTP('smtp.chem.gla.ac.uk', 25)
+#text = msg.as_string()
+#server.sendmail(fromaddr, fromaddr, text)
+#server.quit()
