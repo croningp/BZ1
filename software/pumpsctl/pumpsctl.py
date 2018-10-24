@@ -140,10 +140,9 @@ class PumpsCtl:
         pickle.dump(self.pumps, update_dic)
         update_dic.close()
 
-        #now set up prompt at 90% of limit
         if self.pumps[pump]['volume'] >= self.pumps[pump]['limit']*0.9:
             addr_list = ["2186149q@student.gla.ac.uk",'juanmanuel.parrillagutierrez@glasgow.ac.uk']
-            fromaddr = "bzboardalert@gmail.com"
+            fromaddr = "juanmanuel.parrillagutierrez@glasgow.ac.uk"
             alert = 'limit reached for ' + self.pumps[pump]['liquid'] + ' please change and confirm on input'
             self.email_alert(self,fromaddr,addr_list,alert)
 
@@ -153,6 +152,10 @@ class PumpsCtl:
                 user_input = input('Has' + self.pumps[pump]['liquid'] + 'been reset?([y]es/[n]o)')
                 if user_input == 'y':
                     self.pumps[pump]['volume'] = 0
+                    #pickle update
+                    update_dic = open("picklepumps.p","wb")
+                    pickle.dump(self.pumps, update_dic)
+                    update_dic.close()
 
         with pump_lock:
             syringe = self.pumps[pump]['syringe']
