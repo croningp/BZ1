@@ -58,6 +58,7 @@ class AutomatedPlatform():
         self.b.activate_motor("D3")
         self.b.activate_motor("E3")
         time.sleep(60*30)
+        self.b.disable_all()
 
         # start cleaning platform
         for i in range(2):

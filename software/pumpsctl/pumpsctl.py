@@ -25,7 +25,7 @@ class PumpsCtl:
 		                'P1': {'id':1, 'liquid': 'ferroin', 'volume':0, 'limit':100,   'syringe':5.00, 'valve': 'input', 'plunger' : 0},
 		                'P2': {'id':2, 'liquid': 'h2so4',   'volume':0, 'limit':1000,  'syringe':12.5, 'valve': 'input', 'plunger' : 0},
 		                'P3': {'id':3, 'liquid': 'malonic', 'volume':0, 'limit':1000,  'syringe':12.5, 'valve': 'input', 'plunger' : 0},
-		                'P4': {'id':4, 'liquid': 'water',   'volume':4997, 'limit':5000,  'syringe':12.5, 'valve': 'input', 'plunger' : 0},
+		                'P4': {'id':4, 'liquid': 'water',   'volume':0, 'limit':5000,  'syringe':12.5, 'valve': 'input', 'plunger' : 0},
 		                'P5': {'id':5, 'liquid': 'kbro3',   'volume':0, 'limit':1000,  'syringe':12.5, 'valve': 'input', 'plunger' : 0}} 
 
         # to control access to serial port
