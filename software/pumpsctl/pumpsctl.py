@@ -2,8 +2,10 @@ from time import sleep
 from serial import Serial
 import threading
 
-#import email function  - I don't know how to do this
-from emailalert import email_alert 
+# path hack
+import os, sys
+sys.path.insert(0, os.path.abspath('..'))
+from tools import emailalert 
 
 import pickle
 import os.path
