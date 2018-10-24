@@ -1,11 +1,12 @@
 from time import sleep
 from serial import Serial
 import threading
-# path hack
-import os, sys
-sys.path.insert(0, os.path.abspath('..'))
-from tools import emailalert 
 
+#import email function  - I don't know how to do this
+from emailalert import email_alert 
+
+import pickle
+import os.path
 
 class PumpsCtl:
 
@@ -18,20 +19,18 @@ class PumpsCtl:
         # syringe means the volume of the syringe attached in ml
         # pumps must start its valve in input state 
         # plunger position in steps, 0 means when the plunger is up, no liquid inside
-        # added name to pump with vol counter and limit
-        self.pumps =   {'P0': {'id':0, 'liquid': 'waste', 'volume':0, 'limit':5000, 
-                            'syringe':12.5, 'valve': 'input', 'plunger' : 0},
-                        'P1': {'id':1, 'liquid': 'ferro', 'volume':0, 'limit':100, 
-                            'syringe':5.00, 'valve': 'input', 'plunger' : 0},
-                        'P2': {'id':2, 'liquid': 'h2so4', 'volume':0, 'limit':1000, 
-                            'syringe':12.5, 'valve': 'input', 'plunger' : 0},
-                        'P3': {'id':3, 'liquid': 'malon', 'volume':0, 'limit':1000, 
-                            'syringe':12.5, 'valve': 'input', 'plunger' : 0},
-                        'P4': {'id':4, 'liquid': 'water', 'volume':0, 'limit':5000, 
-                            'syringe':12.5, 'valve': 'input', 'plunger' : 0},
-                        'P5': {'id':5, 'liquid': 'kbro3', 'volume':0, 'limit':1000, 
-                            'syringe':12.5, 'valve': 'input', 'plunger' : 0}} 
-
+        self.pumps =   {'P0': {'id':0, 'liquid': 'waste',   'volume':0, 'limit':10000, 'syringe':12.5, 'valve': 'input', 'plunger' : 0},
+                        'P1': {'id':1, 'liquid': 'ferroin', 'volume':0, 'limit':250,   'syringe':5.00, 'valve': 'input', 'plunger' : 0},
+                        'P2': {'id':2, 'liquid': 'h2so4',   'volume':0, 'limit':1000,  'syringe':12.5, 'valve': 'input', 'plunger' : 0},
+                        'P3': {'id':3, 'liquid': 'malonic', 'volume':0, 'limit':1000,  'syringe':12.5, 'valve': 'input', 'plunger' : 0},
+                        'P4': {'id':4, 'liquid': 'water',   'volume':0, 'limit':1000,  'syringe':12.5, 'valve': 'input', 'plunger' : 0},
+                        'P5': {'id':5, 'liquid': 'kbro3',   'volume':0, 'limit':1000,  'syringe':12.5, 'valve': 'input', 'plunger' : 0}}         
+        
+        if os.path.isfile('picklepumps.p') is true:
+            self.pumps = pickle.load(open("picklepumps.p", "rb"))
+        else:
+            pickle.dump(self.pumps, open("picklepumps.p", "wb"))
+        
         # to control access to serial port
         self.ser_lock = threading.Lock() 
         d = threading.Thread(target=self.read_serial, daemon=True)
@@ -136,21 +135,25 @@ class PumpsCtl:
         #add quantity to associated volume
         self.pumps[pump]['volume'] += quantity
 
-        #now set up prompt at 90% of limit
-        if self.pumps[pump]['volume'] >= self.pumps[pump]['limit']*1.0:
-            addr_list = ['2186149q@student.gla.ac.uk', 'juanma@chem.gla.ac.uk']
-            fromaddr = 'juanma@chem.gla.ac.uk'
-            alert = 'limit reached for ' + self.pumps[pump]['liquid'] + 
-                ' please change and confirm on input'
-            emailalert.email_alert(fromaddr,addr_list,alert)
+        #pickle update
+        update_dic = open("picklepumps.p","wb")
+        pickle.dump(self.pumps, update_dic)
+        update_dic.close()
 
+        #now set up prompt at 90% of limit
+        if self.pumps[pump]['volume'] >= self.pumps[pump]['limit']*0.9:
+            addr_list = ["2186149q@student.gla.ac.uk",'juanmanuel.parrillagutierrez@glasgow.ac.uk']
+            fromaddr = "bzboardalert@gmail.com"
+            alert = 'limit reached for ' + self.pumps[pump]['liquid'] + ' please change and confirm on input'
+            self.email_alert(self,fromaddr,addr_list,alert)
+
+            # set input to annoy user into changing vessel
             user_input = 'n'
             while user_input != 'y':
-                user_input = input('Has' + self.pumps[pump]['liquid'] + 
-                        'been reset?([y]es/[n]o)')
+                user_input = input('Has' + self.pumps[pump]['liquid'] + 'been reset?([y]es/[n]o)')
                 if user_input == 'y':
                     self.pumps[pump]['volume'] = 0
-           
+
         with pump_lock:
             syringe = self.pumps[pump]['syringe']
             steps_left = (quantity / syringe) * 100000 # plunger is 100000 steps 
