@@ -143,7 +143,7 @@ class PumpsCtl:
         #now set up prompt at 90% of limit
         if self.pumps[pump]['volume'] >= self.pumps[pump]['limit']*0.9:
             addr_list = ["2186149q@student.gla.ac.uk",'juanmanuel.parrillagutierrez@glasgow.ac.uk']
-            fromaddr = "bzboardalert@gmail.com"
+            fromaddr = 'juanmanuel.parrillagutierrez@glasgow.ac.uk'
             alert = 'limit reached for ' + self.pumps[pump]['liquid'] + ' please change and confirm on input'
             self.email_alert(self,fromaddr,addr_list,alert)
 

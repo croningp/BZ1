@@ -46,7 +46,7 @@ if __name__ == "__main__":
     frame_counter = 0
     fps = video.get(cv2.CAP_PROP_FPS)
     total_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
-    #total_frames = int(total_frames/30)+1
+    total_frames = int(total_frames/30)+1
     timemap = np.zeros((600, total_frames, 3), np.uint8)
     speed = 1
 

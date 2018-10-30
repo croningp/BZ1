@@ -135,8 +135,7 @@ class BZBoard:
     	# write random values to stirer matrix
         for i in self.motors.keys():
             speed = self.rand_speed[i]
-            self.activate_motor(i, speed)
-            
+            self.activate_motor(i, speed)            
 
 
     def disable_motor(self, motor_code):

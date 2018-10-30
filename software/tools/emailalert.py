@@ -22,7 +22,7 @@ def email_alert(efrom,eto,ebody):
     msg.attach(MIMEText(body, 'plain'))
     print("end")
 
-    server = smtplib.SMTP('smtp.chem.gla.ac.uk', 25)
+    server = smtplib.SMTP('smtp.chem.gla.ac.uk', 25, timeout=5)
     text = msg.as_string()
     server.sendmail(fromaddr, toaddr, text)
     server.quit()
