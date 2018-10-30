@@ -6,7 +6,11 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.utils import COMMASPACE
 
-def email_alert(efrom,eto,ebody):
+
+FROM = 'juanmanuel.parrillagutierrez@glasgow.ac.uk'
+TO = ["2186149q@student.gla.ac.uk",'juanmanuel.parrillagutierrez@glasgow.ac.uk'] 
+
+def email_alert(efrom=FROM, eto=TO, ebody):
     
     #send email to multiple emails require list
     fromaddr = efrom
