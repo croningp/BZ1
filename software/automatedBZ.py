@@ -2,7 +2,7 @@ import time
 from pumpsctl.pumpsctl import PumpsCtl
 from bzboard.bzboard import BZBoard
 from img_proc.record_cam import RecordVideo
-
+from datetime import datetime
 
 class AutomatedPlatform():
 
@@ -48,11 +48,12 @@ class AutomatedPlatform():
         # wait for 10 minutes
         time.sleep(60*10)
         
-        #cannabalised old pattern function
-        self.rv.record_threaded( str(kbro3)+"kbro3" )
         # activate random pattern for 1 minute 30 times
+        # need variable titles
+        exp_time = datetime.now().strftime('%Y-%m-%d %H:%M')
+        self.rv.record_threaded( exp_time )
         for i in range(30):
-            self.b.activate_rand()
+            self.b.activate_rand(exp_time)
             time.sleep(60*1)
 
         # start cleaning platform

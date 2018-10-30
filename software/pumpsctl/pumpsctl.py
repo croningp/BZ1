@@ -2,8 +2,10 @@ from time import sleep
 from serial import Serial
 import threading
 
-#import email function  - I don't know how to do this
-from emailalert import email_alert 
+# path hack
+import os, sys
+sys.path.insert(0, os.path.abspath('..'))
+from tools import emailalert 
 
 import pickle
 import os.path
@@ -140,19 +142,43 @@ class PumpsCtl:
         pickle.dump(self.pumps, update_dic)
         update_dic.close()
 
-        #now set up prompt at 90% of limit
         if self.pumps[pump]['volume'] >= self.pumps[pump]['limit']*0.9:
             addr_list = ["2186149q@student.gla.ac.uk",'juanmanuel.parrillagutierrez@glasgow.ac.uk']
+<<<<<<< HEAD
             fromaddr = 'juanmanuel.parrillagutierrez@glasgow.ac.uk'
+=======
+            fromaddr = "juanmanuel.parrillagutierrez@glasgow.ac.uk"
+>>>>>>> f5818dedcd8e4ccc105f10b56d195ad9cc6bab9e
             alert = 'limit reached for ' + self.pumps[pump]['liquid'] + ' please change and confirm on input'
             self.email_alert(self,fromaddr,addr_list,alert)
 
             # set input to annoy user into changing vessel
             user_input = 'n'
             while user_input != 'y':
-                user_input = input('Has' + self.pumps[pump]['liquid'] + 'been reset?([y]es/[n]o)')
+                user_input = input('Has ' + self.pumps[pump]['liquid'] + ' been reset?([y]es/[n]o) ')
                 if user_input == 'y':
                     self.pumps[pump]['volume'] = 0
+                    more_input = 'n'
+                    more_input = input('would you like to reset futher values?([y]es/[n]o) ')
+                    if more_input == 'y':
+                        reset_volumes = input('what would you like to reset? answer as comma seperated list. [w]aste, [f]erroin, [s]ulphuric acid, [m]alonic, [h]2o, [k]bro3 ')
+                        split_reset = reset_volumes.split(',')
+                        if 'w' in reset_volumes:
+                            self.pumps['P0']['volume'] = 0
+                        if 'f' in reset_volumes:
+                            self.pumps['P1']['volume'] = 0
+                        if 's' in reset_volumes:
+                            self.pumps['P2']['volume'] = 0
+                        if 'm' in reset_volumes:
+                            self.pumps['P3']['volume'] = 0
+                        if 'h' in reset_volumes:
+                            self.pumps['P4']['volume'] = 0
+                        if 'k' in reset_volumes:
+                            self.pumps['P5']['volume'] = 0
+                        #pickle update
+                        update_dic = open("picklepumps.p","wb")
+                        pickle.dump(self.pumps, update_dic)
+                        update_dic.close()
 
         with pump_lock:
             syringe = self.pumps[pump]['syringe']
