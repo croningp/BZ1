@@ -22,18 +22,26 @@ class PumpsCtl:
         # syringe means the volume of the syringe attached in ml
         # pumps must start its valve in input state 
         # plunger position in steps, 0 means when the plunger is up, no liquid inside
-        self.pumps =   {'P0': {'id':0, 'liquid': 'waste',   'volume':0, 'limit':10000, 'syringe':12.5, 'valve': 'input', 'plunger' : 0},
-                        'P1': {'id':1, 'liquid': 'ferroin', 'volume':0, 'limit':250,   'syringe':5.00, 'valve': 'input', 'plunger' : 0},
-                        'P2': {'id':2, 'liquid': 'h2so4',   'volume':0, 'limit':1000,  'syringe':12.5, 'valve': 'input', 'plunger' : 0},
-                        'P3': {'id':3, 'liquid': 'malonic', 'volume':0, 'limit':1000,  'syringe':12.5, 'valve': 'input', 'plunger' : 0},
-                        'P4': {'id':4, 'liquid': 'water',   'volume':0, 'limit':1000,  'syringe':12.5, 'valve': 'input', 'plunger' : 0},
-                        'P5': {'id':5, 'liquid': 'kbro3',   'volume':0, 'limit':1000,  'syringe':12.5, 'valve': 'input', 'plunger' : 0}}         
+        self.pumps =   {'P0': {'id':0, 'syringe':12.5, 'valve': 'input', 'plunger' : 0},
+                        'P1': {'id':1, 'syringe':5.00, 'valve': 'input', 'plunger' : 0},
+                        'P2': {'id':2, 'syringe':12.5, 'valve': 'input', 'plunger' : 0},
+                        'P3': {'id':3, 'syringe':12.5, 'valve': 'input', 'plunger' : 0},
+                        'P4': {'id':4, 'syringe':12.5, 'valve': 'input', 'plunger' : 0},
+                        'P5': {'id':5, 'syringe':12.5, 'valve': 'input', 'plunger' : 0}}         
+       
+        self.volumes = {'P0': {'id':0, 'liquid': 'waste',   'volume':0, 'limit':5000},
+                        'P1': {'id':1, 'liquid': 'ferroin', 'volume':0, 'limit':100},
+                        'P2': {'id':2, 'liquid': 'h2so4',   'volume':0, 'limit':1000},
+                        'P3': {'id':3, 'liquid': 'malonic', 'volume':0, 'limit':1000},
+                        'P4': {'id':4, 'liquid': 'water',   'volume':0, 'limit':5000},
+                        'P5': {'id':5, 'liquid': 'kbro3',   'volume':0, 'limit':1000}}         
         
+ 
         if os.path.isfile('picklepumps.p') is True:
-            self.pumps = pickle.load(open("picklepumps.p", "rb"))
+            self.volumes = pickle.load(open("picklepumps.p", "rb"))
 
         else:
-            pickle.dump(self.pumps, open("picklepumps.p", "wb"))
+            pickle.dump(self.volumes, open("picklepumps.p", "wb"))
         
         # to control access to serial port
         self.ser_lock = threading.Lock() 
@@ -178,25 +186,25 @@ class PumpsCtl:
         an e-mail'''
 
         #add quantity to associated volume
-        self.pumps[pump]['volume'] += quantity
+        self.volumes[pump]['volume'] += quantity
 
         #pickle update
         update_dic = open("picklepumps.p","wb")
         pickle.dump(self.pumps, update_dic)
         update_dic.close()
 
-        if self.pumps[pump]['volume'] >= self.pumps[pump]['limit']*1.0:
+        if self.volumes[pump]['volume'] >= self.volumes[pump]['limit']*1.0:
 
-            alert = 'limit reached for ' + self.pumps[pump]['liquid']
+            alert = 'limit reached for ' + self.volumes[pump]['liquid']
             self.email_alert( ebody=alert )
 
             # set input to annoy user into changing vessel
             user_input = 'n'
             while user_input != 'y':
-                user_input = input('Has ' + self.pumps[pump]['liquid'] + ' been reset?([y]es/[n]o) ')
+                user_input = input('Has ' + self.volumes[pump]['liquid'] + ' been reset?([y]es/[n]o) ')
                 
                 if user_input == 'y':
-                    self.pumps[pump]['volume'] = 0
+                    self.volumes[pump]['volume'] = 0
                     more_input = 'n'
                     more_input = input('would you like to reset futher values?([y]es/[n]o) ')
                     
@@ -205,21 +213,21 @@ class PumpsCtl:
                         split_reset = reset_volumes.split(',')
                         
                         if 'w' in split_reset:
-                            self.pumps['P0']['volume'] = 0
+                            self.volumes['P0']['volume'] = 0
                         if 'f' in split_reset:
-                            self.pumps['P1']['volume'] = 0
+                            self.volumes['P1']['volume'] = 0
                         if 's' in split_reset:
-                            self.pumps['P2']['volume'] = 0
+                            self.volumes['P2']['volume'] = 0
                         if 'm' in split_reset:
-                            self.pumps['P3']['volume'] = 0
+                            self.volumes['P3']['volume'] = 0
                         if 'h' in split_reset:
-                            self.pumps['P4']['volume'] = 0
+                            self.volumes['P4']['volume'] = 0
                         if 'k' in split_reset:
-                            self.pumps['P5']['volume'] = 0
+                            self.volumes['P5']['volume'] = 0
                         
                         #pickle update
                         update_dic = open("picklepumps.p","wb")
-                        pickle.dump(self.pumps, update_dic)
+                        pickle.dump(self.volumes, update_dic)
                         update_dic.close()
 
     
