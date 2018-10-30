@@ -55,6 +55,7 @@ class AutomatedPlatform():
         for i in range(30):
             self.b.activate_rand(exp_time)
             time.sleep(60*1)
+        self.b.disable_all()
 
         # start cleaning platform
         for i in range(2):
@@ -75,5 +76,5 @@ if __name__ == "__main__":
 
     ap = AutomatedPlatform()
 
-    for i in [15, 16]: # why
-        ap.perform_experiment(kbro3=i)
+    for i in [1]: # why
+        ap.perform_experiment()

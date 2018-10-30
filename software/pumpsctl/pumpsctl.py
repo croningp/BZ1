@@ -29,7 +29,7 @@ class PumpsCtl:
                         'P4': {'id':4, 'liquid': 'water',   'volume':0, 'limit':1000,  'syringe':12.5, 'valve': 'input', 'plunger' : 0},
                         'P5': {'id':5, 'liquid': 'kbro3',   'volume':0, 'limit':1000,  'syringe':12.5, 'valve': 'input', 'plunger' : 0}}         
         
-        if os.path.isfile('picklepumps.p') is true:
+        if os.path.isfile('picklepumps.p') is True:
             self.pumps = pickle.load(open("picklepumps.p", "rb"))
 
         else:

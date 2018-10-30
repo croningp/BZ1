@@ -10,7 +10,7 @@ from email.utils import COMMASPACE
 FROM = 'juanmanuel.parrillagutierrez@glasgow.ac.uk'
 TO = ["2186149q@student.gla.ac.uk",'juanmanuel.parrillagutierrez@glasgow.ac.uk'] 
 
-def email_alert(efrom=FROM, eto=TO, ebody):
+def email_alert(efrom=FROM, eto=TO, ebody="BZ fail"):
     
     #send email to multiple emails require list
     fromaddr = efrom
