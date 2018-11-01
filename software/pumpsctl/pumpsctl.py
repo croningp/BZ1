@@ -4,11 +4,11 @@ import threading
 
 # path hack to load a python script from a sibling folder
 import os, sys
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.append(os.path.abspath('..'))
 from tools import emailalert 
-
 import pickle
 import os.path
+
 
 
 class PumpsCtl:
@@ -36,12 +36,14 @@ class PumpsCtl:
                         'P4': {'id':4, 'liquid': 'water',   'volume':0, 'limit':5000},
                         'P5': {'id':5, 'liquid': 'kbro3',   'volume':0, 'limit':1000}}         
         
- 
-        if os.path.isfile('picklepumps.p') is True:
-            self.volumes = pickle.load(open("picklepumps.p", "rb"))
+
+        self.vol_db = sys.path[0]+'pickepumps.p'
+        
+        if os.path.isfile(self.vol_db) is True:
+            self.volumes = pickle.load(open(self.vol_db, "rb"))
 
         else:
-            pickle.dump(self.volumes, open("picklepumps.p", "wb"))
+            pickle.dump(self.volumes, open(self.vol_db, "wb"))
         
         # to control access to serial port
         self.ser_lock = threading.Lock() 
@@ -189,7 +191,7 @@ class PumpsCtl:
         self.volumes[pump]['volume'] += quantity
 
         #pickle update
-        update_dic = open("picklepumps.p","wb")
+        update_dic = open(self.vol_db,"wb")
         pickle.dump(self.pumps, update_dic)
         update_dic.close()
 
@@ -226,7 +228,7 @@ class PumpsCtl:
                             self.volumes['P5']['volume'] = 0
                         
                         #pickle update
-                        update_dic = open("picklepumps.p","wb")
+                        update_dic = open(self.vol_db,"wb")
                         pickle.dump(self.volumes, update_dic)
                         update_dic.close()
 
