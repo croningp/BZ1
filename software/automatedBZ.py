@@ -4,6 +4,7 @@ from bzboard.bzboard import BZBoard
 from img_proc.record_cam import RecordVideo
 from datetime import datetime
 
+
 class AutomatedPlatform():
 
 
@@ -12,7 +13,7 @@ class AutomatedPlatform():
         self.b = BZBoard("/dev/ttyACM1")
         self.p = PumpsCtl('/dev/ttyACM0')
 
-        self.rv = RecordVideo(10*60)
+        self.rv = RecordVideo(30*60)
 
         # original recipe was 2.5, 20, 12.5, 18, 19 (fe, h2o, h2s, mal, k)
         # but because on average there's a 3 ml remain of theoretically clean water
@@ -42,17 +43,17 @@ class AutomatedPlatform():
                 self.ferroin)
         # activate all max speed for 30 second to mix
         self.b.activate_all(3000)
-        time.sleep(30)
+        time.sleep(60)
         self.b.disable_all()
 
         # wait for 10 minutes
-        time.sleep(60*2)
+        time.sleep(60*10)
         
         # activate random pattern for 1 minute 30 times
         # need variable titles
         exp_time = datetime.now().strftime('%Y-%m-%d %H:%M')
         self.rv.record_threaded( exp_time )
-        for i in range(10):
+        for i in range(30):
             self.b.activate_rand(exp_time)
             time.sleep(60*1)
         self.b.disable_all()
@@ -62,7 +63,7 @@ class AutomatedPlatform():
             self.p.pump_multiple(self.waste) # send to waste
             self.p.pump_multiple(self.water_clean, self.h2so4_clean, 
                     self.kbro3_clean) # clean system
-            time.sleep(3*60)
+            time.sleep(2*60)
 
         for i in range(1):
             self.p.pump_multiple(self.waste)
@@ -76,5 +77,5 @@ if __name__ == "__main__":
 
     ap = AutomatedPlatform()
 
-    for i in [1]: # why
+    for i in range(1): # number of experiments
         ap.perform_experiment()

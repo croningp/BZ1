@@ -29,16 +29,16 @@ class PumpsCtl:
                         'P4': {'id':4, 'syringe':12.5, 'valve': 'input', 'plunger' : 0},
                         'P5': {'id':5, 'syringe':12.5, 'valve': 'input', 'plunger' : 0}}         
        
-        self.volumes = {'P0': {'id':0, 'liquid': 'waste',   'volume':0, 'limit':5000},
+        self.volumes = {'P0': {'id':0, 'liquid': 'waste',   'volume':1000, 'limit':5000},
                         'P1': {'id':1, 'liquid': 'ferroin', 'volume':0, 'limit':100},
-                        'P2': {'id':2, 'liquid': 'h2so4',   'volume':0, 'limit':1000},
-                        'P3': {'id':3, 'liquid': 'malonic', 'volume':0, 'limit':1000},
-                        'P4': {'id':4, 'liquid': 'water',   'volume':0, 'limit':5000},
-                        'P5': {'id':5, 'liquid': 'kbro3',   'volume':0, 'limit':1000}}         
+                        'P2': {'id':2, 'liquid': 'h2so4',   'volume':900, 'limit':1000},
+                        'P3': {'id':3, 'liquid': 'malonic', 'volume':700, 'limit':1000},
+                        'P4': {'id':4, 'liquid': 'water',   'volume':1000, 'limit':5000},
+                        'P5': {'id':5, 'liquid': 'kbro3',   'volume':900, 'limit':1000}}         
         
 
-        self.vol_db = sys.path[0]+'pickepumps.p'
-        
+        script_path = os.path.dirname(os.path.realpath(__file__))
+        self.vol_db = script_path + '/picklepumps.p'
         if os.path.isfile(self.vol_db) is True:
             self.volumes = pickle.load(open(self.vol_db, "rb"))
 
@@ -192,7 +192,7 @@ class PumpsCtl:
 
         #pickle update
         update_dic = open(self.vol_db,"wb")
-        pickle.dump(self.pumps, update_dic)
+        pickle.dump(self.volumes, update_dic)
         update_dic.close()
 
         if self.volumes[pump]['volume'] >= self.volumes[pump]['limit']*1.0:
