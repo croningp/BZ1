@@ -190,7 +190,7 @@ class PumpsCtl:
 
         #pickle update
         update_dic = open("picklepumps.p","wb")
-        pickle.dump(self.pumps, update_dic)
+        pickle.dump(self.volumes, update_dic)
         update_dic.close()
 
         if self.volumes[pump]['volume'] >= self.volumes[pump]['limit']*1.0:

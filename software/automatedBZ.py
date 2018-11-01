@@ -12,7 +12,7 @@ class AutomatedPlatform():
         self.b = BZBoard("/dev/ttyACM1")
         self.p = PumpsCtl('/dev/ttyACM0')
 
-        self.rv = RecordVideo(30*60)
+        self.rv = RecordVideo(10*60)
 
         # original recipe was 2.5, 20, 12.5, 18, 19 (fe, h2o, h2s, mal, k)
         # but because on average there's a 3 ml remain of theoretically clean water
@@ -46,13 +46,13 @@ class AutomatedPlatform():
         self.b.disable_all()
 
         # wait for 10 minutes
-        time.sleep(60*10)
+        time.sleep(60*2)
         
         # activate random pattern for 1 minute 30 times
         # need variable titles
         exp_time = datetime.now().strftime('%Y-%m-%d %H:%M')
         self.rv.record_threaded( exp_time )
-        for i in range(30):
+        for i in range(10):
             self.b.activate_rand(exp_time)
             time.sleep(60*1)
         self.b.disable_all()

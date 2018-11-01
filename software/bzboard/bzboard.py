@@ -9,8 +9,11 @@ If you want better functionality, error handling,... check the other one
 '''
 
 
+
 import serial, time, json, random, csv
 from datetime import datetime
+from random import randint
+
 
 
 class BZBoard:
