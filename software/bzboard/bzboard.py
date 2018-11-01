@@ -13,6 +13,7 @@ If you want better functionality, error handling,... check the other one
 import serial, time, json, random, csv
 from datetime import datetime
 from random import randint
+import json
 
 
 
@@ -123,26 +124,33 @@ class BZBoard:
         '''Activate a random pattern - each motor at a random speed - and append
         this random configuration to the end of the file filename'''
 
-        # need variable titles
-        exp_time = datetime.now().strftime('%Y-%m-%d %H:%M')
-        # opens/creates csv in append mode
-        rand_list = open(filename +'.csv','a')
         # random 5*5 speed
-
-        self.rand_speed = { 
-                    "A1":randint(0,4000),"A2":randint(0,4000),"A3":randint(0,4000),"A4":randint(0,4000),"A5":randint(0,4000),
-                    "B1":randint(0,4000),"B2":randint(0,4000),"B3":randint(0,4000),"B4":randint(0,4000),"B5":randint(0,4000),
-                    "C1":randint(0,4000),"C2":randint(0,4000),"C3":randint(0,4000),"C4":randint(0,4000),"C5":randint(0,4000),
-                    "D1":randint(0,4000),"D2":randint(0,4000),"D3":randint(0,4000),"D4":randint(0,4000),"D5":randint(0,4000),
-                    "E1":randint(0,4000),"E2":randint(0,4000),"E3":randint(0,4000),"E4":randint(0,4000),"E5":randint(0,4000)
+        rand_speed = { 
+                    "A1":randint(0,2000),"A2":randint(0,2000),"A3":randint(0,2000),"A4":randint(0,2000),"A5":randint(0,2000),
+                    "B1":randint(0,2000),"B2":randint(0,2000),"B3":randint(0,2000),"B4":randint(0,2000),"B5":randint(0,2000),
+                    "C1":randint(0,2000),"C2":randint(0,2000),"C3":randint(0,2000),"C4":randint(0,2000),"C5":randint(0,2000),
+                    "D1":randint(0,2000),"D2":randint(0,2000),"D3":randint(0,2000),"D4":randint(0,2000),"D5":randint(0,2000),
+                    "E1":randint(0,2000),"E2":randint(0,2000),"E3":randint(0,2000),"E4":randint(0,2000),"E5":randint(0,2000)
                     }
-        
-        # append list
-        rand_list.write(datetime.now().strftime('%H:%M'))
-    	
+
+        # we will use time for titles
+        exp_time = datetime.now().strftime('%Y-%m-%d_%H:%M')
+
+        # load the previous json to update with new data
+        with open(filename +'.json') as f:
+            data = json.load(f)
+
+        # new data entry for the dict
+        new_dict = { exp_time : rand_speed }
+        data.update(new_dict)
+
+        # update the json
+        with open(filename +'.json', 'w') as f:
+            json.dump(data, f)
+
         # enable the motors with the random speeds
         for i in self.motors.keys():
-            speed = self.rand_speed[i]
+            speed = rand_speed[i]
             self.activate_motor(i, speed)
             
 
