@@ -13,7 +13,7 @@ If you want better functionality, error handling,... check the other one
 import serial, time, json, random, csv
 from datetime import datetime
 from random import randint
-import json
+import json, os
 
 
 
@@ -133,26 +133,32 @@ class BZBoard:
                     "E1":randint(0,2000),"E2":randint(0,2000),"E3":randint(0,2000),"E4":randint(0,2000),"E5":randint(0,2000)
                     }
 
-        # we will use time for titles
-        exp_time = datetime.now().strftime('%Y-%m-%d_%H:%M')
-
-        # load the previous json to update with new data
-        with open(filename +'.json') as f:
-            data = json.load(f)
-
-        # new data entry for the dict
-        new_dict = { exp_time : rand_speed }
-        data.update(new_dict)
-
-        # update the json
-        with open(filename +'.json', 'w') as f:
-            json.dump(data, f)
-
         # enable the motors with the random speeds
         for i in self.motors.keys():
             speed = rand_speed[i]
             self.activate_motor(i, speed)
-            
+         
+        # we will use time as keys in the dict
+        exp_time = datetime.now().strftime('%Y-%m-%d_%H:%M')
+        filename = filename +'.json'
+        # new data entry for the dict
+        new_dict = { exp_time : rand_speed}
+        
+        # if the file does not exist, meaning its the first experiment
+        if os.path.isfile(filename) is False:
+            data = new_dict
+        
+        else:
+            # load the previous json to update with new data
+            with open(filename) as f:
+                data = json.load(f)
+                data.update(new_dict)
+
+        # update the json
+        with open(filename, 'w') as f:
+            json.dump(data, f)
+
+           
 
     def disable_motor(self, motor_code):
 
