@@ -22,9 +22,7 @@ def email_alert(efrom=FROM, eto=TO, ebody="BZ fail"):
     msg['Subject'] = "BZ Limit alert!"
 
     body = ebody 
-    print("start")
     msg.attach(MIMEText(body, 'plain'))
-    print("end")
 
     server = smtplib.SMTP('smtp.chem.gla.ac.uk', 25, timeout=5)
     text = msg.as_string()

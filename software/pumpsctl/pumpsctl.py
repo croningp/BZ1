@@ -29,12 +29,12 @@ class PumpsCtl:
                         'P4': {'id':4, 'syringe':12.5, 'valve': 'input', 'plunger' : 0},
                         'P5': {'id':5, 'syringe':12.5, 'valve': 'input', 'plunger' : 0}}         
        
-        self.volumes = {'P0': {'id':0, 'liquid': 'waste',   'volume':1000, 'limit':5000},
+        self.volumes = {'P0': {'id':0, 'liquid': 'waste',   'volume':1500, 'limit':5000},
                         'P1': {'id':1, 'liquid': 'ferroin', 'volume':0, 'limit':100},
-                        'P2': {'id':2, 'liquid': 'h2so4',   'volume':900, 'limit':1000},
+                        'P2': {'id':2, 'liquid': 'h2so4',   'volume':0, 'limit':1000},
                         'P3': {'id':3, 'liquid': 'malonic', 'volume':700, 'limit':1000},
-                        'P4': {'id':4, 'liquid': 'water',   'volume':1000, 'limit':5000},
-                        'P5': {'id':5, 'liquid': 'kbro3',   'volume':900, 'limit':1000}}         
+                        'P4': {'id':4, 'liquid': 'water',   'volume':2000, 'limit':5000},
+                        'P5': {'id':5, 'liquid': 'kbro3',   'volume':0, 'limit':1000}}         
         
 
         script_path = os.path.dirname(os.path.realpath(__file__))
@@ -198,7 +198,7 @@ class PumpsCtl:
         if self.volumes[pump]['volume'] >= self.volumes[pump]['limit']*1.0:
 
             alert = 'limit reached for ' + self.volumes[pump]['liquid']
-            self.email_alert( ebody=alert )
+            emailalert.email_alert( ebody=alert )
 
             # set input to annoy user into changing vessel
             user_input = 'n'

@@ -77,5 +77,5 @@ if __name__ == "__main__":
 
     ap = AutomatedPlatform()
 
-    for i in range(1): # number of experiments
+    for i in range(2): # number of experiments
         ap.perform_experiment()
