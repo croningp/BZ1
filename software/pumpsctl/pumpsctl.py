@@ -55,6 +55,9 @@ class PumpsCtl:
         # to make it thread safe, no idea if erase() is thread safe
         self.ctasks_lock = threading.Lock()
       
+        # to make the function that checks for volumes thread safe
+        self.check_vols_lock = threading.Lock()
+
         d.start()
 
 
@@ -146,7 +149,8 @@ class PumpsCtl:
         pump_id = self.pumps[pump]['id']
         pump_lock = self.pump_locks[pump_id]
 
-        self.check_volumes(pump, quantity)
+        with self.check_vols_lock:
+            self.check_volumes(pump, quantity)
 
         with pump_lock:
             syringe = self.pumps[pump]['syringe']
