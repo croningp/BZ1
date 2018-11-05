@@ -55,6 +55,9 @@ class PumpsCtl:
         # to make it thread safe, no idea if erase() is thread safe
         self.ctasks_lock = threading.Lock()
       
+        # to make the function that checks for volumes thread safe
+        self.check_vols_lock = threading.Lock()
+
         d.start()
 
 
@@ -146,7 +149,8 @@ class PumpsCtl:
         pump_id = self.pumps[pump]['id']
         pump_lock = self.pump_locks[pump_id]
 
-        self.check_volumes(pump, quantity)
+        with self.check_vols_lock:
+            self.check_volumes(pump, quantity)
 
         with pump_lock:
             syringe = self.pumps[pump]['syringe']
@@ -232,7 +236,30 @@ class PumpsCtl:
                         pickle.dump(self.volumes, update_dic)
                         update_dic.close()
 
-    
+
+    def pre_exp_check(self, water, ferroin, h2so4, kbro3, malonic, waste)
+
+        # stop program if not enough liquid or waste room
+        if water >= self.volumes['P4']['limit'] - self.volumes['P4']['volume']:
+            print('Water limit reached experiment terminated')
+            sys.exit()
+        if ferroin >= self.volumes['P1']['limit'] - self.volumes['P1']['volume']:
+            print('Ferroin limit reached experiment terminated')
+            sys.exit()    
+        if h2so4 >= self.volumes['P2']['limit'] - self.volumes['P2']['volume']:
+            print('Sulphuric acid limit reached experiment terminated')
+            sys.exit()
+        if kbro3 >= self.volumes['P5']['limit'] - self.volumes['P5']['volume']:
+            print('Pottasium Bromate limit reached experiment terminated')
+            sys.exit()
+        if malonic >= self.volumes['P3']['limit'] - self.volumes['P3']['volume']:
+            print('Malonic limit reached experiment terminated')
+            sys.exit()
+        if waste >= self.volumes['P0']['limit'] - self.volumes['P0']['volume']:
+            print('Waste limit reached experiment terminated')
+            sys.exit()
+
+
     def close(self):
 
         for p in self.pumps.keys():

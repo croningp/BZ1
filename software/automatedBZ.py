@@ -36,7 +36,14 @@ class AutomatedPlatform():
         self.h2so4['quantity'] = h2so4
         self.kbro3['quantity'] = kbro3
         self.malonic['quantity'] = malonic
-
+        
+        vol_check_water =   self.water['quantity'] + 3*self.water_clean['quantity']
+        vol_check_ferroin = self.ferroin['quantity'] 
+        vol_check_h2so4 =   self.h2so4['quantity'] + 2*self.h2so4_clean['quantity']
+        vol_check_kbro3 =   self.kbro3['quantity'] + 2*self.kbro3_clean['quantity']
+        vol_check_malonic = self.malonic['quantity'] 
+        vol_check_waste =   vol_check_water + vol_check_ferroin + vol_check_h2so4 + vol_check_kbro3 + vol_check_malonic
+        self.p.pre_exp_check(vol_check_water, vol_check_ferroin, vol_check_h2so4, vol_check_kbro3, vol_check_malonic, vol_check_waste)
         
         #dispense the BZ recipe into the arena
         self.p.pump_multiple(self.water, self.malonic, self.kbro3, self.h2so4, 
