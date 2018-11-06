@@ -43,14 +43,14 @@ class AutomatedPlatform():
         self.malonic['quantity'] = malonic
 
         #calc volume for one experiment including cleaning
-        vol_check_water =   self.water['quantity'] + 3*self.water_clean['quantity']
-        vol_check_ferroin = self.ferroin['quantity'] 
-        vol_check_h2so4 =   self.h2so4['quantity'] + 2*self.h2so4_clean['quantity']          
-        vol_check_kbro3 =   self.kbro3['quantity'] + 2*self.kbro3_clean['quantity']
-        vol_check_malonic = self.malonic['quantity']             
-        vol_check_waste =   vol_check_water + vol_check_ferroin + vol_check_h2so4 + vol_check_kbro3 + vol_check_malonic
+        tot_water =   self.water['quantity'] + 3*self.water_clean['quantity']
+        tot_ferroin = self.ferroin['quantity'] 
+        tot_h2so4 =   self.h2so4['quantity'] + 2*self.h2so4_clean['quantity']          
+        tot_kbro3 =   self.kbro3['quantity'] + 2*self.kbro3_clean['quantity']
+        tot_malonic = self.malonic['quantity']             
+        tot_waste =   tot_water + tot_ferroin + tot_h2so4 + tot_kbro3 + tot_malonic
         #update required experiment volumes  (expvol) in volctl
-        self.p.expvolinput(self,vol_check_water,vol_check_ferroin,vol_check_h2so4,vol_check_kbro3,vol_check_malonic,vol_check_waste)
+        self.p.expvolinput(tot_water,tot_ferroin,tot_h2so4,tot_kbro3,tot_malonic,tot_waste)
         #call countdown and print how many experiments are left
         self.p.countdown()
         #check enough for whole experiment to run and direct to reset if not
