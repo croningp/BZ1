@@ -33,7 +33,7 @@ class VolCtl:
 
 	def volcontrol(self):	
 		#display said volumes
-		print(volumes)
+		print(self.volumes)
 		#user inputs to reset
 		while finished != 'y':
 			reset_volumes = input('what would you like to reset? answer as comma seperated list. [w]aste, [f]erroin, [s]ulphuric, [m]alonic, [h]2o, [k]bro3 ')
@@ -61,7 +61,7 @@ class VolCtl:
 
 	
 	def expvolinput(self, water, ferroin, h2so4, kbro3, malonic, waste):
-		#updates the dictionary for total experiment volumes from automatedBZ file
+		#updates the dictionary for total experiment volumes from automatedBZ file needed for below
 		if self.volume[key] == 'P0':
 			self.volume['P0']['expvol'] = waste
 		if self.volume[key] == 'P1':
