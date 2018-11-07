@@ -15,12 +15,12 @@ class VolCtl:
 	
 	def __init__(self):
 		#volume dictionary
-        self.volumes = {'P0': {'id':0, 'liquid': 'waste',   'volume':1000, 'limit':5000, 'expvol':0},
-                        'P1': {'id':1, 'liquid': 'ferroin', 'volume':0,    'limit':100,  'expvol':0},
-                        'P2': {'id':2, 'liquid': 'h2so4',   'volume':900,  'limit':1000, 'expvol':0},
-                        'P3': {'id':3, 'liquid': 'malonic', 'volume':700,  'limit':1000, 'expvol':0},
-                        'P4': {'id':4, 'liquid': 'water',   'volume':1000, 'limit':5000, 'expvol':0},
-                        'P5': {'id':5, 'liquid': 'kbro3',   'volume':900,  'limit':1000, 'expvol':0}}
+		self.volumes = {'P0': {'id':0, 'liquid': 'waste',   'volume':0, 'limit':5000, 'expvol':0},
+						'P1': {'id':1, 'liquid': 'ferroin', 'volume':0, 'limit':100,  'expvol':0},
+						'P2': {'id':2, 'liquid': 'h2so4',   'volume':0, 'limit':1000, 'expvol':0},
+						'P3': {'id':3, 'liquid': 'malonic', 'volume':0, 'limit':1000, 'expvol':0},
+						'P4': {'id':4, 'liquid': 'water',   'volume':0, 'limit':5000, 'expvol':0},
+						'P5': {'id':5, 'liquid': 'kbro3',   'volume':0, 'limit':1000, 'expvol':0}}
 
 		#load in volumes if already exist or create new file
 		script_path = os.path.dirname(os.path.realpath(__file__))
@@ -35,24 +35,49 @@ class VolCtl:
 		#display said volumes
 		print(self.volumes)
 		#user inputs to reset
+		finished = 'n'
 		while finished != 'y':
-			reset_volumes = input('what would you like to reset? answer as comma seperated list. [w]aste, [f]erroin, [s]ulphuric, [m]alonic, [h]2o, [k]bro3 ')
-			split_reset = reset_volumes.split(',')
-	                        
-			if 'w' in split_reset:
-	    		self.volumes['P0']['volume'] = 0
-			if 'f' in split_reset:
-	    		self.volumes['P1']['volume'] = 0
-			if 's' in split_reset:
-	    		self.volumes['P2']['volume'] = 0
-			if 'm' in split_reset:
-	    		self.volumes['P3']['volume'] = 0
-			if 'h' in split_reset:
-	    		self.volumes['P4']['volume'] = 0
-			if 'k' in split_reset:
-	    		self.volumes['P5']['volume'] = 0
-	    	#confirmation 
-	    	finished = input('Are you finished [y/n]?')
+			#give option to reset to 0 or eneter actual values
+			primary_input = input('would you like to (r)eset volumes or enter (s)pecific values')
+			if primary_input = 'r':
+				reset_volumes = input('what would you like to reset? answer as comma seperated list. [w]aste, [f]erroin, [s]ulphuric, [m]alonic, [h]2o, [k]bro3')
+				split_reset = reset_volumes.split(',')							
+				if 'w' in split_reset:
+					self.volumes['P0']['volume'] = 0
+				if 'f' in split_reset:
+					self.volumes['P1']['volume'] = 0
+				if 's' in split_reset:
+					self.volumes['P2']['volume'] = 0
+				if 'm' in split_reset:
+					self.volumes['P3']['volume'] = 0
+				if 'h' in split_reset:
+					self.volumes['P4']['volume'] = 0
+				if 'k' in split_reset:
+					self.volumes['P5']['volume'] = 0
+			if primary_input = 's':
+				value_input = input('what volume would you like to enter? answer as comma seperated list. [w]aste, [f]erroin, [s]ulphuric, [m]alonic, [h]2o, [k]bro3')
+				split_reset_2 = value_input.split(',')							
+				if 'w' in split_reset:
+					waste_volume = input('How much waste is there in ml')
+					self.volumes['P0']['volume'] = self.volumes['P0']['limit'] - waste_volume
+				if 'f' in split_reset:
+					ferroin_volume = input('How much ferroin is there in ml')
+					self.volumes['P1']['volume'] = self.volumes['P1']['limit'] - ferroin_volume
+				if 's' in split_reset:
+					sulphuric_volume = input('How much sulphuric is there in ml')
+					self.volumes['P2']['volume'] = self.volumes['P2']['limit'] - sulphuric_volume
+				if 'm' in split_reset:
+					malonic_volume = input('How much malonic is there in ml')
+					self.volumes['P3']['volume'] = self.volumes['P3']['limit'] - malonic_volume
+				if 'h' in split_reset:
+					water_volume = input('How much water is there in ml')
+					self.volumes['P4']['volume'] = self.volumes['P4']['limit'] - water_volume
+				if 'k' in split_reset:
+					kbro3_volume = input('How much Potasium Bromide is there in ml')
+					self.volumes['P5']['volume'] = self.volumes['P5']['limit'] - kbro3_volume
+
+			#confirmation 
+			finished = input('Are you finished [y/n]?')
 		
 			#update reset volumes to dictionary 
 			update_dic = open(vol_db,"wb")
@@ -89,15 +114,15 @@ class VolCtl:
 				self.p.email_alert(ebody = alert)
 			print('There are ' + exp_left + ' worth of ' + self.volumes[key]['liquid'] + ' left at current consumption')
 
-    def pre_exp_check(self):
-        # stop program if not enough liquid or waste room
-        for key in self.volumes:
-        	if (self.volumes[key]['limit'] - self.volumes[key]['volume']) <= self.volumes[key]['expvol']:
-        		print('Insufficient ' + self.volumes[key]['liquid'] + ' remaining please change and follow prompts')
-        		self.reset_volume(key)
+	def pre_exp_check(self):
+		# stop program if not enough liquid or waste room
+		for key in self.volumes:
+			if (self.volumes[key]['limit'] - self.volumes[key]['volume']) <= self.volumes[key]['expvol']:
+				print('Insufficient ' + self.volumes[key]['liquid'] + ' remaining please change and follow prompts')
+				self.reset_volume(key)
 
-    def reset_volume(self,resetpump):
-        while hold_input != 'y':
-            hold_input = input('Have you reset ' + self.volumes[resetpump]['liquid'] + ' and is the experiment ready to continue? [y/n]')
-            if hold_input == 'y':
-                self.volumes[resetpump]['volume'] = 0						
+	def reset_volume(self,resetpump):
+		while hold_input != 'y':
+			hold_input = input('Have you reset ' + self.volumes[resetpump]['liquid'] + ' and is the experiment ready to continue? [y/n]')
+			if hold_input == 'y':
+				self.volumes[resetpump]['volume'] = 0						
