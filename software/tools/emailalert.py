@@ -18,7 +18,7 @@ def email_alert(efrom=FROM, eto=TO, ebody="BZ fail"):
     toaddr = COMMASPACE.join(eto)
     msg = MIMEMultipart()
     msg['From'] = fromaddr
-    msg['To'] = COMMASPACE.join(toaddr)
+    msg['To'] = toaddr
     msg['Subject'] = "BZ Limit alert!"
 
     body = ebody 
