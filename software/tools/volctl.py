@@ -11,8 +11,11 @@ import os, sys
 sys.path.append(os.path.abspath('..'))
 from tools import emailalert 
 
+
+
 class VolCtl:	
 	
+
 	def __init__(self):
 		#volume dictionary
 		self.volumes = {'P0': {'id':0, 'liquid': 'waste',   'volume':0, 'limit':5000, 'expvol':0},
@@ -31,14 +34,18 @@ class VolCtl:
 		else:	
 			pickle.dump(self.volumes, open(self.vol_db, "wb"))
 
-	def volcontrol(self):	
-		#display said volumes
+
+	def volume_control(self):	
+		#allow the user to reset the volumes either to 0 or specify a volume
+		
+		#display volumes
 		print(self.volumes)
-		#user inputs to reset
+		
 		finished = 'n'
 		while finished != 'y':
-			#give option to reset to 0 or eneter actual values
-			primary_input = input('would you like to (r)eset volumes or enter (s)pecific values')
+			#give option to reset to 0 or enter actual values
+			primary_input = input('would you like to (r)eset volumes, enter (s)pecific values or do (n)othing?')
+			#reset to 0
 			if primary_input = 'r':
 				reset_volumes = input('what would you like to reset? answer as comma seperated list. [w]aste, [f]erroin, [s]ulphuric, [m]alonic, [h]2o, [k]bro3')
 				split_reset = reset_volumes.split(',')							
@@ -54,29 +61,55 @@ class VolCtl:
 					self.volumes['P4']['volume'] = 0
 				if 'k' in split_reset:
 					self.volumes['P5']['volume'] = 0
+				else:
+					print('invalid input detected')	
+			#specific values 
 			if primary_input = 's':
 				value_input = input('what volume would you like to enter? answer as comma seperated list. [w]aste, [f]erroin, [s]ulphuric, [m]alonic, [h]2o, [k]bro3')
 				split_reset_2 = value_input.split(',')							
-				if 'w' in split_reset:
+				if 'w' in split_reset_2:
 					waste_volume = input('How much waste is there in ml')
-					self.volumes['P0']['volume'] = self.volumes['P0']['limit'] - waste_volume
-				if 'f' in split_reset:
+					try:
+						int(waste_volume)
+						self.volumes['P0']['volume'] = self.volumes['P0']['limit'] - waste_volume
+					except ValueError:
+						print(waste_volume + ' is not an intiger please try again')
+				if 'f' in split_reset_2:
 					ferroin_volume = input('How much ferroin is there in ml')
-					self.volumes['P1']['volume'] = self.volumes['P1']['limit'] - ferroin_volume
-				if 's' in split_reset:
+					try:
+						int(ferroin_volume)
+						self.volumes['P1']['volume'] = self.volumes['P1']['limit'] - ferroin_volume
+					except ValueError:
+						print(ferroin_volume + ' is not an intiger please try again')				
+				if 's' in split_reset_2:
 					sulphuric_volume = input('How much sulphuric is there in ml')
-					self.volumes['P2']['volume'] = self.volumes['P2']['limit'] - sulphuric_volume
-				if 'm' in split_reset:
+					try:
+						int(sulphuric_volume)
+						self.volumes['P2']['volume'] = self.volumes['P2']['limit'] - sulphuric_volume
+					except ValueError:
+						print(sulphuric_volume + ' is not an intiger please try again')				
+				if 'm' in split_reset_2:
 					malonic_volume = input('How much malonic is there in ml')
-					self.volumes['P3']['volume'] = self.volumes['P3']['limit'] - malonic_volume
-				if 'h' in split_reset:
+					try:
+						int(malonic_volume)
+						self.volumes['P3']['volume'] = self.volumes['P3']['limit'] - malonic_volume
+					except ValueError:
+						print(malonic_volume + ' is not an intiger please try again')				
+				if 'h' in split_reset_2:
 					water_volume = input('How much water is there in ml')
-					self.volumes['P4']['volume'] = self.volumes['P4']['limit'] - water_volume
-				if 'k' in split_reset:
+					try:
+						int(water_volume)
+						self.volumes['P4']['volume'] = self.volumes['P4']['limit'] - water_volume
+					except ValueError:
+						print(water_volume + ' is not an intiger please try again')				
+				if 'k' in split_reset_2:
 					kbro3_volume = input('How much Potasium Bromide is there in ml')
-					self.volumes['P5']['volume'] = self.volumes['P5']['limit'] - kbro3_volume
-
-			#confirmation 
+					try:
+						int(kbro3_volume)
+						self.volumes['P5']['volume'] = self.volumes['P5']['limit'] - kbro3_volume
+					except ValueError:
+						print(kbro3_volume + ' is not an intiger please try again')			
+			#confirmation or back to loop
 			finished = input('Are you finished [y/n]?')
 		
 			#update reset volumes to dictionary 
@@ -84,8 +117,8 @@ class VolCtl:
 			pickle.dump(volumes, update_dic)
 			update_dic.close()
 
-	
-	def expvolinput(self, water, ferroin, h2so4, kbro3, malonic, waste):
+
+	def update_single_experiment_volumes(self, water, ferroin, h2so4, kbro3, malonic, waste):
 		#updates the dictionary for total experiment volumes from automatedBZ file needed for below
 		if self.volume[key] == 'P0':
 			self.volume['P0']['expvol'] = waste
@@ -104,25 +137,37 @@ class VolCtl:
 		pickle.dump(self.volumes, update_dic)
 		update_dic.close()						
 
-	def countdown(self):
+
+	def countdown_experiments_left(self):
 	#takes in the repective volumes for each experiment and calculates the remaining experiments at that volume
 		for keys in self.volumes:
 			space = (volumes[keys]['limit'] - volumes[keys]['volume'])
 			exp_left = space/self.volumes[key]['expvol']
 			if exp_left <= 5:
-				alert = 'There are ' + exp_left + 'experiments worth of ' + self.volumes[key]['liquid'] + ' left once changed please run volctl and reset volumes'
-				self.p.email_alert(ebody = alert)
+				alert = 'There are ' + exp_left + ' experiments worth of ' + self.volumes[key]['liquid'] + ' left once changed please run volctl and reset volumes'
+				self.email_alert(ebody = alert)
 			print('There are ' + exp_left + ' worth of ' + self.volumes[key]['liquid'] + ' left at current consumption')
 
-	def pre_exp_check(self):
-		# stop program if not enough liquid or waste room
+
+	def check_sufficent_volume(self):
+		# checks there is enough volume for one experiment and will stop program if not enough liquid or waste room untill reset
 		for key in self.volumes:
 			if (self.volumes[key]['limit'] - self.volumes[key]['volume']) <= self.volumes[key]['expvol']:
 				print('Insufficient ' + self.volumes[key]['liquid'] + ' remaining please change and follow prompts')
+				close_alert = 'There is insufficent ' + self.volumes[key]['liquid'] + ' for experiment to proceed experiment is held untill volume is reset'
+				self.email_alert(ebody = close_alert)
 				self.reset_volume(key)
 
+
 	def reset_volume(self,resetpump):
+		#check_sufficent_volume redirects here if there is not enough 'liquid' for one experiment
 		while hold_input != 'y':
 			hold_input = input('Have you reset ' + self.volumes[resetpump]['liquid'] + ' and is the experiment ready to continue? [y/n]')
 			if hold_input == 'y':
-				self.volumes[resetpump]['volume'] = 0						
+				self.volumes[resetpump]['volume'] = 0
+
+
+
+if __name__ == '__main__':
+
+    v = VolCtl('/dev/ttyACM0')										
