@@ -50,11 +50,11 @@ class AutomatedPlatform():
         tot_malonic = self.malonic['quantity']             
         tot_waste =   tot_water + tot_ferroin + tot_h2so4 + tot_kbro3 + tot_malonic
         #update required experiment volumes  (expvol) in volctl
-        self.p.expvolinput(tot_water,tot_ferroin,tot_h2so4,tot_kbro3,tot_malonic,tot_waste)
+        self.v.update_single_experiment_volumes(tot_water,tot_ferroin,tot_h2so4,tot_kbro3,tot_malonic,tot_waste)
         #call countdown and print how many experiments are left
-        self.p.countdown()
+        self.v.countdown_experiments_left()
         #check enough for whole experiment to run and direct to reset if not
-        self.p.pre_exp_check()
+        self.v.check_sufficent_volume()
 
 
         #dispense the BZ recipe into the arena
