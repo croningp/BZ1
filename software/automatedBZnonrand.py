@@ -73,9 +73,9 @@ class AutomatedPlatform():
         pattern_shape = shape
         self.rv.record_threaded( patternshape )
         for i in range(1):
-            self.b.activate_pattern(pattern = pattern1,speed = exp_speed)
+            self.b.activate_pattern_defined_speed(pattern = pattern1,speed = exp_speed)
             time.sleep(7.5*1)
-            self.b.activate_pattern(pattern = pattern2 ,speed = exp_speed)
+            self.b.activate_pattern_defined_speed(pattern = pattern2 ,speed = exp_speed)
             time.sleep(7.5*1)
         self.b.disable_all()
 
