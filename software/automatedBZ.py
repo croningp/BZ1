@@ -18,13 +18,13 @@ class AutomatedPlatform():
         # original recipe was 2.5, 20, 12.5, 18, 19 (fe, h2o, h2s, mal, k)
         # but because on average there's a 3 ml remain of theoretically clean water
         # I am reducing the quantity of water to 16 to consider remains
-        self.waste =       {'pump':'P0', 'quantity':100, 'speedIn':40, 'speedOut':50}
+        self.waste =       {'pump':'P0', 'quantity':75, 'speedIn':40, 'speedOut':50}
         self.water =       {'pump':'P4', 'quantity':15,  'speedIn':60, 'speedOut':60}
         self.ferroin =     {'pump':'P1', 'quantity':2.5, 'speedIn':35, 'speedOut':35}
         self.h2so4 =       {'pump':'P2', 'quantity':12.5,'speedIn':60, 'speedOut':60}
         self.h2so4_clean = {'pump':'P2', 'quantity':5,   'speedIn':60, 'speedOut':60}
         self.kbro3 =       {'pump':'P5', 'quantity':19,  'speedIn':110,'speedOut':110}
-        self.kbro3_clean = {'pump':'P5', 'quantity':15,  'speedIn':110,'speedOut':110}
+        self.kbro3_clean = {'pump':'P5', 'quantity':12,  'speedIn':110,'speedOut':110}
         self.malonic =     {'pump':'P3', 'quantity':18,  'speedIn':60, 'speedOut':60}
         self.water_clean = {'pump':'P4', 'quantity':50,  'speedIn':60, 'speedOut':60} # what does clean and waste do here
 

@@ -29,11 +29,11 @@ class PumpsCtl:
                         'P4': {'id':4, 'syringe':12.5, 'valve': 'input', 'plunger' : 0},
                         'P5': {'id':5, 'syringe':12.5, 'valve': 'input', 'plunger' : 0}}         
        
-        self.volumes = {'P0': {'id':0, 'liquid': 'waste',   'volume':1500, 'limit':5000},
-                        'P1': {'id':1, 'liquid': 'ferroin', 'volume':0, 'limit':100},
-                        'P2': {'id':2, 'liquid': 'h2so4',   'volume':0, 'limit':1000},
-                        'P3': {'id':3, 'liquid': 'malonic', 'volume':700, 'limit':1000},
-                        'P4': {'id':4, 'liquid': 'water',   'volume':2000, 'limit':5000},
+        self.volumes = {'P0': {'id':0, 'liquid': 'waste',   'volume':500, 'limit':5000},
+                        'P1': {'id':1, 'liquid': 'ferroin', 'volume':80, 'limit':100},
+                        'P2': {'id':2, 'liquid': 'h2so4',   'volume':650, 'limit':1000},
+                        'P3': {'id':3, 'liquid': 'malonic', 'volume':225, 'limit':1000},
+                        'P4': {'id':4, 'liquid': 'water',   'volume':3000, 'limit':5000},
                         'P5': {'id':5, 'liquid': 'kbro3',   'volume':0, 'limit':1000}}         
         
 
@@ -237,7 +237,7 @@ class PumpsCtl:
                         update_dic.close()
 
 
-    def pre_exp_check(self, water, ferroin, h2so4, kbro3, malonic, waste)
+    def pre_exp_check(self, water, ferroin, h2so4, kbro3, malonic, waste):
 
         # stop program if not enough liquid or waste room
         if water >= self.volumes['P4']['limit'] - self.volumes['P4']['volume']:

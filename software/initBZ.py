@@ -15,7 +15,7 @@ p = PumpsCtl('/dev/ttyACM0')
 
 rv = RecordVideo(10)
 
-waste = {'pump':'P0', 'quantity':100, 'speedIn':50, 'speedOut':50}
+waste = {'pump':'P0', 'quantity':75, 'speedIn':50, 'speedOut':50}
 water = {'pump':'P4', 'quantity':5, 'speedIn':60, 'speedOut':60}
 h2so4 = {'pump':'P2', 'quantity':5, 'speedIn':60, 'speedOut':60}
 kbro3 = {'pump':'P5', 'quantity':10, 'speedIn':110, 'speedOut':110}
