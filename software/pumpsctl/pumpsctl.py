@@ -14,7 +14,8 @@ import os.path
 class PumpsCtl:
 
     def __init__(self, port):
-
+        
+        self.v = VolCtl()
         self.pumps_ser = Serial(port, 115200)
         sleep(2) # pyserial recommends 2 seconds wait after connection
         self.pumps_ser.flush(); self.pumps_ser.flushInput(); self.pumps_ser.flushOutput();
@@ -29,13 +30,6 @@ class PumpsCtl:
                         'P4': {'id':4, 'syringe':12.5, 'valve': 'input', 'plunger' : 0},
                         'P5': {'id':5, 'syringe':12.5, 'valve': 'input', 'plunger' : 0}}         
        
-        if os.path.isfile(picklepumps.p) is True:
-            self.volumes = pickle.load(open(self.vol_db, "rb"))
-
-        else:
-            print('Please run tools/volctl first to generate the volume dictionary.')
-            sys.quit()
-        
         # to control access to serial port
         self.ser_lock = threading.Lock() 
         d = threading.Thread(target=self.read_serial, daemon=True)
@@ -136,17 +130,8 @@ class PumpsCtl:
 
         pump_id = self.pumps[pump]['id']
         pump_lock = self.pump_locks[pump_id]
-
-        #had problem where waste volume was adding more than was actually going into it solved by waste just equalling things added 
-        if pump = 'P0':
-        else:
-            self.volumes[pump]['volume'] = self.volumes[pump]['volume'] += quantity
-            self.volumes['P0']['volume'] = self.volumes['P0']['volume'] += quantity
-            #updates dictionary with added inputs
-            update_dic = open(vol_db,"wb")
-            pickle.dump(self.volumes, update_dic)
-            update_dic.close()    
-
+        #call function to update volumes in volctl
+        self.v.update_volumes(self,pump,quantity):
 
         with pump_lock:
             syringe = self.pumps[pump]['syringe']
