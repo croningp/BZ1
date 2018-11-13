@@ -5,7 +5,7 @@ import threading
 # path hack to load a python script from a sibling folder
 import os, sys
 sys.path.append(os.path.abspath('..'))
-from tools import emailalert 
+from tools import VolCtl 
 import pickle
 import os.path
 
