@@ -29,12 +29,12 @@ class PumpsCtl:
                         'P4': {'id':4, 'syringe':12.5, 'valve': 'input', 'plunger' : 0},
                         'P5': {'id':5, 'syringe':12.5, 'valve': 'input', 'plunger' : 0}}         
        
-        self.volumes = {'P0': {'id':0, 'liquid': 'waste',   'volume':500, 'limit':5000},
-                        'P1': {'id':1, 'liquid': 'ferroin', 'volume':80, 'limit':100},
-                        'P2': {'id':2, 'liquid': 'h2so4',   'volume':650, 'limit':1000},
+        self.volumes = {'P0': {'id':0, 'liquid': 'waste',   'volume':0, 'limit':5000},
+                        'P1': {'id':1, 'liquid': 'ferroin', 'volume':0, 'limit':100},
+                        'P2': {'id':2, 'liquid': 'h2so4',   'volume':800, 'limit':1000},
                         'P3': {'id':3, 'liquid': 'malonic', 'volume':225, 'limit':1000},
-                        'P4': {'id':4, 'liquid': 'water',   'volume':3000, 'limit':5000},
-                        'P5': {'id':5, 'liquid': 'kbro3',   'volume':0, 'limit':1000}}         
+                        'P4': {'id':4, 'liquid': 'water',   'volume':0, 'limit':5000},
+                        'P5': {'id':5, 'liquid': 'kbro3',   'volume':225, 'limit':1000}}         
         
 
         script_path = os.path.dirname(os.path.realpath(__file__))
