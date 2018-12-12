@@ -150,23 +150,23 @@ class GridClickData:
             cv2.line(frame, (x1,y1+steph*i),  (x2,y1+steph*i), (0,0,255), 3)
 
 
-    def get_platform_corners(self, frame):
+    def get_platform_corners(self, frame, name=""):
         '''Given a frame, it will let the user click on the platform corners
         in order to obtain its coordinates: 
         top left corner, bottom right corner'''
 
-        cv2.namedWindow('Choose grid')
-        cv2.setMouseCallback('Choose grid', self.grid_callback)
+        cv2.namedWindow('Choose grid '+name)
+        cv2.setMouseCallback('Choose grid '+name, self.grid_callback)
         unmodified = frame.copy()
 
         # grid_callback sets finished to True once the user selects both corners
         while(self.finished is False):
             frame = unmodified.copy()
             self.draw_grid(frame)
-            cv2.imshow('Choose grid', frame)
+            cv2.imshow('Choose grid '+name, frame)
             cv2.waitKey(10)
 
-        cv2.destroyWindow('Choose grid')
+        cv2.destroyWindow('Choose grid '+name)
 
 
 
@@ -216,8 +216,9 @@ if __name__ == "__main__":
             ret, frame = video.read()
             click_cell = CellClickData()
             frame_counter += 1
-            # sys.stdout.write("\r{0} in {1}".format(frame_counter, total_frames))
-            # sys.stdout.flush()
+            if frame_counter % 100 == 0:
+                sys.stdout.write("\r{0} in {1}".format(frame_counter, total_frames))
+                sys.stdout.flush()
 
         if ret is False:
             break

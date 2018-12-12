@@ -60,8 +60,10 @@ class AutomatedPlatform():
         # need variable titles
         exp_time = datetime.now().strftime('%Y-%m-%d %H:%M')
         self.rv.record_threaded( exp_time )
-        for i in range(30):
-            self.b.activate_rand(exp_time)
+        for i in range(15):
+            speeds = self.b.activate_rand_single(exp_time)
+            time.sleep(60*1)
+            self.b.repeat_rand(speeds)
             time.sleep(60*1)
         self.b.disable_all()
 
