@@ -10,14 +10,14 @@
 
 import cv2
 import numpy as np
-import sys
+import sys, glob, os, multiprocessing
 from generate_dataset import GridClickData
 from generate_dataset import bz_average_color
 from train_svm import equalise_img
 from sklearn.externals import joblib
 from sklearn.decomposition import PCA
 from collections import deque
-
+from time import sleep
 
 
 class TestSVM():
@@ -207,63 +207,88 @@ class HSVHistogramBkgMem(TestSVM):
         return int(decision[1][0][0]) 
 
 
+def SVMsinglevideo(path, processLimiter=multiprocessing.Lock()):
+
+    with processLimiter:
+        print("Processing video "+path)
+        
+        # svm = BlueChannel('svm_bluechannel.dat')
+        # svm = RedBlueChannel('svm_rbchannel.dat')
+        # svm = PCATransform('svm_pca.dat', 'pca.dat')
+        # svm = HSVHistogram('hsvhist.dat')
+        svm = HSVHistogramBkgMem('hsvhistmem.dat')
+
+        video = cv2.VideoCapture(path)
+        # print(video.get(cv2.CAP_PROP_FRAME_COUNT))
+        click_grid = GridClickData()    
+        play = True # True means play, False means pause
+
+        bkg_window = 3000 # number of avg frame colors we will keep
+        frame_color = deque(maxlen=bkg_window) # keeps the average color per frame
+
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        outname = path.split(".")[0] + "_svm.avi"
+        out = cv2.VideoWriter(outname, fourcc, 20.0, (800,600))
+        counter = 0
+
+        while(True):
+
+            if play is True:
+                ret, frame = video.read()
+
+            if ret is False:
+                break
+
+            counter = counter + 1
+
+            # first thing we ask the user to define the 5x5 grid
+            if click_grid.finished is False:
+                click_grid.get_platform_corners(frame, path)
+
+            # calculate the average color of this frame
+            avg_c = bz_average_color(frame, click_grid.points) 
+            # save it
+            frame_color.append(avg_c)
+            # calculate the average color of the last n frames
+            window_c = np.average(frame_color, axis=0).astype('float32')
+
+            # "click_grid" is now populated with the x,y corners of the platform
+            click_grid.draw_grid(frame)
+            # we use the svm to decide if the cells are painted red or blue
+            svm.paint_cells(frame, click_grid.points, window_c)
+
+            #cv2.imshow('Video', frame)
+            out.write(frame)
+            #key = cv2.waitKey(33) & 0xFF # 33 means roughly 30FPS 
+
+            # if key == ord('p'):
+            #    play = not play
+
+
+        video.release()
+        out.release()
+        cv2.destroyAllWindows()
+        # print(counter)
+
+
+def SVMfolder(pathtofolder):
+    ''' This function will execute the previous single svm video function
+    in all the files of a folder.
+    NOT WORKING WITH MULTITHREADING, I am keeping it simple.
+    Multithreading was giving some errors with the Xs GTK and Deque'''
+
+    s = multiprocessing.Semaphore(4)
+    # we only want to process the videos with fast5 in the name
+    allvideos = glob.glob(pathtofolder+'*_fast5.avi')
+    for video in allvideos:
+        p = multiprocessing.Process(target=SVMsinglevideo, args=(video,s))
+        p.start()
+        #cpSVMsinglevideo(video)
+
 
 if __name__ == "__main__":
-
-    # svm = BlueChannel('svm_bluechannel.dat')
-    # svm = RedBlueChannel('svm_rbchannel.dat')
-    # svm = PCATransform('svm_pca.dat', 'pca.dat')
-    # svm = HSVHistogram('hsvhist.dat')
-    svm = HSVHistogramBkgMem('hsvhistmem.dat')
-
-    video = cv2.VideoCapture(sys.argv[1])
-    # print(video.get(cv2.CAP_PROP_FRAME_COUNT))
-    click_grid = GridClickData()    
-    play = True # True means play, False means pause
-
-    bkg_window = 3000 # number of avg frame colors we will keep
-    frame_color = deque(maxlen=bkg_window) # keeps the average color per frame
-
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    outname = sys.argv[1].split(".")[0] + "_svm.avi"
-    out = cv2.VideoWriter(outname, fourcc, 20.0, (800,600))
-    counter = 0
-
-    while(True):
-
-        if play is True:
-            ret, frame = video.read()
-
-        if ret is False:
-            break
-
-        counter = counter + 1
-
-        # first thing we ask the user to define the 5x5 grid
-        if click_grid.finished is False:
-            click_grid.get_platform_corners(frame)
-
-        # calculate the average color of this frame
-        avg_c = bz_average_color(frame, click_grid.points) 
-        # save it
-        frame_color.append(avg_c)
-        # calculate the average color of the last n frames
-        window_c = np.average(frame_color, axis=0).astype('float32')
-
-        # "click_grid" is now populated with the x,y corners of the platform
-        click_grid.draw_grid(frame)
-        # we use the svm to decide if the cells are painted red or blue
-        svm.paint_cells(frame, click_grid.points, window_c)
-
-        # cv2.imshow('Video', frame)
-        out.write(frame)
-        # key = cv2.waitKey(33) & 0xFF # 33 means roughly 30FPS 
-
-        # if key == ord('p'):
-        #    play = not play
+    
+    SVMsinglevideo(sys.argv[1])
+    #SVMfolder(sys.argv[1])
 
 
-    video.release()
-    out.release()
-    cv2.destroyAllWindows()
-    # print(counter)

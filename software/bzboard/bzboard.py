@@ -12,7 +12,7 @@ If you want better functionality, error handling,... check the other one
 
 import serial, time, json, random, csv
 from datetime import datetime
-from random import randint
+from random import randint, choice
 import json, os
 
 
@@ -120,7 +120,7 @@ class BZBoard:
                 self.activate_motor(i, speed*0) # x1 before if motor is off speed off
     
 
-    def activate_rand(self, filename):
+    def activate_rand_all(self, filename):
         '''Activate a random pattern - each motor at a random speed - and append
         this random configuration to the end of the file filename'''
 
@@ -137,12 +137,59 @@ class BZBoard:
         for i in self.motors.keys():
             speed = rand_speed[i]
             self.activate_motor(i, speed)
+
+        save_pattern_in_json(rand_speed, filename)
+        return rand_speed
+
+
+    def repeat_rand(self, filename, inspeeds):
+        ''' Repeats a random experiment and saves it into the corresponding
+        json file'''
+    
+        # enable the motors with the random speeds
+        for i in self.motors.keys():
+            speed = inspeeds[i]
+            self.activate_motor(i, speed)
+
+        save_pattern_in_json(rand_speed, filename)
+        return inspeeds
+
+
+    def activate_rand_single(self, filename):
+        '''Activates only 1 motor at a random speed - and append
+        this random configuration to the end of the file filename'''
+
+        # first generate dict as before with all 0s
+        speeds = { 
+                    "A1":0,"A2":0,"A3":0,"A4":0,"A5":0,
+                    "B1":0,"B2":0,"B3":0,"B4":0,"B5":0,
+                    "C1":0,"C2":0,"C3":0,"C4":0,"C5":0,
+                    "D1":0,"D2":0,"D3":0,"D4":0,"D5":0,
+                    "E1":0,"E2":0,"E3":0,"E4":0,"E5":0
+                    }
+
+        random_motor = choice("ABCDE")+choice("12345") # choice is from random
+        speed = randint(0,2000)
+
+        # store the speed and activate the motor
+        speeds[random_motor] = speed
+        self.activate_motor(random_motor, speed)
          
+        save_pattern_in_json(speeds, filename)
+        return speeds
+   
+
+    def save_pattern_in_json(self, pattern, filename):
+        '''given a dict with all the motors keys and their speeds, and a filename
+        it will append this pattern into that filename with a timestamp
+        This function was created for the RNN experiments'''
+    
+        
         # we will use time as keys in the dict
         exp_time = datetime.now().strftime('%Y-%m-%d_%H:%M')
         filename = filename +'.json'
         # new data entry for the dict
-        new_dict = { exp_time : rand_speed}
+        new_dict = { exp_time : pattern}
         
         # if the file does not exist, meaning its the first experiment
         if os.path.isfile(filename) is False:
@@ -158,7 +205,6 @@ class BZBoard:
         with open(filename, 'w') as f:
             json.dump(data, f)
 
-           
 
     def disable_motor(self, motor_code):
 
