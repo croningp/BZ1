@@ -5,7 +5,7 @@ import threading
 # path hack to load a python script from a sibling folder
 import os, sys
 sys.path.append(os.path.abspath('..'))
-from tools import volctl 
+from tools.volctl import VolCtl 
 import pickle
 import os.path
 
@@ -13,9 +13,9 @@ import os.path
 
 class PumpsCtl:
 
-    def __init__(self, port):
+    def __init__(self, port, volctl):
 
-        self.v = VolCtl()
+        self.v = volctl
         self.pumps_ser = Serial(port, 115200)
         sleep(2) # pyserial recommends 2 seconds wait after connection
         self.pumps_ser.flush(); self.pumps_ser.flushInput(); self.pumps_ser.flushOutput();
@@ -131,7 +131,7 @@ class PumpsCtl:
         pump_id = self.pumps[pump]['id']
         pump_lock = self.pump_locks[pump_id]
         #call function to update volumes in volctl
-        self.v.update_volumes(self,pump,quantity):
+        self.v.update_volumes(pump, quantity)
 
         with pump_lock:
             syringe = self.pumps[pump]['syringe']
@@ -180,4 +180,5 @@ class PumpsCtl:
 
 if __name__ == '__main__':
 
-    p = PumpsCtl('/dev/ttyACM0')
+    v = VolCtl()
+    p = PumpsCtl('/dev/ttyACM0', v)

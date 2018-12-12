@@ -1,13 +1,11 @@
 import time
 from pumpsctl.pumpsctl import PumpsCtl
 from bzboard.bzboard import BZBoard
-from volctl.volctl import VolCtl
+from tools.volctl import VolCtl
 
 from img_proc.record_cam import RecordVideo
 from datetime import datetime
 import os, sys
-sys.path.append(os.path.abspath('..'))
-from tools import volctl
 import pickle
 
 
@@ -16,10 +14,9 @@ class AutomatedPlatform():
 
     def __init__(self):
 
-        self.b = BZBoard("/dev/ttyACM1")
-        self.p = PumpsCtl('/dev/ttyACM0')
         self.v = VolCtl()
-
+        self.b = BZBoard("/dev/ttyACM1")
+        self.p = PumpsCtl('/dev/ttyACM0', self.v)
         self.rv = RecordVideo(30*60)
 
         # original recipe was 2.5, 20, 12.5, 18, 19 (fe, h2o, h2s, mal, k)
@@ -86,7 +83,7 @@ class AutomatedPlatform():
             self.p.pump_multiple(self.water_clean, self.h2so4_clean, 
                     self.kbro3_clean) # clean system
             time.sleep(2*60)
-
+            
         for i in range(1):
             self.p.pump_multiple(self.waste)
             self.p.pump_multiple(self.water_clean) 
@@ -95,7 +92,7 @@ class AutomatedPlatform():
             self.p.pump_multiple(self.waste)
 
 
-    def preform_phase_experiment(self, water=15, ferroin=2.5, h2so4=12.5, kbro3=19, malonic=18, shape, pattern1, pattern2, exp_speed):
+    def preform_phase_experiment(self, shape='B3C3900', pattern1="bzboard/patterns/C3.json", pattern2="bzboard/patterns/C3.json", exp_speed =900, water=15, ferroin=2.5, h2so4=12.5, kbro3=19, malonic=18):
 
         #set experiental parameters 
         self.water['quantity'] = water
@@ -117,28 +114,32 @@ class AutomatedPlatform():
         self.v.countdown_experiments_left()
         #check enough for whole experiment to run and direct to reset if not
         self.v.check_sufficent_volume()
-
-
+        
         #dispense the BZ recipe into the arena
         self.p.pump_multiple(self.water, self.malonic, self.kbro3, self.h2so4, 
                 self.ferroin)
         # activate all max speed for 30 second to mix
-        self.b.activate_all(3000)
-        time.sleep(60)
+        self.b.activate_all(1000)
+        time.sleep(5*60)
         self.b.disable_all()
 
         # wait for 10 minutes
         time.sleep(60*10)
-        
+                
         # activate patterns to create in phase/out of phase simple patterns 
         # need variable titles
-        pattern_shape = shape
-        self.rv.record_threaded( patternshape )
+        self.rv.record_threaded(shape)
+        
+        #pat1 = self.b.pattern_from_file(pattern1)
+        #pat2 = self.b.pattern_from_file(pattern2)
+
         for i in range(1):
-            self.b.activate_pattern_defined_speed(pattern = pattern1,speed = exp_speed)
-            time.sleep(7.5*1)
-            self.b.activate_pattern_defined_speed(pattern = pattern2 ,speed = exp_speed)
-            time.sleep(7.5*1)
+            self.b.activate_motor('B3',900)
+            self.b.activate_motor('C3',750)
+            self.b.activate_motor('D3',900)
+            
+            time.sleep(60*30)
+        
         self.b.disable_all()
 
         # start cleaning platform
@@ -147,7 +148,7 @@ class AutomatedPlatform():
             self.p.pump_multiple(self.water_clean, self.h2so4_clean, 
                     self.kbro3_clean) # clean system
             time.sleep(2*60)
-
+            
         for i in range(1):
             self.p.pump_multiple(self.waste)
             self.p.pump_multiple(self.water_clean) 
@@ -161,4 +162,4 @@ if __name__ == "__main__":
     ap = AutomatedPlatform()
 
     for i in range(1): # number of experiments
-        ap.perform_experiment()
+        ap.preform_phase_experiment(shape='B3D3900C3750', pattern1="bzboard/patterns/A3C3E3.json", pattern2="bzboard/patterns/B3D3.json",water=12.5, ferroin=3, kbro3=20, malonic=19,exp_speed = 900)
