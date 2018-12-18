@@ -5,7 +5,7 @@ import threading
 # path hack to load a python script from a sibling folder
 import os, sys
 sys.path.append(os.path.abspath('..'))
-from tools import emailalert 
+from tools.volctl import VolCtl 
 import pickle
 import os.path
 
@@ -13,8 +13,9 @@ import os.path
 
 class PumpsCtl:
 
-    def __init__(self, port):
+    def __init__(self, port, volctl):
 
+        self.v = volctl
         self.pumps_ser = Serial(port, 115200)
         sleep(2) # pyserial recommends 2 seconds wait after connection
         self.pumps_ser.flush(); self.pumps_ser.flushInput(); self.pumps_ser.flushOutput();
@@ -28,6 +29,7 @@ class PumpsCtl:
                         'P3': {'id':3, 'syringe':12.5, 'valve': 'input', 'plunger' : 0},
                         'P4': {'id':4, 'syringe':12.5, 'valve': 'input', 'plunger' : 0},
                         'P5': {'id':5, 'syringe':12.5, 'valve': 'input', 'plunger' : 0}}         
+<<<<<<< HEAD
        
         self.volumes = {'P0': {'id':0, 'liquid': 'waste',   'volume':0, 'limit':5000},
                         'P1': {'id':1, 'liquid': 'ferroin', 'volume':0, 'limit':100},
@@ -45,6 +47,9 @@ class PumpsCtl:
         else:
             pickle.dump(self.volumes, open(self.vol_db, "wb"))
         
+=======
+              
+>>>>>>> bcdcecd8c53c595a3780ded5dfc2a649d3d211c8
         # to control access to serial port
         self.ser_lock = threading.Lock() 
         d = threading.Thread(target=self.read_serial, daemon=True)
@@ -55,9 +60,6 @@ class PumpsCtl:
         # to make it thread safe, no idea if erase() is thread safe
         self.ctasks_lock = threading.Lock()
       
-        # to make the function that checks for volumes thread safe
-        self.check_vols_lock = threading.Lock()
-
         d.start()
 
 
@@ -148,9 +150,8 @@ class PumpsCtl:
 
         pump_id = self.pumps[pump]['id']
         pump_lock = self.pump_locks[pump_id]
-
-        with self.check_vols_lock:
-            self.check_volumes(pump, quantity)
+        #call function to update volumes in volctl
+        self.v.update_volumes(pump, quantity)
 
         with pump_lock:
             syringe = self.pumps[pump]['syringe']
@@ -183,81 +184,7 @@ class PumpsCtl:
             t.start()
 
         for t in threads:
-            t.join()
-
-
-    def check_volumes(self, pump, quantity):
-        ''' It will update the volumes list, and check if the bottle needs
-        to be replaced, in which case it will wait for user input and send
-        an e-mail'''
-
-        #add quantity to associated volume
-        self.volumes[pump]['volume'] += quantity
-
-        #pickle update
-        update_dic = open(self.vol_db,"wb")
-        pickle.dump(self.volumes, update_dic)
-        update_dic.close()
-
-        if self.volumes[pump]['volume'] >= self.volumes[pump]['limit']*1.0:
-
-            alert = 'limit reached for ' + self.volumes[pump]['liquid']
-            emailalert.email_alert( ebody=alert )
-
-            # set input to annoy user into changing vessel
-            user_input = 'n'
-            while user_input != 'y':
-                user_input = input('Has ' + self.volumes[pump]['liquid'] + ' been reset?([y]es/[n]o) ')
-                
-                if user_input == 'y':
-                    self.volumes[pump]['volume'] = 0
-                    more_input = 'n'
-                    more_input = input('would you like to reset futher values?([y]es/[n]o) ')
-                    
-                    if more_input == 'y':
-                        reset_volumes = input('what would you like to reset? answer as comma seperated list. [w]aste, [f]erroin, [s]ulphuric, [m]alonic, [h]2o, [k]bro3 ')
-                        split_reset = reset_volumes.split(',')
-                        
-                        if 'w' in split_reset:
-                            self.volumes['P0']['volume'] = 0
-                        if 'f' in split_reset:
-                            self.volumes['P1']['volume'] = 0
-                        if 's' in split_reset:
-                            self.volumes['P2']['volume'] = 0
-                        if 'm' in split_reset:
-                            self.volumes['P3']['volume'] = 0
-                        if 'h' in split_reset:
-                            self.volumes['P4']['volume'] = 0
-                        if 'k' in split_reset:
-                            self.volumes['P5']['volume'] = 0
-                        
-                        #pickle update
-                        update_dic = open(self.vol_db,"wb")
-                        pickle.dump(self.volumes, update_dic)
-                        update_dic.close()
-
-
-    def pre_exp_check(self, water, ferroin, h2so4, kbro3, malonic, waste):
-
-        # stop program if not enough liquid or waste room
-        if water >= self.volumes['P4']['limit'] - self.volumes['P4']['volume']:
-            print('Water limit reached experiment terminated')
-            sys.exit()
-        if ferroin >= self.volumes['P1']['limit'] - self.volumes['P1']['volume']:
-            print('Ferroin limit reached experiment terminated')
-            sys.exit()    
-        if h2so4 >= self.volumes['P2']['limit'] - self.volumes['P2']['volume']:
-            print('Sulphuric acid limit reached experiment terminated')
-            sys.exit()
-        if kbro3 >= self.volumes['P5']['limit'] - self.volumes['P5']['volume']:
-            print('Pottasium Bromate limit reached experiment terminated')
-            sys.exit()
-        if malonic >= self.volumes['P3']['limit'] - self.volumes['P3']['volume']:
-            print('Malonic limit reached experiment terminated')
-            sys.exit()
-        if waste >= self.volumes['P0']['limit'] - self.volumes['P0']['volume']:
-            print('Waste limit reached experiment terminated')
-            sys.exit()
+            t.join()       
 
 
     def close(self):
@@ -273,4 +200,5 @@ class PumpsCtl:
 
 if __name__ == '__main__':
 
-    p = PumpsCtl('/dev/ttyACM0')
+    v = VolCtl()
+    p = PumpsCtl('/dev/ttyACM0', v)

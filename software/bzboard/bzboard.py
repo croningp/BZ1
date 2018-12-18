@@ -118,6 +118,17 @@ class BZBoard:
                 self.activate_motor(i, speed*2) # x5 before
             else:
                 self.activate_motor(i, speed*0) # x1 before if motor is off speed off
+
+    
+    def activate_pattern_defined_speed(self, pattern, speed):
+        #same as above but speed is defined and costatn across motors
+        for i in pattern:
+            _, _, speed = self.motors[i] 
+
+            if pattern[i] == 1:
+                self.activate_motor(i, speed) # x5 before
+            else:
+                self.activate_motor(i, speed*0) # x1 before if motor is off speed off            
     
 
     def activate_rand_all(self, filename):

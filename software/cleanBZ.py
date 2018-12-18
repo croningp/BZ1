@@ -1,9 +1,11 @@
 import time
 from pumpsctl.pumpsctl import PumpsCtl
 from bzboard.bzboard import BZBoard
+from tools.volctl import VolCtl
 
 b = BZBoard("/dev/ttyACM1")
-p = PumpsCtl('/dev/ttyACM0')
+v = VolCtl()
+p = PumpsCtl('/dev/ttyACM0', v)
 
 
 # I am reducing the quantity of water to 16 to consider remains
