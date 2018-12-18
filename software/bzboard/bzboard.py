@@ -138,7 +138,7 @@ class BZBoard:
             speed = rand_speed[i]
             self.activate_motor(i, speed)
 
-        save_pattern_in_json(rand_speed, filename)
+        self.save_pattern_in_json(rand_speed, filename)
         return rand_speed
 
 
@@ -151,7 +151,7 @@ class BZBoard:
             speed = inspeeds[i]
             self.activate_motor(i, speed)
 
-        save_pattern_in_json(rand_speed, filename)
+        self.save_pattern_in_json(inspeeds, filename)
         return inspeeds
 
 
@@ -173,9 +173,12 @@ class BZBoard:
 
         # store the speed and activate the motor
         speeds[random_motor] = speed
-        self.activate_motor(random_motor, speed)
-         
-        save_pattern_in_json(speeds, filename)
+        # enable the motors with the random speeds
+        for i in self.motors.keys():
+            speed = speeds[i]
+            self.activate_motor(i, speed)
+
+        self.save_pattern_in_json(speeds, filename)
         return speeds
    
 
@@ -186,7 +189,7 @@ class BZBoard:
     
         
         # we will use time as keys in the dict
-        exp_time = datetime.now().strftime('%Y-%m-%d_%H:%M')
+        exp_time = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
         filename = filename +'.json'
         # new data entry for the dict
         new_dict = { exp_time : pattern}
