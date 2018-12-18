@@ -3,7 +3,7 @@ from bzboard.bzboard import BZBoard
 
 b = BZBoard("/dev/ttyACM1")
 
-#b.activate_motor('D3',900)
+##b.activate_motor('D3',900)
 #for i in range(100):
 b.activate_motor('C3',900)
 	#time.sleep(1)
