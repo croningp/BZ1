@@ -75,7 +75,7 @@ class AutomatedPlatform():
         for i in range(15):
             speeds = self.b.activate_rand_single(exp_time)
             time.sleep(60*1)
-            self.b.repeat_rand(speeds)
+            self.b.repeat_rand(exp_time, speeds)
             time.sleep(60*1)
         self.b.disable_all()
 
@@ -164,4 +164,4 @@ if __name__ == "__main__":
     ap = AutomatedPlatform()
 
     for i in range(1): # number of experiments
-        ap.preform_phase_experiment(shape='B3D3900C3750', pattern1="bzboard/patterns/A3C3E3.json", pattern2="bzboard/patterns/B3D3.json",water=12.5, ferroin=3, kbro3=20, malonic=19,exp_speed = 900)
+        ap.perform_experiment()
