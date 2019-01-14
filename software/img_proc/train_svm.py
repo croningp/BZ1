@@ -56,8 +56,8 @@ class TrainSVM:
         svm = cv2.ml.SVM_create()
         svm.setKernel(cv2.ml.SVM_RBF)
         svm.setType(cv2.ml.SVM_C_SVC)
-        svm.setC(5) # before 2.67
-        svm.setGamma(5) # before 5.383
+        svm.setC(9) # before 2.67
+        svm.setGamma(9) # before 5.383
         svm.train(trainData, cv2.ml.ROW_SAMPLE, self.responses)
         svm.save(file_to_save)
         result = svm.predict(testData)
