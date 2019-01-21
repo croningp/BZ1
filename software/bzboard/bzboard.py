@@ -179,15 +179,16 @@ class BZBoard:
                     "E1":0,"E2":0,"E3":0,"E4":0,"E5":0
                     }
 
-        random_motor = choice("ABCDE")+choice("12345") # choice is from random
-        speed = randint(0,2000)
+        for i in range(6):
+            random_motor = choice("ABCDE")+choice("12345") # choice is from random
+            speed = randint(0,1000)
 
-        # store the speed and activate the motor
-        speeds[random_motor] = speed
-        # enable the motors with the random speeds
-        for i in self.motors.keys():
-            speed = speeds[i]
-            self.activate_motor(i, speed)
+            # store the speed and activate the motor
+            speeds[random_motor] = speed
+            # enable the motors with the random speeds
+            for i in self.motors.keys():
+                speed = speeds[i]
+                self.activate_motor(i, speed)
 
         self.save_pattern_in_json(speeds, filename)
         return speeds

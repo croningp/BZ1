@@ -29,27 +29,7 @@ class PumpsCtl:
                         'P3': {'id':3, 'syringe':12.5, 'valve': 'input', 'plunger' : 0},
                         'P4': {'id':4, 'syringe':12.5, 'valve': 'input', 'plunger' : 0},
                         'P5': {'id':5, 'syringe':12.5, 'valve': 'input', 'plunger' : 0}}         
-<<<<<<< HEAD
-       
-        self.volumes = {'P0': {'id':0, 'liquid': 'waste',   'volume':0, 'limit':5000},
-                        'P1': {'id':1, 'liquid': 'ferroin', 'volume':0, 'limit':100},
-                        'P2': {'id':2, 'liquid': 'h2so4',   'volume':150, 'limit':1000},
-                        'P3': {'id':3, 'liquid': 'malonic', 'volume':400, 'limit':1000},
-                        'P4': {'id':4, 'liquid': 'water',   'volume':0, 'limit':5000},
-                        'P5': {'id':5, 'liquid': 'kbro3',   'volume':50, 'limit':1000}}         
-        
 
-        script_path = os.path.dirname(os.path.realpath(__file__))
-        self.vol_db = script_path + '/picklepumps.p'
-        if os.path.isfile(self.vol_db) is True:
-            self.volumes = pickle.load(open(self.vol_db, "rb"))
-
-        else:
-            pickle.dump(self.volumes, open(self.vol_db, "wb"))
-        
-=======
-              
->>>>>>> bcdcecd8c53c595a3780ded5dfc2a649d3d211c8
         # to control access to serial port
         self.ser_lock = threading.Lock() 
         d = threading.Thread(target=self.read_serial, daemon=True)
