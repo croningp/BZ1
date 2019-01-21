@@ -288,7 +288,7 @@ def SVMfolder(pathtofolder):
 
 if __name__ == "__main__":
     
-    SVMsinglevideo(sys.argv[1])
-    #SVMfolder(sys.argv[1])
+    #SVMsinglevideo(sys.argv[1])
+    SVMfolder(sys.argv[1])
 
 
