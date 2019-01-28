@@ -30,7 +30,7 @@ ferroin = {'pump':'P1', 'quantity':1, 'speedIn':35, 'speedOut':35}
 
 
 # make sure these 4 pumps are filled, I will test ferroin individually 
-p.pump_multiple(water, malonic, kbro3, h2so4,)
+p.pump_multiple(water, malonic, kbro3, h2so4,ferroin)
 # activate all max speed for 30 second to mix
 b.activate_all(3000)
 time.sleep(30)
