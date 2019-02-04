@@ -10,10 +10,9 @@ If you want better functionality, error handling,... check the other one
 
 
 
-import serial, time, json, random, csv
+import serial, time, json, os
 from datetime import datetime
 from random import randint, choice
-import json, os
 
 
 
@@ -51,7 +50,6 @@ class BZBoard:
         self.disable_all()
         self.ser.close()
         del self.ser
-        # disables all motors and clears variables
 
 
     def close(self):
@@ -59,7 +57,6 @@ class BZBoard:
         self.disable_all()
         self.ser.close()
         del self.ser
-        # seems to do the same 
 
 
     def pattern_from_file(self, patternfile):
@@ -116,34 +113,31 @@ class BZBoard:
                 self.activate_motor(i, speed*0) # x1 before if motor is off speed off
 
     
-    def activate_pattern_defined_speed(self, pattern, speed):
-        #same as above but speed is defined and costatn across motors
-        for i in pattern:
-            _, _, speed = self.motors[i] 
-
-            if pattern[i] == 1:
-                self.activate_motor(i, speed) # x5 before
-            else:
-                self.activate_motor(i, speed*0) # x1 before if motor is off speed off            
-    
-
     def activate_rand_all(self, filename):
         '''Activate a random pattern - each motor at a random speed - and append
         this random configuration to the end of the file filename'''
 
         # random 5*5 speed
         rand_speed = { 
-                    "A1":randint(0,255),"A2":randint(0,255),"A3":randint(0,255),"A4":randint(0,255),"A5":randint(0,255),
-                    "B1":randint(0,255),"B2":randint(0,255),"B3":randint(0,255),"B4":randint(0,255),"B5":randint(0,255),
-                    "C1":randint(0,255),"C2":randint(0,255),"C3":randint(0,255),"C4":randint(0,255),"C5":randint(0,255),
-                    "D1":randint(0,255),"D2":randint(0,255),"D3":randint(0,255),"D4":randint(0,255),"D5":randint(0,255),
-                    "E1":randint(0,255),"E2":randint(0,255),"E3":randint(0,255),"E4":randint(0,255),"E5":randint(0,255)
+                    "A1":randint(-10,10),"A2":randint(-10,10),"A3":randint(-10,10),"A4":randint(-10,10),"A5":randint(-10,10),
+                    "B1":randint(-10,10),"B2":randint(-10,10),"B3":randint(-10,10),"B4":randint(-10,10),"B5":randint(-10,10),
+                    "C1":randint(-10,10),"C2":randint(-10,10),"C3":randint(-10,10),"C4":randint(-10,10),"C5":randint(-10,10),
+                    "D1":randint(-10,10),"D2":randint(-10,10),"D3":randint(-10,10),"D4":randint(-10,10),"D5":randint(-10,10),
+                    "E1":randint(-10,10),"E2":randint(-10,10),"E3":randint(-10,10),"E4":randint(-10,10),"E5":randint(-10,10)
                     }
 
         # enable the motors with the random speeds
         for i in self.motors.keys():
             speed = rand_speed[i]
-            self.activate_motor(i, speed)
+            
+            if speed > 0:
+                direction = 1
+            else:
+                direction = 0
+            
+            speed = abs(speed)*25
+            
+            self.activate_motor(i, direction, speed)
 
         self.save_pattern_in_json(rand_speed, filename)
         return rand_speed
@@ -152,17 +146,24 @@ class BZBoard:
     def repeat_rand(self, filename, inspeeds):
         ''' Repeats a random experiment and saves it into the corresponding
         json file'''
-    
-        # enable the motors with the random speeds
+        
         for i in self.motors.keys():
-            speed = inspeeds[i]
-            self.activate_motor(i, speed)
+            speed = rand_speed[i]
+            
+            if speed > 0:
+                direction = 1
+            else:
+                direction = 0
+            
+            speed = abs(speed)*25
+            
+            self.activate_motor(i, direction, speed)
 
-        self.save_pattern_in_json(inspeeds, filename)
-        return inspeeds
+        self.save_pattern_in_json(rand_speed, filename)
+        return rand_speed
 
 
-    def activate_rand_single(self, filename):
+    def activate_rand_multiple(self, filename):
         '''Activates only 1 motor at a random speed - and append
         this random configuration to the end of the file filename'''
 
@@ -175,15 +176,25 @@ class BZBoard:
                     "E1":0,"E2":0,"E3":0,"E4":0,"E5":0
                     }
 
-        random_motor = choice("ABCDE")+choice("12345") # choice is from random
-        speed = randint(0,255)
+        for i in range(5):
+            random_motor = choice("ABCDE")+choice("12345") # choice is from random
+            speed = randint(-10,10)
 
-        # store the speed and activate the motor
-        speeds[random_motor] = speed
+            # store the speed and activate the motor
+            speeds[random_motor] = speed
+        
         # enable the motors with the random speeds
-        for i in self.motors.keys():
-            speed = speeds[i]
-            self.activate_motor(i, speed)
+        for i in speeds:
+            speed = rand_speed[i]
+            
+            if speed > 0:
+                direction = 1
+            else:
+                direction = 0
+            
+            speed = abs(speed)*25
+            
+            self.activate_motor(i, direction, speed)
 
         self.save_pattern_in_json(speeds, filename)
         return speeds
