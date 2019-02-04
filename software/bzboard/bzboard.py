@@ -26,12 +26,12 @@ class BZBoard:
         time.sleep(2) # serial docs recommend a wait just after connection
         self.ser.flush(); self.ser.flushInput(); self.ser.flushOutput();
 
-        self.motors = { # [adafruit_shield, pin, min_speed]
-            "A1":[1, 8, 500],"A2":[1, 9, 565],"A3":[1,10, 525],"A4":[1,11, 545],"A5":[1,12, 590],
-            "B1":[1,14, 510],"B2":[1,15, 600],"B3":[1,13, 580],"B4":[1, 0, 610],"B5":[1, 1, 565],
-            "C1":[1, 2, 640],"C2":[1, 3, 605],"C3":[1, 4, 550],"C4":[1, 5, 530],"C5":[1, 6, 620],
-            "D1":[1, 7, 575],"D2":[0, 4, 595],"D3":[0, 8, 650],"D4":[0, 9, 545],"D5":[0,10, 510],
-            "E1":[0,11, 565],"E2":[0,12, 550],"E3":[0,13, 565],"E4":[0,14, 560],"E5":[0,15, 520]
+        self.motors = { # [adafruit_shield, motor]
+            "A1":[0,1],"A2":[0,2],"A3":[0,4],"A4":[0,3],"A5":[1,1],
+            "B1":[1,2],"B2":[1,4],"B3":[1,3],"B4":[2,1],"B5":[2,2],
+            "C1":[2,4],"C2":[2,3],"C3":[3,1],"C4":[3,2],"C5":[3,4],
+            "D1":[3,3],"D2":[4,1],"D3":[4,2],"D4":[4,4],"D5":[4,3],
+            "E1":[5,1],"E2":[5,2],"E3":[5,4],"E4":[5,3],"E5":[7,1]
             }
         # inactive but not off stirers for mixing
 
@@ -66,25 +66,21 @@ class BZBoard:
 
         with open(patternfile) as f:
             return json.load(f)
-        # opens pattern 
 
 
-    def activate_motor(self, motor_code, speed=None):
+    def activate_motor(self, motor_code, direction=0, speed=100):
         ''' code as in A1 or C2 as marked in the actual board. See the dict motors'''
 
-        if speed == None:
-            shield, pin, speed = self.motors[motor_code] # sets motor speed if defined in pattern as 0 
-        else:
-            shield, pin, _  = self.motors[motor_code] # now if not 0 so loop isn't running over null
+        shield, motor = self.motors[motor_code] # get shield and motor 
         
         # because sometimes we can send here a speed 0 to disable it
         # the following if will be longer than expected
         if self.matrix[motor_code] < 1 and speed > 0: # we need to activate it
-            #The following line is a dirty trick. Some of the motors need to be
+            # The following line is a dirty trick. Some of the motors need to be
             # kickstarted at a higher speed
-            command = "A%d P%d S3000\n" % (shield, pin)
+            command = "A%d M%d D%d S255\n" % (shield, motor, direction)
             # and then we send the desired speed
-            command += "A%d P%d S%d\n" % ( shield, pin, speed )
+            command += "A%d M%d D%d S%d\n" % ( shield, motor, direction, speed )
             self.matrix[motor_code] = 1 # mark it as enabled
             self.ser.write(command.encode()) # encode helps program run 
 
@@ -92,7 +88,7 @@ class BZBoard:
             pass
 
         elif self.matrix[motor_code] > 0 and speed > 0: # just update speed
-            command = "A%d P%d S%d\n" % ( shield, pin, speed )
+            command = "A%d M%d D%d S%d\n" % ( shield, motor, direction, speed )
             self.ser.write(command.encode())
 
         elif self.matrix[motor_code] > 0 and speed == 0: # we disable it (on with no speed)
@@ -102,10 +98,10 @@ class BZBoard:
             print("something bad happened when updating a motor") # broken
 
 
-    def activate_all(self, speed=None):
+    def activate_all(self, direction=0, speed=100):
 
         for key in self.motors.keys(): # set to min stiring speed 
-            self.activate_motor(key, speed)
+            self.activate_motor(key, direction, speed)
             self.ser.flush() #flush variables
 
 
@@ -137,11 +133,11 @@ class BZBoard:
 
         # random 5*5 speed
         rand_speed = { 
-                    "A1":randint(0,2000),"A2":randint(0,2000),"A3":randint(0,2000),"A4":randint(0,2000),"A5":randint(0,2000),
-                    "B1":randint(0,2000),"B2":randint(0,2000),"B3":randint(0,2000),"B4":randint(0,2000),"B5":randint(0,2000),
-                    "C1":randint(0,2000),"C2":randint(0,2000),"C3":randint(0,2000),"C4":randint(0,2000),"C5":randint(0,2000),
-                    "D1":randint(0,2000),"D2":randint(0,2000),"D3":randint(0,2000),"D4":randint(0,2000),"D5":randint(0,2000),
-                    "E1":randint(0,2000),"E2":randint(0,2000),"E3":randint(0,2000),"E4":randint(0,2000),"E5":randint(0,2000)
+                    "A1":randint(0,255),"A2":randint(0,255),"A3":randint(0,255),"A4":randint(0,255),"A5":randint(0,255),
+                    "B1":randint(0,255),"B2":randint(0,255),"B3":randint(0,255),"B4":randint(0,255),"B5":randint(0,255),
+                    "C1":randint(0,255),"C2":randint(0,255),"C3":randint(0,255),"C4":randint(0,255),"C5":randint(0,255),
+                    "D1":randint(0,255),"D2":randint(0,255),"D3":randint(0,255),"D4":randint(0,255),"D5":randint(0,255),
+                    "E1":randint(0,255),"E2":randint(0,255),"E3":randint(0,255),"E4":randint(0,255),"E5":randint(0,255)
                     }
 
         # enable the motors with the random speeds
@@ -179,16 +175,15 @@ class BZBoard:
                     "E1":0,"E2":0,"E3":0,"E4":0,"E5":0
                     }
 
-        for i in range(6):
-            random_motor = choice("ABCDE")+choice("12345") # choice is from random
-            speed = randint(0,1000)
+        random_motor = choice("ABCDE")+choice("12345") # choice is from random
+        speed = randint(0,255)
 
-            # store the speed and activate the motor
-            speeds[random_motor] = speed
-            # enable the motors with the random speeds
-            for i in self.motors.keys():
-                speed = speeds[i]
-                self.activate_motor(i, speed)
+        # store the speed and activate the motor
+        speeds[random_motor] = speed
+        # enable the motors with the random speeds
+        for i in self.motors.keys():
+            speed = speeds[i]
+            self.activate_motor(i, speed)
 
         self.save_pattern_in_json(speeds, filename)
         return speeds
@@ -223,8 +218,8 @@ class BZBoard:
 
     def disable_motor(self, motor_code):
 
-        shield, pin, _ = self.motors[motor_code]
-        command = "A%d P%d S0\n" % ( shield, pin )
+        shield, motor = self.motors[motor_code]
+        command = "A%d M%d D0 S0\n" % ( shield, motor )
 
         if self.matrix[motor_code] > 0: # so it was enabled
             self.ser.write(command.encode())
@@ -240,4 +235,4 @@ class BZBoard:
 
 if __name__ == "__main__":
 
-    b = BZBoard("/dev/ttyACM1")
+    b = BZBoard("/dev/ttyACM2")
