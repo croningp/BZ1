@@ -8,7 +8,8 @@ from email.utils import COMMASPACE
 
 
 FROM = 'juanmanuel.parrillagutierrez@glasgow.ac.uk'
-TO = ["2186149q@student.gla.ac.uk",'juanmanuel.parrillagutierrez@glasgow.ac.uk'] 
+#TO = ['2186149q@student.gla.ac.uk','juanmanuel.parrillagutierrez@glasgow.ac.uk'] 
+TO = 'juanmanuel.parrillagutierrez@glasgow.ac.uk' 
 
 def email_alert(efrom=FROM, eto=TO, ebody="BZ fail"):
     
@@ -26,7 +27,7 @@ def email_alert(efrom=FROM, eto=TO, ebody="BZ fail"):
 
     server = smtplib.SMTP('smtp.chem.gla.ac.uk', 25, timeout=5)
     text = msg.as_string()
-    server.sendmail(fromaddr, toaddr, text)
+    server.sendmail(fromaddr, eto, text)
     server.quit()
 
     return
