@@ -41,7 +41,7 @@ class RecordVideo():
         cv2.namedWindow("video")
 
         fourcc = cv2.VideoWriter_fourcc(*'X264')
-        random_name = self.random_filename(1)
+        random_name = self.random_filename(0)
         out = cv2.VideoWriter(filename+random_name, fourcc, 20.0, (800,600))
 
         event = threading.Event()
@@ -72,7 +72,7 @@ class RecordVideo():
         cv2.destroyAllWindows()
 
 
-    def record_threaded(self, filename):
+    def record_threaded(self, filename="test"):
         threading.Thread(target=self.record_video, args=(filename,)).start()
 
 

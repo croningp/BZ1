@@ -17,7 +17,7 @@ class AutomatedPlatform():
         self.v = VolCtl()
         self.b = BZBoard("/dev/ttyACM1")
         self.p = PumpsCtl('/dev/ttyACM0', self.v)
-        self.rv = RecordVideo(30*60)
+        self.rv = RecordVideo(60*30)
 
         # original recipe was 2.5, 20, 12.5, 18, 19 (fe, h2o, h2s, mal, k)
         # but because on average there's a 3 ml remain of theoretically clean water
@@ -34,6 +34,10 @@ class AutomatedPlatform():
 
 
     def perform_experiment(self, water=15, ferroin=2.5, h2so4=12.5, kbro3=19, malonic=18):
+
+        
+        exp_time = datetime.now().strftime('%Y-%m-%d %H:%M')
+        print("Starting time: "+exp_time)
 
         #set experiental parameters 
         self.water['quantity'] = water
@@ -56,7 +60,7 @@ class AutomatedPlatform():
         #check enough for whole experiment to run and direct to reset if not
         self.v.check_sufficent_volume()
 
-
+        print("Preparing BZ reaction")
         #dispense the BZ recipe into the arena
         self.p.pump_multiple(self.water, self.malonic, self.kbro3, self.h2so4, 
                 self.ferroin)
@@ -65,31 +69,39 @@ class AutomatedPlatform():
         time.sleep(60)
         self.b.disable_all()
 
+        print("Waiting 10 minutes")
         # wait for 10 minutes
         time.sleep(60*10)
         
         # activate random pattern for 1 minute 30 times
         # need variable titles
         exp_time = datetime.now().strftime('%Y-%m-%d %H:%M')
+        print("Starting actual experiment at "+exp_time)
         self.rv.record_threaded( exp_time )
+        time.sleep(1)
         for i in range(15):
-            speeds = self.b.activate_rand_single(exp_time)
+            #speeds = self.b.activate_rand_multiple(exp_time)
+            speeds = self.b.activate_rand_all(exp_time)
             time.sleep(60*1)
             self.b.repeat_rand(exp_time, speeds)
             time.sleep(60*1)
         self.b.disable_all()
-
+        
+        print("Starting cleaning")
         # start cleaning platform
         for i in range(2):
+            print("First cleaning phase "+str(i))
             self.p.pump_multiple(self.waste) # send to waste
             self.p.pump_multiple(self.water_clean, self.h2so4_clean, 
                     self.kbro3_clean) # clean system
             time.sleep(2*60)
             
+        print("Second cleaning phase")
         for i in range(1):
             self.p.pump_multiple(self.waste)
             self.p.pump_multiple(self.water_clean) 
 
+        print("Last cleaning phase")
         for i in range(2):
             self.p.pump_multiple(self.waste)
 
@@ -98,6 +110,10 @@ class AutomatedPlatform():
 if __name__ == "__main__":
 
     ap = AutomatedPlatform()
+    num_experiments = 1
 
-    for i in range(1): # number of experiments
+    for i in range(num_experiments): # number of experiments
+        print("###################")
+        print("###################")
+        print("Starting experiment "+str(i))
         ap.perform_experiment()

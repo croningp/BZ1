@@ -148,7 +148,7 @@ class BZBoard:
         json file'''
         
         for i in self.motors.keys():
-            speed = rand_speed[i]
+            speed = inspeeds[i]
             
             if speed > 0:
                 direction = 1
@@ -159,8 +159,8 @@ class BZBoard:
             
             self.activate_motor(i, direction, speed)
 
-        self.save_pattern_in_json(rand_speed, filename)
-        return rand_speed
+        self.save_pattern_in_json(inspeeds, filename)
+        return inspeeds
 
 
     def activate_rand_multiple(self, filename):
@@ -176,25 +176,25 @@ class BZBoard:
                     "E1":0,"E2":0,"E3":0,"E4":0,"E5":0
                     }
 
-        for i in range(5):
+        num_oscilators = randint(1,26)
+        for i in range(num_oscilators):
             random_motor = choice("ABCDE")+choice("12345") # choice is from random
             speed = randint(-10,10)
 
             # store the speed and activate the motor
             speeds[random_motor] = speed
+
+
+        for motor in self.motors.keys():
+            speed = speeds[motor]
         
-        # enable the motors with the random speeds
-        for i in speeds:
-            speed = rand_speed[i]
-            
             if speed > 0:
                 direction = 1
             else:
                 direction = 0
             
             speed = abs(speed)*25
-            
-            self.activate_motor(i, direction, speed)
+            self.activate_motor(motor, direction, speed)
 
         self.save_pattern_in_json(speeds, filename)
         return speeds
@@ -246,4 +246,4 @@ class BZBoard:
 
 if __name__ == "__main__":
 
-    b = BZBoard("/dev/ttyACM2")
+    b = BZBoard("/dev/ttyACM1")
