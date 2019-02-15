@@ -198,7 +198,44 @@ class BZBoard:
 
         self.save_pattern_in_json(speeds, filename)
         return speeds
-   
+  
+
+    def activate_rand_column(self, filename):
+        '''activates a random column at a random speed. All the motors in that
+        column will be at the same speed'''
+
+        # first generate a dict as before with all 0s
+        speeds = { 
+                    "A1":0,"A2":0,"A3":0,"A4":0,"A5":0,
+                    "B1":0,"B2":0,"B3":0,"B4":0,"B5":0,
+                    "C1":0,"C2":0,"C3":0,"C4":0,"C5":0,
+                    "D1":0,"D2":0,"D3":0,"D4":0,"D5":0,
+                    "E1":0,"E2":0,"E3":0,"E4":0,"E5":0
+                    }
+
+        random_column = choice("ABCDE")
+        speed = randint(-10,10)
+
+        # store the new speed in all the motors of the column generated
+        for row in range(1,6):
+            motor = random_column+str(row)
+            speeds[motor] = speed
+
+        # enable the motors with the random speeds
+        for i in speeds:
+            speed = rand_speed[i]
+            
+            if speed > 0:
+                direction = 1
+            else:
+                direction = 0
+            
+            speed = abs(speed)*25
+            
+            self.activate_motor(i, direction, speed)
+
+        self.save_pattern_in_json(speeds, filename)
+        return speeds
 
     def save_pattern_in_json(self, pattern, filename):
         '''given a dict with all the motors keys and their speeds, and a filename
