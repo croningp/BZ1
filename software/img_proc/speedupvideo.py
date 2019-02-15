@@ -17,8 +17,8 @@ import subprocess, sys, multiprocessing, glob, os
 def speedUpSinglevideo(video, outdir, speedUp, 
         processLimiter=multiprocessing.Lock()):
 
-    videoname = video.split("/")[1].split(".")[0]
-    outvideo = outdir + videoname + "_fast" + speedUp + ".avi"
+    _, videoname = os.path.split(video)
+    outvideo = outdir + videoname.split(".")[0] + "_fast" + speedUp + ".avi"
 
     with processLimiter:
         print("Processing video: "+video)
@@ -40,7 +40,7 @@ def speedUpFolder(pathtofolder, speedUp, newdir):
     else:
         print("newdir can be 'y' or 'n'")
         raise SystemExit
-    print(outdir)
+
     s = multiprocessing.Semaphore(4)
     allvideos = glob.glob(pathtofolder+'*.avi')
     for video in allvideos:
