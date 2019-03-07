@@ -206,33 +206,32 @@ class BZBoard:
 
         # first generate a dict as before with all 0s
         speeds = { 
-                    "A1":0,"A2":0,"A3":0,"A4":0,"A5":0,
-                    "B1":0,"B2":0,"B3":0,"B4":0,"B5":0,
-                    "C1":0,"C2":0,"C3":0,"C4":0,"C5":0,
-                    "D1":0,"D2":0,"D3":0,"D4":0,"D5":0,
-                    "E1":0,"E2":0,"E3":0,"E4":0,"E5":0
+                    "A1":2,"A2":2,"A3":2,"A4":2,"A5":2,
+                    "B1":2,"B2":2,"B3":2,"B4":2,"B5":2,
+                    "C1":2,"C2":2,"C3":2,"C4":2,"C5":2,
+                    "D1":2,"D2":2,"D3":2,"D4":2,"D5":2,
+                    "E1":2,"E2":2,"E3":2,"E4":2,"E5":2
                     }
 
         random_column = choice("ABCDE")
-        speed = randint(-10,10)
+        #speed = randint(-10,10)
+        speed = choice([-8,8])
 
         # store the new speed in all the motors of the column generated
         for row in range(1,6):
             motor = random_column+str(row)
             speeds[motor] = speed
 
-        # enable the motors with the random speeds
-        for i in speeds:
-            speed = rand_speed[i]
-            
+        for motor in self.motors.keys():
+            speed = speeds[motor]
+        
             if speed > 0:
                 direction = 1
             else:
                 direction = 0
             
             speed = abs(speed)*25
-            
-            self.activate_motor(i, direction, speed)
+            self.activate_motor(motor, direction, speed)
 
         self.save_pattern_in_json(speeds, filename)
         return speeds

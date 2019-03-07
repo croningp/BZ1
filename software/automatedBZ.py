@@ -81,7 +81,7 @@ class AutomatedPlatform():
         time.sleep(1)
         for i in range(15):
             #speeds = self.b.activate_rand_multiple(exp_time)
-            speeds = self.b.activate_rand_all(exp_time)
+            speeds = self.b.activate_rand_column(exp_time)
             time.sleep(60*1)
             self.b.repeat_rand(exp_time, speeds)
             time.sleep(60*1)
@@ -110,7 +110,7 @@ class AutomatedPlatform():
 if __name__ == "__main__":
 
     ap = AutomatedPlatform()
-    num_experiments = 1
+    num_experiments = 3
 
     for i in range(num_experiments): # number of experiments
         print("###################")
