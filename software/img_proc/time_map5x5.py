@@ -25,13 +25,19 @@ def add_column(frame, timemap, bz_coord, xcol):
     width = x2 - x1
 
     for i in range(5):
+        
         pad = 0
-        if i == 3:
-            pad = -9
+        if i == 0:
+            pad = 50
+        if i == 1:
+            pad = 45
         if i == 2:
-            pad = 55
+            pad = 45
+        if i == 3:
+            pad = 40
         if i == 4:
-            pad = -9
+            pad = 40
+    
         col = frame[y1:y2, x1+25-(i*0)+pad + step_w*i]
         timemap[i*height:i*height+height, xcol] = col
         #row = frame[y1+20-(i*2) + step_h*i, x1:x2]

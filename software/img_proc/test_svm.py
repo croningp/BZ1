@@ -242,11 +242,12 @@ def SVMsinglevideo(path, processLimiter=multiprocessing.Lock()):
             counter = counter + 1
 
             # first thing we ask the user to define the 5x5 grid
-            if click_grid.finished is False:
-                click_grid.get_platform_corners(frame, path)
+            #if click_grid.finished is False:
+            #    click_grid.get_platform_corners(frame, path)
 
             # calculate the average color of this frame
-            avg_c = bz_average_color(frame, click_grid.points) 
+            #avg_c = bz_average_color(frame, click_grid.points) 
+            avg_c = bz_average_color(frame, [205,80,656,533]) 
             # save it
             frame_color.append(avg_c)
             # calculate the average color of the last n frames
