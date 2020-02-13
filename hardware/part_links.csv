@@ -1,6 +1,6 @@
 Part, url, Purchase url
-Motors,-,http://hobbycomponents.com/motors-and-servos/519-micro-coreless-6mm-x-14mm-motor
-PWM shield,https://www.adafruit.com/products/1411,https://shop.pimoroni.com/products/adafruit-16-channel-12-bit-pwm-servo-shield-i2c-interface
+Motors,-,See SI for the exact specs, they were bought from alixpress but the link is dead now, but very similar motors with same specs can be found
+PWM shield,https://learn.adafruit.com/adafruit-motor-shield-v2-for-arduino
 Stackable headers,-,https://shop.pimoroni.com/products/arduino-stackable-header-6-pin
 Darlington transistor arrays,http://www.ti.com/lit/ds/symlink/uln2803a.pdf,Ask So
 Arduino Mega,https://www.arduino.cc/en/Main/ArduinoBoardMega,
